@@ -23,12 +23,12 @@ export const UpcomingTasks = ({ data }: { data: Task[] }) => {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {data.length === 0 ? (
+        {data?.length === 0 ? (
           <p className="text-center text-muted-foreground py-8">
             No upcoming tasks yet
           </p>
         ) : (
-          data.map((task) => (
+          data?.map((task) => (
             <Link
               to={`/workspaces${workspaceId}/projects/${task.project}/tasks/${task._id}`}
               key={task._id}
