@@ -132,3 +132,33 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Fix calendar weekday header alignment */
+.rdp-caption_label {
+  text-align: center;
+  width: 100%;
+}
+
+.rdp-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.rdp-head_row,
+.rdp-row {
+  display: table-row;
+}
+
+.rdp-head_cell,
+.rdp-cell {
+  display: table-cell;
+  text-align: center;
+  width: 1.5em;
+  font-family: inherit;
+  font-weight: 500;
+  padding: 0.25em 0;
+}
+
+.rdp-head_cell {
+  font-weight: 600;
+}

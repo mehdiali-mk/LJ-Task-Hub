@@ -159,7 +159,7 @@ export const CreateProjectDialog = ({
             />
 
             <div className="grid grid-cols-2 gap-4">
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="startDate"
                 render={({ field }) => (
@@ -200,8 +200,8 @@ export const CreateProjectDialog = ({
                     <FormMessage />
                   </FormItem>
                 )}
-              />
-              <FormField
+              /> */}
+              {/* <FormField
                 control={form.control}
                 name="dueDate"
                 render={({ field }) => (
@@ -227,6 +227,94 @@ export const CreateProjectDialog = ({
                         </PopoverTrigger>
 
                         <PopoverContent>
+                          <Calendar
+                            mode="single"
+                            selected={
+                              field.value ? new Date(field.value) : undefined
+                            }
+                            onSelect={(date) => {
+                              field.onChange(date?.toISOString() || undefined);
+                            }}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              /> */}
+
+              <FormField
+                control={form.control}
+                name="startDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Start Date</FormLabel>
+                    <FormControl>
+                      <Popover modal={true}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={`max-w-[250px] justify-start text-left font-normal ${
+                              !field.value ? "text-muted-foreground" : ""
+                            } overflow-hidden`}
+                          >
+                            <CalendarIcon className="size-4 mr-2" />
+                            {field.value ? (
+                              format(new Date(field.value), "PPPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-auto min-w-[260px] p-0 z-50"
+                          align="start"
+                        >
+                          <Calendar
+                            mode="single"
+                            selected={
+                              field.value ? new Date(field.value) : undefined
+                            }
+                            onSelect={(date) => {
+                              field.onChange(date?.toISOString() || undefined);
+                            }}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="dueDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Due Date</FormLabel>
+                    <FormControl>
+                      <Popover modal={true}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={`max-w-[250px] justify-start text-left font-normal ${
+                              !field.value ? "text-muted-foreground" : ""
+                            } overflow-hidden`}
+                          >
+                            <CalendarIcon className="size-4 mr-1" />
+                            {field.value ? (
+                              format(new Date(field.value), "PPPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-auto min-w-[260px] p-0 z-50"
+                          align="start"
+                        >
                           <Calendar
                             mode="single"
                             selected={
