@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router";
 import { useSignUpMutation } from "@/hooks/use-auth";
 import { toast } from "sonner";
+import { Loader2, Wrench } from "lucide-react";
 
 export type SignupFormData = z.infer<typeof signUpSchema>;
 
@@ -63,6 +64,10 @@ const SignUp = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-muted/40 p-4">
+      <div className="flex items-center gap-2 mb-8">
+        <Wrench className="size-8 text-blue-600" />
+        <span className="font-semibold text-2xl hidden md:block">TaskHub</span>
+      </div>
       <Card className="max-w-md w-full shadow-xl">
         <CardHeader className="text-center mb-5">
           <CardTitle className="text-2xl font-bold">

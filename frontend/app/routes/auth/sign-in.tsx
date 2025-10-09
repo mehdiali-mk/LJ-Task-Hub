@@ -20,7 +20,7 @@ import { useLoginMutation } from "@/hooks/use-auth";
 import { signInSchema } from "@/lib/schema";
 import { useAuth } from "@/provider/auth-context";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, Wrench } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -59,6 +59,10 @@ const SignIn = () => {
   };
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-muted/40 p-4">
+      <div className="flex items-center gap-2 mb-8">
+        <Wrench className="size-8 text-blue-600" />
+        <span className="font-semibold text-2xl hidden md:block">TaskHub</span>
+      </div>
       <Card className="max-w-md w-full shadow-xl">
         <CardHeader className="text-center mb-5">
           <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
