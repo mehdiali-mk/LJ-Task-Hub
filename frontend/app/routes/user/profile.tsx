@@ -144,18 +144,18 @@ const Profile = () => {
     <div className="space-y-8">
       <div className="px-4 md:px-0">
         <BackButton />
-        <h3 className="text-lg font-medium">Profile Information</h3>
-        <p className="text-sm text-muted-foreground">
+        <h3 className="text-lg font-medium text-white">Profile Information</h3>
+        <p className="text-sm text-gray-400">
           Manage your account settings and preferences.
         </p>
       </div>
 
-      <Separator />
+      <Separator className="bg-white/10" />
 
-      <Card>
+      <Card className="glass-card border-none">
         <CardHeader>
-          <CardTitle>Personal Information</CardTitle>
-          <CardDescription>Update your personal details.</CardDescription>
+          <CardTitle className="text-white">Personal Information</CardTitle>
+          <CardDescription className="text-gray-400">Update your personal details.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...profileForm}>
@@ -164,7 +164,7 @@ const Profile = () => {
               className="grid gap-4"
             >
               <div className="flex items-center space-x-4 mb-6">
-                <Avatar className="h-20 w-20 bg-gray-600">
+                <Avatar className="h-20 w-20 bg-gray-600 ring-2 ring-white/10">
                   <AvatarImage
                     src={
                       profileForm.watch("profilePicture") ||
@@ -172,7 +172,7 @@ const Profile = () => {
                     }
                     alt={user?.name}
                   />
-                  <AvatarFallback className="text-xl">
+                  <AvatarFallback className="text-xl bg-gray-700 text-white">
                     {user?.name?.charAt(0) || "U"}
                   </AvatarFallback>
                 </Avatar>
@@ -189,6 +189,7 @@ const Profile = () => {
                     type="button"
                     size="sm"
                     variant="outline"
+                    className="bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white"
                     onClick={() =>
                       document.getElementById("avatar-upload")?.click()
                     }
@@ -203,29 +204,30 @@ const Profile = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel className="text-gray-200">Full Name</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-primary/50" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <div className="grid gap-2">
-                <Label htmlFor="email">Email Address</Label>
+                <Label htmlFor="email" className="text-gray-200">Email Address</Label>
                 <Input
                   id="email"
                   type="email"
                   defaultValue={user?.email}
                   disabled
+                  className="bg-white/5 border-white/10 text-gray-400"
                 />
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-gray-500">
                   Your email address cannot be changed.
                 </p>
               </div>
               <Button
                 type="submit"
-                className="w-fit"
+                className="w-fit bg-primary text-black hover:bg-primary/90"
                 disabled={isUpdatingProfile || isPending}
               >
                 {isUpdatingProfile ? (
@@ -242,10 +244,10 @@ const Profile = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="glass-card border-none">
         <CardHeader>
-          <CardTitle>Security</CardTitle>
-          <CardDescription>Update your password.</CardDescription>
+          <CardTitle className="text-white">Security</CardTitle>
+          <CardDescription className="text-gray-400">Update your password.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -266,13 +268,14 @@ const Profile = () => {
                   name="currentPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Current Password</FormLabel>
+                      <FormLabel className="text-gray-200">Current Password</FormLabel>
                       <FormControl>
                         <Input
                           id="current-password"
                           type="password"
                           placeholder="********"
                           {...field}
+                          className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-primary/50"
                         />
                       </FormControl>
                       <FormMessage />
@@ -285,13 +288,14 @@ const Profile = () => {
                   name="newPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>New Password</FormLabel>
+                      <FormLabel className="text-gray-200">New Password</FormLabel>
                       <FormControl>
                         <Input
                           id="new-password"
                           type="password"
                           placeholder="********"
                           {...field}
+                          className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-primary/50"
                         />
                       </FormControl>
                       <FormMessage />
@@ -304,13 +308,14 @@ const Profile = () => {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
+                      <FormLabel className="text-gray-200">Confirm Password</FormLabel>
                       <FormControl>
                         <Input
                           id="confirm-password"
                           placeholder="********"
                           type="password"
                           {...field}
+                          className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-primary/50"
                         />
                       </FormControl>
                       <FormMessage />
@@ -321,7 +326,7 @@ const Profile = () => {
 
               <Button
                 type="submit"
-                className="mt-2 w-fit"
+                className="mt-2 w-fit bg-primary text-black hover:bg-primary/90"
                 disabled={isPending || isChangingPassword}
               >
                 {isPending || isChangingPassword ? (

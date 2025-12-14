@@ -12,13 +12,12 @@ import { Input } from "@/components/ui/input";
 import { useForgotPasswordMutation } from "@/hooks/use-auth";
 import { forgotPasswordSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, CheckCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle, Loader2, Layers } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
 import { toast } from "sonner";
 import type { z } from "zod";
-
 type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 const ForgotPassword = () => {
@@ -47,16 +46,19 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-center h-screen px-4">
       <div className="w-full max-w-md space-y-6">
-        <div className="flex flex-col items-center justify-center space-y-2">
-          <h1 className="text-2xl font-bold">Forgot Password</h1>
-          <p className="text-muted-foreground">
+        <div className="flex flex-col items-center justify-center space-y-2 mb-6">
+           <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 ring-1 ring-white/10 flex items-center justify-center shadow-inner mb-2">
+             <Layers className="size-6 text-[#00FFFF]" />
+           </div>
+          <h1 className="text-2xl font-bold text-white">Forgot Password</h1>
+          <p className="text-gray-400 text-center">
             Enter your email to reset your password
           </p>
         </div>
 
-        <Card>
+        <Card className="bg-white/[0.08] backdrop-blur-3xl border-white/20 ring-1 ring-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
           <CardHeader>
             <Link to="/sign-in" className="flex items-center gap-2">
               <ArrowLeft className="w-4 h-4" />

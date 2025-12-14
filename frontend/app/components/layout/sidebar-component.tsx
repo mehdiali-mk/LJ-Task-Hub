@@ -10,8 +10,9 @@ import {
   LogOut,
   Settings,
   Users,
-  Wrench,
+  Layers,
 } from "lucide-react";
+
 import { useState } from "react";
 import { Link } from "react-router";
 import { Button } from "../ui/button";
@@ -62,34 +63,36 @@ export const SidebarComponent = ({
   return (
     <div
       className={cn(
-        "flex flex-col border-r bg-sidebar transition-all duration-300",
+        "flex flex-col border-r border-white/20 bg-white/[0.08] backdrop-blur-2xl transition-all duration-300",
         isCollapsed ? "w-16 md:w[80px]" : "w-16 md:w-[240px]"
       )}
     >
-      <div className="flex h-14 items-center border-b px-4 mb-4">
-        <Link to="/dashboard" className="flex items-center">
-          {!isCollapsed && (
-            <div className="flex items-center gap-2">
-              <Wrench className="size-6 text-blue-600" />
-              <span className="font-semibold text-lg hidden md:block">
-                TaskHub
-              </span>
+      <div className={cn("flex h-14 items-center border-b mb-4", isCollapsed ? "justify-center px-2" : "justify-between px-4")}>
+        <Link to="/dashboard" className={cn("flex items-center", isCollapsed && "hidden")}>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
+              <Layers className="size-5 text-[#00FFFF]" />
             </div>
-          )}
-
-          {isCollapsed && <Wrench className="size-6 text-blue-600" />}
+            <span className="font-semibold text-lg hidden md:block text-white">
+              TaskHub
+            </span>
+          </div>
         </Link>
 
+        {/* When collapsed, we only show the toggle button centered */}
         <Button
           variant={"ghost"}
           size="icon"
-          className="ml-auto hidden md:block"
+          className={cn(
+            "hidden md:flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors",
+            !isCollapsed && "ml-auto"
+          )}
           onClick={() => setIsCollapsed(!isCollapsed)}
         >
           {isCollapsed ? (
-            <ChevronsRight className="size-4" />
+            <ChevronsRight className="size-5" />
           ) : (
-            <ChevronsLeft className="size-4" />
+            <ChevronsLeft className="size-5" />
           )}
         </Button>
       </div>

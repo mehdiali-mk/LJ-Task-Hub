@@ -38,14 +38,14 @@ export const TaskPrioritySelector = ({
   };
   return (
     <Select value={priority || ""} onValueChange={handleStatusChange}>
-      <SelectTrigger className="w-[180px]" disabled={isPending}>
+      <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white hover:bg-white/10" disabled={isPending}>
         <SelectValue placeholder="Priority" />
       </SelectTrigger>
 
-      <SelectContent>
-        <SelectItem value="Low">Low</SelectItem>
-        <SelectItem value="Medium">Medium</SelectItem>
-        <SelectItem value="High">High</SelectItem>
+      <SelectContent className="glass-card bg-black/90 border-white/10 text-white">
+        <SelectItem value="Low" className="focus:bg-white/10 focus:text-white cursor-pointer">Low</SelectItem>
+        <SelectItem value="Medium" className="focus:bg-white/10 focus:text-white cursor-pointer">Medium</SelectItem>
+        <SelectItem value="High" className="focus:bg-white/10 focus:text-white cursor-pointer">High</SelectItem>
       </SelectContent>
     </Select>
   );

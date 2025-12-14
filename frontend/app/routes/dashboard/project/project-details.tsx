@@ -64,52 +64,76 @@ const ProjectDetails = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex items-center gap-2 min-w-32">
+          <div className="flex items-center gap-2 min-w-60">
             <div className="text-sm text-muted-foreground">Progress:</div>
             <div className="flex-1">
-              <Progress value={projectProgress} className="h-2" />
+              <Progress 
+                value={projectProgress} 
+                className={cn(
+                  "h-3 bg-white/5 border border-white/10",
+                  project.status === "In Progress" && "[&>div]:bg-blue-500/80",
+                  project.status === "Completed" && "[&>div]:bg-green-500/80",
+                  project.status === "Cancelled" && "[&>div]:bg-red-500/80",
+                  project.status === "On Hold" && "[&>div]:bg-yellow-500/80",
+                  project.status === "Planning" && "[&>div]:bg-purple-500/80",
+                  !["In Progress", "Completed", "Cancelled", "On Hold", "Planning"].includes(project.status) && "[&>div]:bg-cyan-500/80"
+                )} 
+              />
             </div>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm text-gray-400 font-medium">
               {projectProgress}%
             </span>
           </div>
 
-          <Button onClick={() => setIsCreateTask(true)}>Add Task</Button>
+          <Button onClick={() => setIsCreateTask(true)} className="bg-primary text-black hover:bg-primary/90">Add Task</Button>
         </div>
       </div>
 
       <div className="flex items-center justify-between">
         <Tabs defaultValue="all" className="w-full">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <TabsList>
-              <TabsTrigger value="all" onClick={() => setTaskFilter("All")}>
+            <TabsList className="bg-white/5 border border-white/10">
+              <TabsTrigger 
+                value="all" 
+                onClick={() => setTaskFilter("All")}
+                className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary text-gray-400"
+              >
                 All Tasks
               </TabsTrigger>
-              <TabsTrigger value="todo" onClick={() => setTaskFilter("To Do")}>
+              <TabsTrigger 
+                value="todo" 
+                onClick={() => setTaskFilter("To Do")}
+                className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary text-gray-400"
+              >
                 To Do
               </TabsTrigger>
               <TabsTrigger
                 value="in-progress"
                 onClick={() => setTaskFilter("In Progress")}
+                className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary text-gray-400"
               >
                 In Progress
               </TabsTrigger>
-              <TabsTrigger value="done" onClick={() => setTaskFilter("Done")}>
+              <TabsTrigger 
+                value="done" 
+                onClick={() => setTaskFilter("Done")}
+                className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary text-gray-400"
+              >
                 Done
               </TabsTrigger>
             </TabsList>
 
             <div className="flex items-center text-sm">
-              <span className="text-muted-foreground">Status:</span>
-              <div>
-                <Badge variant="outline" className="bg-background">
+              <span className="text-muted-foreground mr-2">Status:</span>
+              <div className="flex gap-2">
+                <Badge variant="outline" className="bg-white/5 border-white/10 text-white">
                   {tasks.filter((task) => task.status === "To Do").length} To Do
                 </Badge>
-                <Badge variant="outline" className="bg-background">
+                <Badge variant="outline" className="bg-white/5 border-white/10 text-white">
                   {tasks.filter((task) => task.status === "In Progress").length}{" "}
                   In Progress
                 </Badge>
-                <Badge variant="outline" className="bg-background">
+                <Badge variant="outline" className="bg-white/5 border-white/10 text-white">
                   {tasks.filter((task) => task.status === "Done").length} Done
                 </Badge>
               </div>
@@ -270,7 +294,7 @@ const TaskCard = ({ task, onClick }: { task: Task; onClick: () => void }) => {
               <Button
                 variant={"ghost"}
                 size={"icon"}
-                className="size-6"
+                className="size-6 text-gray-400 hover:text-white hover:bg-white/10"
                 onClick={() => {
                   console.log("mark as to do");
                 }}
@@ -284,7 +308,7 @@ const TaskCard = ({ task, onClick }: { task: Task; onClick: () => void }) => {
               <Button
                 variant={"ghost"}
                 size={"icon"}
-                className="size-6"
+                className="size-6 text-gray-400 hover:text-white hover:bg-white/10"
                 onClick={() => {
                   console.log("mark as in progress");
                 }}
@@ -298,7 +322,7 @@ const TaskCard = ({ task, onClick }: { task: Task; onClick: () => void }) => {
               <Button
                 variant={"ghost"}
                 size={"icon"}
-                className="size-6"
+                className="size-6 text-gray-400 hover:text-white hover:bg-white/10"
                 onClick={() => {
                   console.log("mark as done");
                 }}
@@ -313,10 +337,10 @@ const TaskCard = ({ task, onClick }: { task: Task; onClick: () => void }) => {
       </CardHeader>
 
       <CardContent>
-        <h4 className="ont-medium mb-2">{task.title}</h4>
+        <h4 className="ont-medium mb-2 text-white">{task.title}</h4>
 
         {task.description && (
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+          <p className="text-sm text-gray-400 line-clamp-2 mb-2">
             {task.description}
           </p>
         )}
@@ -328,7 +352,7 @@ const TaskCard = ({ task, onClick }: { task: Task; onClick: () => void }) => {
                 {task.assignees.slice(0, 5).map((member) => (
                   <Avatar
                     key={member._id}
-                    className="relative size-8 bg-gray-700 rounded-full border-2 border-background overflow-hidden"
+                    className="relative size-8 bg-gray-700 rounded-full border-2 border-white/10 overflow-hidden"
                     title={member.name}
                   >
                     <AvatarImage src={member.profilePicture} />

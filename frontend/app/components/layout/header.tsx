@@ -46,11 +46,14 @@ export const Header = ({
   };
 
   return (
-    <div className="bg-background sticky top-0 z-40 border-b">
+    <div className="bg-white/[0.05] backdrop-blur-xl sticky top-0 z-40 border-b border-white/10">
       <div className="flex h-14 items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant={"outline"}>
+            <Button
+              variant={"ghost"}
+              className="bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:text-white transition-all duration-200"
+            >
               {selectedWorkspace ? (
                 <>
                   {selectedWorkspace.color && (
@@ -67,15 +70,16 @@ export const Header = ({
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent>
-            <DropdownMenuLabel>Workspace</DropdownMenuLabel>
-            <DropdownMenuSeparator />
+          <DropdownMenuContent className="w-56 glass-card border-white/10 bg-black/80 backdrop-blur-xl text-white">
+            <DropdownMenuLabel className="text-gray-400">Workspace</DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-white/10" />
 
             <DropdownMenuGroup>
               {workspaces.map((ws) => (
                 <DropdownMenuItem
                   key={ws._id}
                   onClick={() => handleOnClick(ws)}
+                  className="focus:bg-white/10 focus:text-white cursor-pointer"
                 >
                   {ws.color && (
                     <WorkspaceAvatar color={ws.color} name={ws.name} />
@@ -86,7 +90,10 @@ export const Header = ({
             </DropdownMenuGroup>
 
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={onCreateWorkspace}>
+              <DropdownMenuItem
+                onClick={onCreateWorkspace}
+                className="focus:bg-white/10 focus:text-white cursor-pointer"
+              >
                 <PlusCircle className="w-4 h-4 mr-2" />
                 Create Workspace
               </DropdownMenuItem>
@@ -101,24 +108,24 @@ export const Header = ({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="rounded-full border p-1 w-8 h-8">
+              <button className="rounded-full border border-white/10 p-0.5 w-9 h-9 flex items-center justify-center hover:bg-white/5 transition-colors">
                 <Avatar className="w-8 h-8">
-                  <AvatarImage src={user?.profilePicture} alt={user?.name} />
-                  <AvatarFallback className="bg-primary text-primary-foreground">
+                  <AvatarImage src={user?.profilePicture} alt={user?.name} className="object-cover" />
+                  <AvatarFallback className="bg-primary text-black font-semibold w-full h-full flex items-center justify-center text-sm">
                     {user?.name?.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
               </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Link to="/user/profile">Profile</Link>
+            <DropdownMenuContent align="end" className="w-48 glass-card border-white/10 bg-black/80 backdrop-blur-xl text-white">
+              <DropdownMenuLabel className="text-gray-400">My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-white/10" />
+              <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer">
+                <Link to="/user/profile" className="w-full">Profile</Link>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={logout}>Log Out</DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-white/10" />
+              <DropdownMenuItem onClick={logout} className="focus:bg-white/10 focus:text-white cursor-pointer">Log Out</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

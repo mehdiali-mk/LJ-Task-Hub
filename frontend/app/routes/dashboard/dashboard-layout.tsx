@@ -7,6 +7,7 @@ import { useAuth } from "@/provider/auth-context";
 import type { Workspace } from "@/types";
 import { useState } from "react";
 import { Navigate, Outlet } from "react-router";
+import { FluidBackground } from "@/components/ui/fluid-background";
 
 export const clientLoader = async () => {
   try {
@@ -36,7 +37,8 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex h-screen w-full relative overflow-hidden text-white selection:bg-[#00FFFF]/30 isolate">
+      <FluidBackground />
       <SidebarComponent currentWorkspace={currentWorkspace} />
 
       <div className="flex flex-1 flex-col h-full">

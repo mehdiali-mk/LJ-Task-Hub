@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router";
-import { ArrowLeft, CheckCircle, Loader, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, Loader, XCircle, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useVerifyEmailMutation } from "@/hooks/use-auth";
 import { toast } from "sonner";
@@ -35,11 +35,15 @@ const VerifyEmail = () => {
   }, [searchParams]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h1 className="text-2xl font-bold">Verify Email</h1>
-      <p className="text-sm text-gray-500">Verifying your email...</p>
+    <div className="flex flex-col items-center justify-center h-screen px-4">
+       <div className="flex flex-col items-center justify-center space-y-2 mb-8">
+           <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 ring-1 ring-white/10 flex items-center justify-center shadow-inner mb-2">
+             <Layers className="size-6 text-[#00FFFF]" />
+           </div>
+          <h1 className="text-2xl font-bold text-white">TaskHub</h1>
+       </div>
 
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md bg-white/[0.08] backdrop-blur-3xl border-white/20 ring-1 ring-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
         {/* <CardHeader>
           <Link to="/sign-in" className="flex items-center gap-2 text-sm">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -51,17 +55,17 @@ const VerifyEmail = () => {
           <div className="flex flex-col items-center justify-center py-6 ">
             {isVerifying ? (
               <>
-                <Loader className="w-10 h-10 text-gray-500 animate-spin" />
-                <h3 className="text-lg font-semibold">Verifying email...</h3>
-                <p className="text-sm text-gray-500">
+                <Loader className="w-10 h-10 text-white animate-spin" />
+                <h3 className="text-lg font-semibold text-white mt-4">Verifying email...</h3>
+                <p className="text-sm text-gray-400 text-center mt-2">
                   Please wait while we verify your email.
                 </p>
               </>
             ) : isSuccess ? (
               <>
                 <CheckCircle className="w-10 h-10 text-green-500" />
-                <h3 className="text-lg font-semibold">Email Verified</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="text-lg font-semibold text-white mt-4">Email Verified</h3>
+                <p className="text-sm text-gray-400 text-center mt-2">
                   Your email has been verified successfully.
                 </p>
                 <Link to="/sign-in" className="text-sm text-blue-500 mt-6">

@@ -45,12 +45,15 @@ export const SidebarNav = ({
             key={el.href}
             variant={isActive ? "outline" : "ghost"}
             className={cn(
-              "justify-start",
-              isActive && "bg-blue-800/20 text-blue-600 font-medium"
+              "justify-start hover:bg-white/10 hover:text-white transition-colors duration-200",
+              isActive 
+                ? "glass-card border-white/10 text-white font-medium shadow-md bg-white/5" 
+                : "text-gray-400 border-transparent",
+              isCollapsed && "justify-center px-2"
             )}
             onClick={handleClick}
           >
-            <Icon className="mr-2 size-4" />
+            <Icon className={cn("size-4", !isCollapsed && "mr-2", isActive ? "text-primary" : "text-gray-400 group-hover:text-white")} />
             {isCollapsed ? (
               <span className="sr-only">{el.title}</span>
             ) : (

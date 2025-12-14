@@ -37,11 +37,18 @@ export const WorkspaceHeader = ({
           </div>
 
           <div className="flex items-center gap-3 justify-between md:justify-start mb-4 md:mb-0">
-            <Button variant={"outline"} onClick={onInviteMember}>
+            <Button
+              variant={"outline"}
+              onClick={onInviteMember}
+              className="bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white"
+            >
               <UserPlus className="size-4 mr-2" />
               Invite
             </Button>
-            <Button onClick={onCreateProject}>
+            <Button
+              onClick={onCreateProject}
+              className="bg-primary text-black hover:bg-primary/90"
+            >
               <Plus className="size-4 mr-2" />
               Create Project
             </Button>
@@ -63,7 +70,7 @@ export const WorkspaceHeader = ({
             {members.map((member) => (
               <Avatar
                 key={member._id}
-                className="relative h-8 w-8 rounded-full  border-2 border-background overflow-hidden"
+                className="relative h-8 w-8 rounded-full border-2 border-white/10 overflow-hidden"
                 title={member.user.name}
               >
                 <AvatarImage

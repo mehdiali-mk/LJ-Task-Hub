@@ -113,10 +113,10 @@ const TaskDetails = () => {
 
         <div className="flex space-x-2 mt-4 md:mt-0">
           <Button
-            variant={"outline"}
+            variant={"ghost"}
             size="sm"
             onClick={handleWatchTask}
-            className="w-fit"
+            className="w-fit bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:text-white transition-all duration-200"
             disabled={isWatching}
           >
             {isUserWatching ? (
@@ -133,10 +133,10 @@ const TaskDetails = () => {
           </Button>
 
           <Button
-            variant={"outline"}
+            variant={"ghost"}
             size="sm"
             onClick={handleAchievedTask}
-            className="w-fit"
+            className="w-fit bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:text-white transition-all duration-200"
             disabled={isAchieved}
           >
             {task.isArchived ? "Unarchive" : "Archive"}

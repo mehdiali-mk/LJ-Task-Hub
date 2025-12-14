@@ -80,13 +80,13 @@ export const TaskAssigneesSelector = ({
             .map((m) => (
               <div
                 key={m.user._id}
-                className="flex items-center bg-gray-100 rounded px-2 py-1"
+                className="flex items-center bg-white/5 border border-white/10 rounded px-2 py-1"
               >
-                <Avatar className="size-6 mr-1">
+                <Avatar className="size-6 mr-1 border border-white/10">
                   <AvatarImage src={m.user.profilePicture} />
-                  <AvatarFallback>{m.user.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="bg-white/10 text-white">{m.user.name.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-gray-200">
                   {m.user.name}
                 </span>
               </div>
@@ -97,7 +97,7 @@ export const TaskAssigneesSelector = ({
       {/* dropdown */}
       <div className="relative">
         <button
-          className="text-sm text-muted-foreground w-full border rounded px-3 py-2 text-left bg-white"
+          className="text-sm text-gray-400 w-full border border-white/10 rounded px-3 py-2 text-left bg-white/5 hover:bg-white/10 hover:text-white transition-colors"
           onClick={() => setDropDownOpen(!dropDownOpen)}
         >
           {selectedIds.length === 0
@@ -106,16 +106,16 @@ export const TaskAssigneesSelector = ({
         </button>
 
         {dropDownOpen && (
-          <div className="absolute z-10 mt-1 w-full bg-white border rounded shadow-lg max-h-60 overflow-y-auto">
-            <div className="flex justify-between px-2 py-1 border-b">
+          <div className="absolute z-10 mt-1 w-full glass-card border-white/10 bg-black/90 backdrop-blur-xl rounded shadow-lg max-h-60 overflow-y-auto text-white">
+            <div className="flex justify-between px-2 py-1 border-b border-white/10">
               <button
-                className="text-xs text-blue-600"
+                className="text-xs text-blue-400 hover:text-blue-300"
                 onClick={handleSelectAll}
               >
                 Select all
               </button>
               <button
-                className="text-xs text-red-600"
+                className="text-xs text-red-400 hover:text-red-300"
                 onClick={handleUnSelectAll}
               >
                 Unselect all
@@ -124,29 +124,29 @@ export const TaskAssigneesSelector = ({
 
             {projectMembers.map((m) => (
               <label
-                className="flex items-center px-3 py-2 cursor-pointer hover:bg-gray-50"
+                className="flex items-center px-3 py-2 cursor-pointer hover:bg-white/10"
                 key={m.user._id}
               >
                 <Checkbox
                   checked={selectedIds.includes(m.user._id)}
                   onCheckedChange={() => handleSelect(m.user._id)}
-                  className="mr-2"
+                  className="mr-2 data-[state=checked]:bg-primary data-[state=checked]:text-black border-white/50"
                 />
 
-                <Avatar className="size-6 mr-2">
+                <Avatar className="size-6 mr-2 border border-white/10">
                   <AvatarImage src={m.user.profilePicture} />
-                  <AvatarFallback>{m.user.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="bg-white/10 text-white">{m.user.name.charAt(0)}</AvatarFallback>
                 </Avatar>
 
-                <span>{m.user.name}</span>
+                <span className="text-gray-200">{m.user.name}</span>
               </label>
             ))}
 
-            <div className="flex justify-between px-2 py-1">
+            <div className="flex justify-between px-2 py-1 border-t border-white/10">
               <Button
-                variant={"outline"}
+                variant={"ghost"}
                 size={"sm"}
-                className="font-light"
+                className="font-light hover:bg-white/10 hover:text-white text-gray-400"
                 onClickCapture={() => setDropDownOpen(false)}
                 disabled={isPending}
               >
@@ -154,7 +154,7 @@ export const TaskAssigneesSelector = ({
               </Button>
               <Button
                 size={"sm"}
-                className="font-light"
+                className="font-light bg-primary text-black hover:bg-primary/90"
                 disabled={isPending}
                 onClickCapture={() => handleSave()}
               >
