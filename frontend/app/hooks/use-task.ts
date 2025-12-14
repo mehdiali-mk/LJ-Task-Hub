@@ -17,10 +17,11 @@ export const useCreateTaskMutation = () => {
   });
 };
 
-export const useTaskByIdQuery = (taskId: string) => {
+export const useTaskByIdQuery = (taskId: string | null | undefined) => {
   return useQuery({
     queryKey: ["task", taskId],
     queryFn: () => fetchData(`/tasks/${taskId}`),
+    enabled: !!taskId,
   });
 };
 
@@ -170,10 +171,13 @@ export const useAddCommentMutation = () => {
   });
 };
 
-export const useGetCommentsByTaskIdQuery = (taskId: string) => {
+export const useGetCommentsByTaskIdQuery = (
+  taskId: string | null | undefined
+) => {
   return useQuery({
     queryKey: ["comments", taskId],
     queryFn: () => fetchData(`/tasks/${taskId}/comments`),
+    enabled: !!taskId,
   });
 };
 
