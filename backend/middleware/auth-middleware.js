@@ -23,7 +23,13 @@ const authMiddleware = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.log(error);
+    console.error("Auth Middleware Error:", error);
+    if (error.name === "TokenExpiredError" || error.name === "JsonWebTokenError") {
+        return res.status(401).json({
+            message: "Unauthorized",
+        });
+    }
+    
     res.status(500).json({
       message: "Internal server error",
     });

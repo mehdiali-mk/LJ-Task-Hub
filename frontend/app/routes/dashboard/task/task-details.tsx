@@ -13,13 +13,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   useAchievedTaskMutation,
+  useDeleteTaskMutation,
   useTaskByIdQuery,
   useWatchTaskMutation,
 } from "@/hooks/use-task";
 import { useAuth } from "@/provider/auth-context";
 import type { Project, Task } from "@/types";
 import { format, formatDistanceToNow } from "date-fns";
-import { Eye, EyeOff } from "lucide-react";
+import { Trash2, Eye, EyeOff } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 
@@ -42,6 +43,7 @@ const TaskDetails = () => {
   const { mutate: watchTask, isPending: isWatching } = useWatchTaskMutation();
   const { mutate: achievedTask, isPending: isAchieved } =
     useAchievedTaskMutation();
+  const { mutate: deleteTask, isPending: isDeleting } = useDeleteTaskMutation();
 
   if (isLoading) {
     return (
@@ -82,6 +84,8 @@ const TaskDetails = () => {
     );
   };
 
+
+
   const handleAchievedTask = () => {
     achievedTask(
       { taskId: task._id },
@@ -96,6 +100,25 @@ const TaskDetails = () => {
     );
   };
 
+  const handleDeleteTask = () => {
+    if (confirm("Are you sure you want to delete this task? This action cannot be undone.")) {
+      deleteTask(task._id, {
+        onSuccess: () => {
+          toast.success("Task deleted successfully");
+          navigate(-1); // Go back after deletion
+        },
+        onError: (error: any) => {
+           toast.error(error.response?.data?.message || "Failed to delete task");
+        }
+      });
+    }
+  };
+
+  const currentUserMember = project?.members?.find(
+    (m) => m.user?._id === user?._id || m.user === user?._id
+  );
+  const isManager = currentUserMember?.role === "manager";
+
   return (
     <div className="container mx-auto p-0 py-4 md:px-4">
       <div className="flex flex-col md:flex-row items-center justify-between mb-6">
@@ -104,11 +127,11 @@ const TaskDetails = () => {
 
           <h1 className="text-xl md:text-2xl font-bold">{task.title}</h1>
 
-          {task.isArchived && (
+          {/* {task.isArchived && (
             <Badge className="ml-2" variant={"outline"}>
               Archived
             </Badge>
-          )}
+          )} */}
         </div>
 
         <div className="flex space-x-2 mt-4 md:mt-0">
@@ -132,7 +155,7 @@ const TaskDetails = () => {
             )}
           </Button>
 
-          <Button
+          {/* <Button
             variant={"ghost"}
             size="sm"
             onClick={handleAchievedTask}
@@ -140,7 +163,7 @@ const TaskDetails = () => {
             disabled={isAchieved}
           >
             {task.isArchived ? "Unarchive" : "Archive"}
-          </Button>
+          </Button> */}
         </div>
       </div>
 
@@ -162,7 +185,7 @@ const TaskDetails = () => {
                   {task.priority} Priority
                 </Badge>
 
-                <TaskTitle title={task.title} taskId={task._id} />
+                <TaskTitle title={task.title} taskId={task._id} isManager={isManager} />
 
                 <div className="text-sm md:text-base text-muted-foreground">
                   Created at:{" "}
@@ -173,16 +196,20 @@ const TaskDetails = () => {
               </div>
 
               <div className="flex items-center gap-2 mt-4 md:mt-0">
-                <TaskStatusSelector status={task.status} taskId={task._id} />
+                <TaskStatusSelector status={task.status} taskId={task._id} isManager={isManager} />
 
-                <Button
-                  variant={"destructive"}
-                  size="sm"
-                  onClick={() => {}}
-                  className="hidden md:block"
-                >
-                  Delete Task
-                </Button>
+                {isManager && (
+                    <Button
+                    variant={"destructive"}
+                    size="sm"
+                    onClick={handleDeleteTask}
+                    disabled={isDeleting}
+                    className="hidden md:flex items-center gap-2"
+                    >
+                    <Trash2 className="w-4 h-4" />
+                    Delete Task
+                    </Button>
+                )}
               </div>
             </div>
 
@@ -194,6 +221,7 @@ const TaskDetails = () => {
               <TaskDescription
                 description={task.description || ""}
                 taskId={task._id}
+                isManager={isManager}
               />
             </div>
 
@@ -201,9 +229,10 @@ const TaskDetails = () => {
               task={task}
               assignees={task.assignees}
               projectMembers={project.members as any}
+              isManager={isManager}
             />
 
-            <TaskPrioritySelector priority={task.priority} taskId={task._id} />
+            <TaskPrioritySelector priority={task.priority} taskId={task._id} isManager={isManager} />
 
             <SubTasksDetails subTasks={task.subtasks || []} taskId={task._id} />
           </div>

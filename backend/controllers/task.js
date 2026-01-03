@@ -109,13 +109,19 @@ const updateTaskTitle = async (req, res) => {
       });
     }
 
-    const isMember = project.members.some(
-      (member) => member.user.toString() === req.user._id.toString()
+    const member = project.members.find(
+      (m) => m.user.toString() === req.user._id.toString()
     );
 
-    if (!isMember) {
+    if (!member) {
       return res.status(403).json({
         message: "You are not a member of this project",
+      });
+    }
+
+    if (member.role !== "manager") {
+      return res.status(403).json({
+        message: "Only managers can update task title",
       });
     }
 
@@ -158,13 +164,19 @@ const updateTaskDescription = async (req, res) => {
       });
     }
 
-    const isMember = project.members.some(
-      (member) => member.user.toString() === req.user._id.toString()
+    const member = project.members.find(
+      (m) => m.user.toString() === req.user._id.toString()
     );
 
-    if (!isMember) {
+    if (!member) {
       return res.status(403).json({
         message: "You are not a member of this project",
+      });
+    }
+
+    if (member.role !== "manager") {
+      return res.status(403).json({
+        message: "Only managers can update task description",
       });
     }
 
@@ -212,13 +224,19 @@ const updateTaskStatus = async (req, res) => {
       });
     }
 
-    const isMember = project.members.some(
-      (member) => member.user.toString() === req.user._id.toString()
+    const member = project.members.find(
+      (m) => m.user.toString() === req.user._id.toString()
     );
 
-    if (!isMember) {
+    if (!member) {
       return res.status(403).json({
         message: "You are not a member of this project",
+      });
+    }
+
+    if (member.role !== "manager") {
+      return res.status(403).json({
+        message: "Only managers can update task status",
       });
     }
 
@@ -261,13 +279,19 @@ const updateTaskAssignees = async (req, res) => {
       });
     }
 
-    const isMember = project.members.some(
-      (member) => member.user.toString() === req.user._id.toString()
+    const member = project.members.find(
+      (m) => m.user.toString() === req.user._id.toString()
     );
 
-    if (!isMember) {
+    if (!member) {
       return res.status(403).json({
         message: "You are not a member of this project",
+      });
+    }
+
+    if (member.role !== "manager") {
+      return res.status(403).json({
+        message: "Only managers can update task assignees",
       });
     }
 
@@ -310,13 +334,19 @@ const updateTaskPriority = async (req, res) => {
       });
     }
 
-    const isMember = project.members.some(
-      (member) => member.user.toString() === req.user._id.toString()
+    const member = project.members.find(
+      (m) => m.user.toString() === req.user._id.toString()
     );
 
-    if (!isMember) {
+    if (!member) {
       return res.status(403).json({
         message: "You are not a member of this project",
+      });
+    }
+
+    if (member.role !== "manager") {
+      return res.status(403).json({
+        message: "Only managers can update task priority",
       });
     }
 
@@ -647,6 +677,97 @@ const getMyTasks = async (req, res) => {
   }
 };
 
+const getArchivedTasks = async (req, res) => {
+  try {
+    // Find all projects where the user is a member
+    const projects = await Project.find({ "members.user": req.user._id });
+    const projectIds = projects.map((p) => p._id);
+
+    const tasks = await Task.find({
+      project: { $in: projectIds },
+      isArchived: true,
+    })
+      .populate({
+        path: "project",
+        select: "title workspace",
+        populate: {
+          path: "workspace",
+          select: "name color",
+        },
+      })
+      .populate("assignees", "name profilePicture")
+      .sort({ updatedAt: -1 });
+
+    res.status(200).json(tasks);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+const deleteTask = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json({
+        message: "Task not found",
+      });
+    }
+
+    const project = await Project.findById(task.project);
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
+
+    const member = project.members.find(
+      (m) => m.user.toString() === req.user._id.toString()
+    );
+
+    if (!member) {
+      return res.status(403).json({
+        message: "You are not a member of this project",
+      });
+    }
+
+    // Check if user is a manager
+    if (member.role !== "manager") {
+      return res.status(403).json({
+        message: "Only managers can delete tasks",
+      });
+    }
+
+    // Cascade delete: Comments, ActivityLogs
+    // Subtasks are embedded in Task document, so they are deleted automatically with the task.
+    // If Subtasks were referenced, we'd delete them here. Logic above shows subtasks are array of objects in Task schema.
+
+    await Comment.deleteMany({ task: taskId });
+    await ActivityLog.deleteMany({ resourceId: taskId, resourceType: "Task" });
+
+    // Remove task from project's tasks array
+    project.tasks = project.tasks.filter(
+        (tId) => tId.toString() !== taskId
+    );
+    await project.save();
+
+    await Task.findByIdAndDelete(taskId);
+
+    res.status(200).json({ message: "Task deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
 export {
   createTask,
   getTaskById,
@@ -663,4 +784,6 @@ export {
   watchTask,
   achievedTask,
   getMyTasks,
+  getArchivedTasks,
+  deleteTask,
 };

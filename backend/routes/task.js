@@ -11,7 +11,9 @@ import {
   getActivityByResourceId,
   getCommentsByTaskId,
   getMyTasks,
+  getArchivedTasks,
   getTaskById,
+  deleteTask,
   updateSubTask,
   updateTaskAssignees,
   updateTaskDescription,
@@ -126,6 +128,8 @@ router.put(
 
 router.get("/my-tasks", authMiddleware, getMyTasks);
 
+router.get("/archived", authMiddleware, getArchivedTasks);
+
 router.put(
   "/:taskId/priority",
   authMiddleware,
@@ -145,6 +149,17 @@ router.get(
     }),
   }),
   getTaskById
+);
+
+router.delete(
+  "/:taskId",
+  authMiddleware,
+  validateRequest({
+    params: z.object({
+      taskId: z.string(),
+    }),
+  }),
+  deleteTask
 );
 
 router.get(

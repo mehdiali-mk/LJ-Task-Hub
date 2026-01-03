@@ -48,11 +48,11 @@ export const SidebarComponent = ({
       href: `/members`,
       icon: Users,
     },
-    {
-      title: "Achieved",
-      href: `/achieved`,
-      icon: CheckCircle2,
-    },
+    // {
+    //   title: "Archived Tasks",
+    //   href: `/archived-tasks`,
+    //   icon: CheckCircle2,
+    // },
     {
       title: "Settings",
       href: "/settings",

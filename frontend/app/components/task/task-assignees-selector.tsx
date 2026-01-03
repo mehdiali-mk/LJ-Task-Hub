@@ -11,10 +11,12 @@ export const TaskAssigneesSelector = ({
   task,
   assignees,
   projectMembers,
+  isManager,
 }: {
   task: Task;
   assignees: User[];
   projectMembers: { user: User; role: ProjectMemberRole }[];
+  isManager: boolean;
 }) => {
   const [selectedIds, setSelectedIds] = useState<string[]>(
     assignees.map((assignee) => assignee._id)
@@ -97,8 +99,9 @@ export const TaskAssigneesSelector = ({
       {/* dropdown */}
       <div className="relative">
         <button
-          className="text-sm text-gray-400 w-full border border-white/10 rounded px-3 py-2 text-left bg-white/5 hover:bg-white/10 hover:text-white transition-colors"
-          onClick={() => setDropDownOpen(!dropDownOpen)}
+          className={`text-sm text-gray-400 w-full border border-white/10 rounded px-3 py-2 text-left bg-white/5 ${isManager ? "hover:bg-white/10 hover:text-white cursor-pointer" : "cursor-not-allowed opacity-50"} transition-colors`}
+          onClick={() => isManager && setDropDownOpen(!dropDownOpen)}
+          disabled={!isManager}
         >
           {selectedIds.length === 0
             ? "Select assignees"

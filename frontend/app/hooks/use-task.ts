@@ -1,5 +1,5 @@
 import type { CreateTaskFormData } from "@/components/task/create-task-dialog";
-import { fetchData, postData, updateData } from "@/lib/fetch-util";
+import { deleteData, fetchData, postData, updateData } from "@/lib/fetch-util";
 import type { TaskPriority, TaskStatus } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -219,5 +219,26 @@ export const useGetMyTasksQuery = () => {
   return useQuery({
     queryKey: ["my-tasks", "user"],
     queryFn: () => fetchData("/tasks/my-tasks"),
+  });
+};
+
+export const useGetArchivedTasksQuery = () => {
+  return useQuery({
+    queryKey: ["archived-tasks", "user"],
+    queryFn: () => fetchData("/tasks/archived"),
+  });
+};
+
+export const useDeleteTaskMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (taskId: string) => deleteData(`/tasks/${taskId}`),
+    onSuccess: (data: any, taskId) => {
+      queryClient.invalidateQueries({
+        queryKey: ["project"],
+      });
+      // also remove from local cache if needed, but project tasks list will be refetched
+    },
   });
 };

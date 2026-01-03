@@ -41,7 +41,7 @@ const getWorkspaces = async (req, res) => {
 
     res.status(200).json(workspaces);
   } catch (error) {
-    console.log(error);
+    console.error("getWorkspaces Error:", error);
     res.status(500).json({
       message: "Internal server error",
     });

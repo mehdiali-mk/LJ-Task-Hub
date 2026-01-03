@@ -8,9 +8,11 @@ import { toast } from "sonner";
 export const TaskTitle = ({
   title,
   taskId,
+  isManager,
 }: {
   title: string;
   taskId: string;
+  isManager: boolean;
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newTitle, setNewTitle] = useState(title);
@@ -55,10 +57,12 @@ export const TaskTitle = ({
           Save
         </Button>
       ) : (
-        <Edit
-          className="size-3 cursor-pointer"
-          onClick={() => setIsEditing(true)}
-        />
+        isManager && (
+          <Edit
+            className="size-3 cursor-pointer"
+            onClick={() => setIsEditing(true)}
+          />
+        )
       )}
     </div>
   );

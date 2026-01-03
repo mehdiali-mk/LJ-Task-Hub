@@ -12,13 +12,18 @@ import { toast } from "sonner";
 export const TaskStatusSelector = ({
   status,
   taskId,
+  isManager,
 }: {
   status: TaskStatus;
   taskId: string;
+  isManager: boolean;
 }) => {
   const { mutate, isPending } = useUpdateTaskStatusMutation();
 
   const handleStatusChange = (value: string) => {
+    // Double check even though UI should disable it
+    if (!isManager) return; 
+
     mutate(
       { taskId, status: value as TaskStatus },
       {
@@ -34,7 +39,7 @@ export const TaskStatusSelector = ({
     );
   };
   return (
-    <Select value={status || ""} onValueChange={handleStatusChange}>
+    <Select value={status || ""} onValueChange={handleStatusChange} disabled={!isManager || isPending}>
       <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white hover:bg-white/10" disabled={isPending}>
         <SelectValue placeholder="Status" />
       </SelectTrigger>

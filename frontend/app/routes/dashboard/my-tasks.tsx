@@ -151,9 +151,9 @@ const MyTasks = () => {
               <DropdownMenuItem onClick={() => setFilter("done")}>
                 Done
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setFilter("achieved")}>
+              {/* <DropdownMenuItem onClick={() => setFilter("achieved")}>
                 Achieved
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem onClick={() => setFilter("high")}>
                 High
               </DropdownMenuItem>
