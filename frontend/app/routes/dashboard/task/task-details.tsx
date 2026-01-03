@@ -1,6 +1,7 @@
 import { BackButton } from "@/components/back-button";
 import { Loader } from "@/components/loader";
 import { CommentSection } from "@/components/task/comment-section";
+import { DeleteTaskDialog } from "@/components/task/delete-task-dialog";
 import { SubTasksDetails } from "@/components/task/sub-tasks";
 import { TaskActivity } from "@/components/task/task-activity";
 import { TaskAssigneesSelector } from "@/components/task/task-assignees-selector";
@@ -13,7 +14,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   useAchievedTaskMutation,
-  useDeleteTaskMutation,
   useTaskByIdQuery,
   useWatchTaskMutation,
 } from "@/hooks/use-task";
@@ -21,6 +21,7 @@ import { useAuth } from "@/provider/auth-context";
 import type { Project, Task } from "@/types";
 import { format, formatDistanceToNow } from "date-fns";
 import { Trash2, Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 
@@ -43,7 +44,7 @@ const TaskDetails = () => {
   const { mutate: watchTask, isPending: isWatching } = useWatchTaskMutation();
   const { mutate: achievedTask, isPending: isAchieved } =
     useAchievedTaskMutation();
-  const { mutate: deleteTask, isPending: isDeleting } = useDeleteTaskMutation();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -100,19 +101,7 @@ const TaskDetails = () => {
     );
   };
 
-  const handleDeleteTask = () => {
-    if (confirm("Are you sure you want to delete this task? This action cannot be undone.")) {
-      deleteTask(task._id, {
-        onSuccess: () => {
-          toast.success("Task deleted successfully");
-          navigate(-1); // Go back after deletion
-        },
-        onError: (error: any) => {
-           toast.error(error.response?.data?.message || "Failed to delete task");
-        }
-      });
-    }
-  };
+
 
   const currentUserMember = project?.members?.find(
     (m) => m.user?._id === user?._id || m.user === user?._id
@@ -120,6 +109,7 @@ const TaskDetails = () => {
   const isManager = currentUserMember?.role === "manager";
 
   return (
+    <>
     <div className="container mx-auto p-0 py-4 md:px-4">
       <div className="flex flex-col md:flex-row items-center justify-between mb-6">
         <div className="flex flex-col md:flex-row md:items-center">
@@ -135,25 +125,27 @@ const TaskDetails = () => {
         </div>
 
         <div className="flex space-x-2 mt-4 md:mt-0">
-          <Button
-            variant={"ghost"}
-            size="sm"
-            onClick={handleWatchTask}
-            className="w-fit bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:text-white transition-all duration-200"
-            disabled={isWatching}
-          >
-            {isUserWatching ? (
-              <>
-                <EyeOff className="mr-2 size-4" />
-                Unwatch
-              </>
-            ) : (
-              <>
-                <Eye className="mr-2 size-4" />
-                Watch
-              </>
-            )}
-          </Button>
+          {false && (
+            <Button
+              variant={"ghost"}
+              size="sm"
+              onClick={handleWatchTask}
+              className="w-fit bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:text-white transition-all duration-200"
+              disabled={isWatching}
+            >
+              {isUserWatching ? (
+                <>
+                  <EyeOff className="mr-2 size-4" />
+                  Unwatch
+                </>
+              ) : (
+                <>
+                  <Eye className="mr-2 size-4" />
+                  Watch
+                </>
+              )}
+            </Button>
+          )}
 
           {/* <Button
             variant={"ghost"}
@@ -202,8 +194,7 @@ const TaskDetails = () => {
                     <Button
                     variant={"destructive"}
                     size="sm"
-                    onClick={handleDeleteTask}
-                    disabled={isDeleting}
+                    onClick={() => setIsDeleteDialogOpen(true)}
                     className="hidden md:flex items-center gap-2"
                     >
                     <Trash2 className="w-4 h-4" />
@@ -242,12 +233,20 @@ const TaskDetails = () => {
 
         {/* right side */}
         <div className="w-full">
-          <Watchers watchers={task.watchers || []} />
+          {false && <Watchers watchers={task.watchers || []} />}
 
           <TaskActivity resourceId={task._id} />
         </div>
       </div>
     </div>
+
+      <DeleteTaskDialog
+        isOpen={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        taskId={task._id}
+        taskTitle={task.title}
+      />
+    </>
   );
 };
 

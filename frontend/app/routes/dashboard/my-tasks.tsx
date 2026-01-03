@@ -1,3 +1,4 @@
+import { BackButton } from "@/components/back-button";
 import { Loader } from "@/components/loader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -113,7 +114,10 @@ const MyTasks = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-start md:items-center justify-between">
-        <h1 className="text-2xl font-bold">My Tasks</h1>
+        <div className="flex items-center gap-4">
+          <BackButton />
+          <h1 className="text-2xl font-bold">My Tasks</h1>
+        </div>
 
         <div
           className="flex flex-col items-start md:flex-row md"

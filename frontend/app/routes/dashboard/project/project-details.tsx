@@ -18,6 +18,8 @@ import { useNavigate, useParams } from "react-router";
 import { ManageProjectMembersDialog } from "@/components/project/manage-project-members-dialog";
 import { useAuth } from "@/provider/auth-context";
 import { UseUpdateProject } from "@/hooks/use-project";
+import { EditProjectDialog } from "@/components/project/edit-project-dialog";
+import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 import {
   Select,
   SelectContent,
@@ -25,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Pencil, Trash2 } from "lucide-react";
 
 const ProjectDetails = () => {
   const { projectId, workspaceId } = useParams<{
@@ -35,6 +38,9 @@ const ProjectDetails = () => {
 
   const [isCreateTask, setIsCreateTask] = useState(false);
   const [isManageMembers, setIsManageMembers] = useState(false);
+  const [isEditProject, setIsEditProject] = useState(false);
+  const [isDeleteProject, setIsDeleteProject] = useState(false);
+
   const { user } = useAuth();
   const [taskFilter, setTaskFilter] = useState<TaskStatus | "All">("All");
   const { mutate: updateProject } = UseUpdateProject();
@@ -57,6 +63,15 @@ const ProjectDetails = () => {
   const { project, tasks } = data;
   const projectProgress = getProjectProgress(tasks);
 
+  // Permissions
+  const isWorkspaceManager = user?.managedWorkspaces?.includes(workspaceId!);
+  const isAdmin = user?.isAdmin;
+  const isProjectManager = project.members.some(m => m.user._id === user?._id && m.role === 'manager');
+  
+  const canEditProject = isAdmin || isWorkspaceManager;
+  const canDeleteProject = isAdmin || isWorkspaceManager;
+  const canManageStatus = isAdmin || isWorkspaceManager || isProjectManager;
+
   const handleTaskClick = (taskId: string) => {
     navigate(
       `/workspaces/${workspaceId}/projects/${projectId}/tasks/${taskId}`
@@ -68,8 +83,18 @@ const ProjectDetails = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <BackButton />
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 group">
             <h1 className="text-xl md:text-2xl font-bold">{project.title}</h1>
+            {canEditProject && (
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-white"
+                    onClick={() => setIsEditProject(true)}
+                >
+                    <Pencil className="h-4 w-4" />
+                </Button>
+            )}
           </div>
           {project.description && (
             <p className="text-sm text-gray-500">{project.description}</p>
@@ -100,9 +125,7 @@ const ProjectDetails = () => {
 
 
           <Button onClick={() => setIsCreateTask(true)} className="bg-primary text-black hover:bg-primary/90">Add Task</Button>
-          {(user?.isAdmin || 
-            user?.managedWorkspaces?.includes(workspaceId!) || 
-            project.members.some(m => m.user._id === user?._id && m.role === 'manager')) && (
+          {canManageStatus && (
             <>
                 <Select
                     value={project.status}
@@ -124,9 +147,17 @@ const ProjectDetails = () => {
                 <Button onClick={() => setIsManageMembers(true)} variant="outline">Manage Members</Button>
             </>
           )}
-          {!(user?.isAdmin || 
-            user?.managedWorkspaces?.includes(workspaceId!) || 
-            project.members.some(m => m.user._id === user?._id && m.role === 'manager')) && (
+          {canDeleteProject && (
+              <Button 
+                variant="destructive" 
+                size="icon" 
+                className="bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20"
+                onClick={() => setIsDeleteProject(true)}
+              >
+                  <Trash2 className="h-4 w-4" />
+              </Button>
+          )}
+          {!canManageStatus && (
             <Badge variant="outline" className="h-10 px-4 text-base font-medium bg-white/5 border-white/10">
                 {project.status}
             </Badge>
@@ -138,6 +169,20 @@ const ProjectDetails = () => {
         isOpen={isManageMembers} 
         onOpenChange={setIsManageMembers} 
         project={project} 
+      />
+
+      <EditProjectDialog
+        isOpen={isEditProject}
+        onOpenChange={setIsEditProject}
+        project={project}
+      />
+
+      <DeleteProjectDialog
+        isOpen={isDeleteProject}
+        onOpenChange={setIsDeleteProject}
+        projectId={projectId!}
+        workspaceId={workspaceId!}
+        projectTitle={project.title}
       />
 
       <div className="flex items-center justify-between">

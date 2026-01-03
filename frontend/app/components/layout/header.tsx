@@ -47,8 +47,8 @@ export const Header = ({
 
   return (
     <div className="bg-white/[0.05] backdrop-blur-xl sticky top-0 z-40 border-b border-white/10">
-      <div className="flex h-14 items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
-        <DropdownMenu>
+      <div className="flex h-14 items-center justify-end px-4 sm:px-6 lg:px-8 py-4">
+        {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant={"ghost"}
@@ -69,7 +69,7 @@ export const Header = ({
               )}
             </Button>
           </DropdownMenuTrigger>
-
+          
           <DropdownMenuContent className="w-56 glass-card border-white/10 bg-black/80 backdrop-blur-xl text-white">
             <DropdownMenuLabel className="text-gray-400">Workspace</DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-white/10" />
@@ -101,12 +101,14 @@ export const Header = ({
               )}
             </DropdownMenuGroup>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon">
-            <Bell />
-          </Button>
+          {false && (
+            <Button variant="ghost" size="icon">
+              <Bell />
+            </Button>
+          )}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -121,8 +123,6 @@ export const Header = ({
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-48 glass-card border-white/10 bg-black/80 backdrop-blur-xl text-white">
-              <DropdownMenuLabel className="text-gray-400">My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-white/10" />
               <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer">
                 <Link to="/user/profile" className="w-full">Profile</Link>
               </DropdownMenuItem>

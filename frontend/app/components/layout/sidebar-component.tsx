@@ -53,11 +53,11 @@ export const SidebarComponent = ({
     //   href: `/archived-tasks`,
     //   icon: CheckCircle2,
     // },
-    {
-      title: "Settings",
-      href: "/settings",
-      icon: Settings,
-    },
+    // {
+    //   title: "Settings",
+    //   href: "/settings",
+    //   icon: Settings,
+    // },
     ...(user?.email === "admin@projectmanager.com" ? [{
         title: "Admin Panel",
         href: "/admin",

@@ -16,10 +16,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/provider/auth-context";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { postData, putData } from "@/lib/fetch-util";
-import type { Project, User } from "@/types";
+import { putData } from "@/lib/fetch-util";
+import type { Project } from "@/types";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus, Trash2 } from "lucide-react";
+import { UseAddProjectMember, UseRemoveProjectMember } from "@/hooks/use-project";
+import { useGetWorkspaceDetailsQuery } from "@/hooks/use-workspace";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ManageProjectMembersDialogProps {
   isOpen: boolean;
@@ -34,14 +42,46 @@ export const ManageProjectMembersDialog = ({
 }: ManageProjectMembersDialogProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [selectedUserToAdd, setSelectedUserToAdd] = useState<string>("");
+
+  // Helper to get workspace ID safely
+  const getWorkspaceId = (workspace: any) => {
+      if (typeof workspace === 'string') return workspace;
+      return workspace._id;
+  };
+
+  const workspaceId = getWorkspaceId(project.workspace);
+  const { data: workspaceData } = useGetWorkspaceDetailsQuery(workspaceId) as { data: any };
+  const workspaceMembers = workspaceData?.members || [];
+
+  // Filter out users who are already in the project
+  const availableUsers = workspaceMembers.filter(
+      (wm: any) => !project.members.some((pm) => pm.user._id === wm.user._id)
+  );
 
   // Role permissions
-  const isWorkspaceManager = user?.managedWorkspaces?.includes(project.workspace._id);
+  const isWorkspaceManager = user?.managedWorkspaces?.includes(workspaceId);
   const isProjectManager = project.members.some(
     (m) => m.user._id === user?._id && m.role === "manager"
   );
   const isAdmin = user?.isAdmin;
   const canManage = isAdmin || isWorkspaceManager || isProjectManager;
+
+  const { mutate: addMember, isPending: isAdding } = UseAddProjectMember();
+  const { mutate: removeMember, isPending: isRemoving } = UseRemoveProjectMember();
+
+  const handleAddMember = (userId: string) => {
+      addMember(
+          { projectId: project._id, userId, role: "contributor" },
+          {
+              onSuccess: () => {
+                  toast.success("Member added successfully");
+                  setSelectedUserToAdd("");
+              },
+              onError: () => toast.error("Failed to add member"),
+          }
+      );
+  };
 
   const { mutate: updateRole, isPending: isUpdating } = useMutation({
     mutationFn: async ({
@@ -69,8 +109,43 @@ export const ManageProjectMembersDialog = ({
           <DialogTitle>Manage Project Members</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-6 py-4">
+            {/* Add Member Section */}
+            {canManage && (
+                <div className="flex gap-2 items-center">
+                    <Select value={selectedUserToAdd} onValueChange={setSelectedUserToAdd}>
+                        <SelectTrigger className="flex-1 bg-white/5 border-white/10">
+                            <SelectValue placeholder="Select user to add..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {availableUsers.length === 0 ? (
+                                <div className="p-2 text-sm text-gray-500 text-center">No matching members found</div>
+                            ) : (
+                                availableUsers.map((wm: any) => (
+                                    <SelectItem key={wm.user._id} value={wm.user._id}>
+                                        <div className="flex items-center gap-2">
+                                            <Avatar className="h-6 w-6">
+                                                <AvatarImage src={wm.user.profilePicture} />
+                                                <AvatarFallback>{wm.user.name?.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <span>{wm.user.name}</span>
+                                        </div>
+                                    </SelectItem>
+                                ))
+                            )}
+                        </SelectContent>
+                    </Select>
+                    <Button 
+                        disabled={!selectedUserToAdd || isAdding}
+                        onClick={() => handleAddMember(selectedUserToAdd)}
+                    >
+                        {isAdding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                    </Button>
+                </div>
+            )}
+
           <div className="flex flex-col gap-3">
+             <h3 className="text-sm font-medium text-gray-400">Current Members ({project.members.length})</h3>
             {project.members.map((member) => (
               <div
                 key={member.user._id}
@@ -89,28 +164,47 @@ export const ManageProjectMembersDialog = ({
                   </div>
                 </div>
 
-                {canManage ? (
-                  <Select
-                    defaultValue={member.role}
-                    onValueChange={(value) =>
-                      updateRole({ memberId: member.user._id, role: value })
-                    }
-                    disabled={isUpdating}
-                  >
-                    <SelectTrigger className="w-[110px] h-8 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="manager">Manager</SelectItem>
-                      <SelectItem value="contributor">Contributor</SelectItem>
-                      <SelectItem value="viewer">Viewer</SelectItem>
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <span className="text-xs capitalize text-muted-foreground border px-2 py-1 rounded">
-                    {member.role}
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                    {canManage ? (
+                    <Select
+                        defaultValue={member.role}
+                        onValueChange={(value) =>
+                        updateRole({ memberId: member.user._id, role: value })
+                        }
+                        disabled={isUpdating}
+                    >
+                        <SelectTrigger className="w-[110px] h-8 text-xs bg-transparent border-white/10">
+                        <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                        <SelectItem value="manager">Manager</SelectItem>
+                        <SelectItem value="contributor">Contributor</SelectItem>
+                        <SelectItem value="viewer">Viewer</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    ) : (
+                    <span className="text-xs capitalize text-muted-foreground border border-white/10 px-2 py-1 rounded">
+                        {member.role}
+                    </span>
+                    )}
+                    
+                    {canManage && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                            onClick={() => {
+                                removeMember({ projectId: project._id, memberId: member.user._id }, {
+                                    onSuccess: () => toast.success("Member removed"),
+                                    onError: () => toast.error("Failed to remove member")
+                                });
+                            }}
+                            disabled={isRemoving}
+                        >
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    )}
+                </div>
               </div>
             ))}
           </div>
