@@ -35,9 +35,15 @@ const createWorkspace = async (req, res) => {
 
 const getWorkspaces = async (req, res) => {
   try {
-    const workspaces = await Workspace.find({
-      "members.user": req.user._id,
-    }).sort({ createdAt: -1 });
+    const query = req.user.isAdmin ? {} : { "members.user": req.user._id };
+
+    const workspaceDocs = await Workspace.find(query).sort({ createdAt: -1 }).lean();
+    
+    // Attach dynamic manager info to each workspace
+    const workspaces = await Promise.all(workspaceDocs.map(async (ws) => {
+        const manager = await User.findOne({ managedWorkspaces: ws._id }, "name email profilePicture");
+        return { ...ws, manager };
+    }));
 
     res.status(200).json(workspaces);
   } catch (error) {
@@ -52,15 +58,19 @@ const getWorkspaceDetails = async (req, res) => {
   try {
     const { workspaceId } = req.params;
 
-    const workspace = await Workspace.findById({
-      _id: workspaceId,
-    }).populate("members.user", "name email profilePicture");
+    const workspaceDoc = await Workspace.findById(workspaceId)
+        .populate("members.user", "name email profilePicture")
+        .lean();
 
-    if (!workspace) {
+    if (!workspaceDoc) {
       return res.status(404).json({
         message: "Workspace not found",
       });
     }
+
+    // Attach dynamic manager
+    const manager = await User.findOne({ managedWorkspaces: workspaceId }, "name email profilePicture");
+    const workspace = { ...workspaceDoc, manager };
 
     res.status(200).json(workspace);
   } catch (error) {}
@@ -70,24 +80,42 @@ const getWorkspaceProjects = async (req, res) => {
   try {
     const { workspaceId } = req.params;
 
-    const workspace = await Workspace.findOne({
-      _id: workspaceId,
-      "members.user": req.user._id,
-    }).populate("members.user", "name email profilePicture");
+    const query = { _id: workspaceId };
+    if (!req.user.isAdmin) {
+        query["members.user"] = req.user._id;
+    }
 
-    if (!workspace) {
+    const workspaceDoc = await Workspace.findOne(query)
+        .populate("members.user", "name email profilePicture")
+        .lean();
+
+    if (!workspaceDoc) {
       return res.status(404).json({
         message: "Workspace not found",
       });
     }
 
+    const manager = await User.findOne({ managedWorkspaces: workspaceId }, "name email profilePicture");
+    const workspace = { ...workspaceDoc, manager };
+
     const projects = await Project.find({
       workspace: workspaceId,
       isArchived: false,
-      members: { $elemMatch: { user: req.user._id } },
+      workspace: workspaceId,
+      isArchived: false,
+      ...(req.user.isAdmin ? {} : { members: { $elemMatch: { user: req.user._id } } }),
     })
       .populate("tasks", "status")
-      .sort({ createdAt: -1 });
+      .populate("members.user", "name email profilePicture") // Populate member details
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Calculate dynamic progress based on task status
+    projects.forEach(project => {
+        const totalTasks = project.tasks.length;
+        const completedTasks = project.tasks.filter(t => t.status === "Done").length;
+        project.progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    });
 
     res.status(200).json({ projects, workspace });
   } catch (error) {
@@ -109,6 +137,8 @@ const getWorkspaceStats = async (req, res) => {
         message: "Workspace not found",
       });
     }
+
+    if (req.user.isAdmin) return; // Admin bypass
 
     const isMember = workspace.members.some(
       (member) => member.user.toString() === req.user._id.toString()
@@ -326,14 +356,24 @@ const inviteUserToWorkspace = async (req, res) => {
       });
     }
 
-    const userMemberInfo = workspace.members.find(
-      (member) => member.user.toString() === req.user._id.toString()
-    );
+    // Authorization Check: Admin, Owner, or Workspace Manager
+    // Authorization Check: Admin, Owner, or Workspace Manager
+    // Dynamic Check: Does req.user manage this workspace?
+    const isManager = req.user.managedWorkspaces && req.user.managedWorkspaces.some(id => id.toString() === workspaceId);
+    const isAdmin = req.user.isAdmin;
+    
+    if (isAdmin || isManager) {
+        // Allowed
+    } else {
+        const userMemberInfo = workspace.members.find(
+          (member) => member.user.toString() === req.user._id.toString()
+        );
 
-    if (!userMemberInfo || !["admin", "owner"].includes(userMemberInfo.role)) {
-      return res.status(403).json({
-        message: "You are not authorized to invite members to this workspace",
-      });
+        if (!userMemberInfo || !["admin", "owner"].includes(userMemberInfo.role)) {
+          return res.status(403).json({
+            message: "You are not authorized to invite members to this workspace",
+          });
+        }
     }
 
     const existingUser = await User.findOne({ email });

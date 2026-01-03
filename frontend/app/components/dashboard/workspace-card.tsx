@@ -54,6 +54,22 @@ export const WorkspaceCard = ({ workspace }: WorkspaceCardProps) => {
                 {workspace.description || "No description provided."}
             </p>
 
+            {workspace.manager && (
+                <div className="mb-3 px-1">
+                    <div className="flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 rounded-md p-1.5 w-fit">
+                         <Avatar className="w-4 h-4 border border-purple-400/50">
+                            <AvatarImage src={workspace.manager.profilePicture} />
+                            <AvatarFallback className="text-[8px] bg-purple-900 text-purple-200">
+                                {workspace.manager.name.charAt(0)}
+                            </AvatarFallback>
+                         </Avatar>
+                         <span className="text-[10px] text-purple-200 font-medium">
+                            Manager: <span className="text-white">{workspace.manager.name}</span>
+                         </span>
+                    </div>
+                </div>
+            )}
+
             <div className="mt-auto w-full pt-2 border-t border-white/10 flex items-center justify-between">
                  <div className="flex -space-x-1.5 hover:space-x-0.5 transition-all duration-300">
                     {workspace.members?.slice(0, 4).map((member, i) => (

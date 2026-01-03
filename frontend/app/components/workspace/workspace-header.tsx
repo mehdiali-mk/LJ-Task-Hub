@@ -16,12 +16,23 @@ interface WorkspaceHeaderProps {
   onInviteMember: () => void;
 }
 
+import { useAuth } from "@/provider/auth-context";
+
 export const WorkspaceHeader = ({
   workspace,
   members,
   onCreateProject,
   onInviteMember,
 }: WorkspaceHeaderProps) => {
+  const { user } = useAuth();
+
+  // Role Checks
+  const isOwner = workspace.owner === user?._id || (typeof workspace.owner === 'object' && (workspace.owner as any)._id === user?._id);
+  const isManager = user?.managedWorkspaces?.includes(workspace._id);
+  
+  // Also check if they are assigned manager via the workspace object (backup/display purely)
+  // const isAssignedManager = workspace.manager && (typeof workspace.manager === 'string' ? workspace.manager === user?._id : (workspace.manager as any)._id === user?._id);
+
   return (
     <div className="space-y-8">
       <div className="space-y-3">
@@ -36,22 +47,26 @@ export const WorkspaceHeader = ({
             </h2>
           </div>
 
-          <div className="flex items-center gap-3 justify-between md:justify-start mb-4 md:mb-0">
-            <Button
-              variant={"outline"}
-              onClick={onInviteMember}
-              className="bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white"
-            >
-              <UserPlus className="size-4 mr-2" />
-              Invite
-            </Button>
-            <Button
-              onClick={onCreateProject}
-              className="bg-primary text-black hover:bg-primary/90"
-            >
-              <Plus className="size-4 mr-2" />
-              Create Project
-            </Button>
+            {/* Action Buttons: Visible only to Admin, Owner, or Workspace Manager */}
+            {(user?.isAdmin || isManager || isOwner) && (
+              <div className="flex items-center gap-3 justify-between md:justify-start mb-4 md:mb-0">
+                <Button
+                  variant={"outline"}
+                  onClick={onInviteMember}
+                  className="bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white"
+                >
+                  <UserPlus className="size-4 mr-2" />
+                  Invite
+                </Button>
+                <Button
+                  onClick={onCreateProject}
+                  className="bg-primary text-black hover:bg-primary/90"
+                >
+                  <Plus className="size-4 mr-2" />
+                  Create Project
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -60,7 +75,7 @@ export const WorkspaceHeader = ({
             {workspace.description}
           </p>
         )}
-      </div>
+
 
       {members.length > 0 && (
         <div className="flex items-center gap-2">

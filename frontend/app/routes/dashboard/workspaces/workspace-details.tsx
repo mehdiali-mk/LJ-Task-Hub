@@ -7,6 +7,7 @@ import { useGetWorkspaceQuery } from "@/hooks/use-workspace";
 import type { Project, Workspace } from "@/types";
 import { useState } from "react";
 import { useParams } from "react-router";
+import { useAuth } from "@/provider/auth-context";
 
 const WorkspaceDetails = () => {
   const { workspaceId } = useParams<{ workspaceId: string }>();
@@ -33,6 +34,12 @@ const WorkspaceDetails = () => {
     );
   }
 
+  const { user } = useAuth();
+  const workspace = data?.workspace;
+  const isOwner = workspace?.owner === user?._id || (typeof workspace?.owner === 'object' && (workspace?.owner as any)._id === user?._id);
+  const isManager = user?.managedWorkspaces?.includes(workspaceId);
+  const canCreateProject = user?.isAdmin || isOwner || isManager;
+
   return (
     <div className="space-y-8">
       <WorkspaceHeader
@@ -46,6 +53,7 @@ const WorkspaceDetails = () => {
         workspaceId={workspaceId}
         projects={data.projects}
         onCreateProject={() => setIsCreateProject(true)}
+        canCreateProject={!!canCreateProject}
       />
 
       <CreateProjectDialog

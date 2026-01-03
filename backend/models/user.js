@@ -12,6 +12,12 @@ const userSchema = new Schema(
     password: { type: String, required: true, select: false },
     name: { type: String, required: true, trim: true },
     profilePicture: { type: String },
+    
+    // Workspace Manager Attributes
+
+    isWorkspaceManager: { type: Boolean, default: false },
+    managedWorkspaces: [{ type: Schema.Types.ObjectId, ref: "Workspace" }], // Dynamic source of truth for management role
+
     lastLogin: { type: Date },
   },
   { timestamps: true }

@@ -90,13 +90,15 @@ export const Header = ({
             </DropdownMenuGroup>
 
             <DropdownMenuGroup>
-              <DropdownMenuItem
-                onClick={onCreateWorkspace}
-                className="focus:bg-white/10 focus:text-white cursor-pointer"
-              >
-                <PlusCircle className="w-4 h-4 mr-2" />
-                Create Workspace
-              </DropdownMenuItem>
+              {user?.isAdmin && (
+                <DropdownMenuItem
+                    onClick={onCreateWorkspace}
+                    className="focus:bg-white/10 focus:text-white cursor-pointer"
+                >
+                    <PlusCircle className="w-4 h-4 mr-2" />
+                    Create Workspace
+                </DropdownMenuItem>
+              )}
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>

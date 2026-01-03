@@ -58,6 +58,11 @@ export const SidebarComponent = ({
       href: "/settings",
       icon: Settings,
     },
+    ...(user?.email === "admin@projectmanager.com" ? [{
+        title: "Admin Panel",
+        href: "/admin",
+        icon: Users,
+    }] : []),
   ];
 
   return (

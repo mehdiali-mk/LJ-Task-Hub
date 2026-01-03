@@ -7,12 +7,14 @@ interface ProjectListProps {
   projects: Project[];
 
   onCreateProject: () => void;
+  canCreateProject?: boolean;
 }
 
 export const ProjectList = ({
   workspaceId,
   projects,
   onCreateProject,
+  canCreateProject = false,
 }: ProjectListProps) => {
   return (
     <div>
@@ -21,13 +23,13 @@ export const ProjectList = ({
         {projects.length === 0 ? (
           <NoDataFound
             title="No projects found"
-            description="Create a project to get started"
-            buttonText="Create Project"
-            buttonAction={onCreateProject}
+            description={canCreateProject ? "Create a project to get started" : "No active projects in this workspace"}
+            buttonText={canCreateProject ? "Create Project" : undefined}
+            buttonAction={canCreateProject ? onCreateProject : undefined}
           />
         ) : (
           projects.map((project) => {
-            const projectProgress = 0;
+            const projectProgress = project.progress || 0;
 
             return (
               <ProjectCard

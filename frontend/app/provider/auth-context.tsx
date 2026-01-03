@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const navigate = useNavigate();
   const currentPath = useLocation().pathname;
-  const isPublicRoute = publicRoutes.includes(currentPath);
+  const isPublicRoute = publicRoutes.includes(currentPath) || currentPath.startsWith("/admin");
 
   // check if user is authenticated
   useEffect(() => {

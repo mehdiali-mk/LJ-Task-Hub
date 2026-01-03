@@ -7,6 +7,9 @@ import {
   createProject,
   getProjectDetails,
   getProjectTasks,
+  addProjectMember,
+  updateProjectMemberRole,
+  updateProject,
 } from "../controllers/project.js";
 
 const router = express.Router();
@@ -38,4 +41,23 @@ router.get(
   validateRequest({ params: z.object({ projectId: z.string() }) }),
   getProjectTasks
 );
+
+router.post(
+    "/:projectId/members",
+    authMiddleware,
+    addProjectMember
+);
+
+router.put(
+    "/:projectId/members/:memberId",
+    authMiddleware,
+    updateProjectMemberRole
+);
+
+router.patch(
+    "/:projectId",
+    authMiddleware,
+    updateProject
+);
+
 export default router;

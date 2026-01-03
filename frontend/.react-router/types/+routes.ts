@@ -61,6 +61,9 @@ type Pages = {
   "/archived-tasks": {
     params: {};
   };
+  "/admin": {
+    params: {};
+  };
   "/workspace-invite/:workspaceId": {
     params: {
       "workspaceId": string;
@@ -69,12 +72,15 @@ type Pages = {
   "/user/profile": {
     params: {};
   };
+  "/admin/login": {
+    params: {};
+  };
 };
 
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/sign-in" | "/sign-up" | "/forgot-password" | "/reset-password" | "/verify-email" | "/dashboard" | "/workspaces" | "/workspaces/:workspaceId" | "/workspaces/:workspaceId/projects/:projectId" | "/workspaces/:workspaceId/projects/:projectId/tasks/:taskId" | "/my-tasks" | "/members" | "/archived-tasks" | "/workspace-invite/:workspaceId" | "/user/profile";
+    page: "/" | "/sign-in" | "/sign-up" | "/forgot-password" | "/reset-password" | "/verify-email" | "/dashboard" | "/workspaces" | "/workspaces/:workspaceId" | "/workspaces/:workspaceId/projects/:projectId" | "/workspaces/:workspaceId/projects/:projectId/tasks/:taskId" | "/my-tasks" | "/members" | "/archived-tasks" | "/admin" | "/workspace-invite/:workspaceId" | "/user/profile" | "/admin/login";
   };
   "routes/auth/auth-layout.tsx": {
     id: "routes/auth/auth-layout";
@@ -106,7 +112,7 @@ type RouteFiles = {
   };
   "routes/dashboard/dashboard-layout.tsx": {
     id: "routes/dashboard/dashboard-layout";
-    page: "/dashboard" | "/workspaces" | "/workspaces/:workspaceId" | "/workspaces/:workspaceId/projects/:projectId" | "/workspaces/:workspaceId/projects/:projectId/tasks/:taskId" | "/my-tasks" | "/members" | "/archived-tasks";
+    page: "/dashboard" | "/workspaces" | "/workspaces/:workspaceId" | "/workspaces/:workspaceId/projects/:projectId" | "/workspaces/:workspaceId/projects/:projectId/tasks/:taskId" | "/my-tasks" | "/members" | "/archived-tasks" | "/admin";
   };
   "routes/dashboard/index.tsx": {
     id: "routes/dashboard/index";
@@ -140,6 +146,10 @@ type RouteFiles = {
     id: "routes/dashboard/archived-tasks";
     page: "/archived-tasks";
   };
+  "routes/admin/index.tsx": {
+    id: "routes/admin/index";
+    page: "/admin";
+  };
   "routes/dashboard/workspaces/workspace-invite.tsx": {
     id: "routes/dashboard/workspaces/workspace-invite";
     page: "/workspace-invite/:workspaceId";
@@ -151,5 +161,9 @@ type RouteFiles = {
   "routes/user/profile.tsx": {
     id: "routes/user/profile";
     page: "/user/profile";
+  };
+  "routes/admin/login.tsx": {
+    id: "routes/admin/login";
+    page: "/admin/login";
   };
 };

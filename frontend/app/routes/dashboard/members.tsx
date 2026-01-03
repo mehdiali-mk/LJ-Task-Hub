@@ -126,13 +126,13 @@ const Members = () => {
                     <div className="flex items-center space-x-1 ml-11 md:ml-0">
                       <Badge
                         variant={
-                          ["admin", "owner"].includes(member.role)
+                          data.manager && data.manager._id === member.user._id
                             ? "destructive"
                             : "secondary"
                         }
                         className="capitalize"
                       >
-                        {member.role}
+                        {data.manager && data.manager._id === member.user._id ? "Manager" : "User"}
                       </Badge>
 
                       <Badge variant={"outline"}>{data.name}</Badge>
@@ -167,12 +167,12 @@ const Members = () => {
 
                   <Badge
                     variant={
-                      ["admin", "owner"].includes(member.role)
+                      data.manager && data.manager._id === member.user._id
                         ? "destructive"
                         : "secondary"
                     }
                   >
-                    {member.role}
+                    {data.manager && data.manager._id === member.user._id ? "Manager" : "User"}
                   </Badge>
                 </CardContent>
               </Card>

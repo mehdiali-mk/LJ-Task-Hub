@@ -14,6 +14,7 @@ const workspaceModel = new Schema(
       ref: "User",
       required: true,
     },
+    // Manager is determined dynamically by querying Users with this workspace in managedWorkspaces
     members: [
       {
         user: { type: Schema.Types.ObjectId, ref: "User" },

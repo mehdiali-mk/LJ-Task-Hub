@@ -15,6 +15,16 @@ import { format } from "date-fns";
 import { AlertCircle, Calendar, CheckCircle, Clock } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { ManageProjectMembersDialog } from "@/components/project/manage-project-members-dialog";
+import { useAuth } from "@/provider/auth-context";
+import { UseUpdateProject } from "@/hooks/use-project";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ProjectDetails = () => {
   const { projectId, workspaceId } = useParams<{
@@ -24,7 +34,10 @@ const ProjectDetails = () => {
   const navigate = useNavigate();
 
   const [isCreateTask, setIsCreateTask] = useState(false);
+  const [isManageMembers, setIsManageMembers] = useState(false);
+  const { user } = useAuth();
   const [taskFilter, setTaskFilter] = useState<TaskStatus | "All">("All");
+  const { mutate: updateProject } = UseUpdateProject();
 
   const { data, isLoading } = UseProjectQuery(projectId!) as {
     data: {
@@ -85,9 +98,47 @@ const ProjectDetails = () => {
             </span>
           </div>
 
+
           <Button onClick={() => setIsCreateTask(true)} className="bg-primary text-black hover:bg-primary/90">Add Task</Button>
+          {(user?.isAdmin || 
+            user?.managedWorkspaces?.includes(workspaceId!) || 
+            project.members.some(m => m.user._id === user?._id && m.role === 'manager')) && (
+            <>
+                <Select
+                    value={project.status}
+                    onValueChange={(value) => {
+                        updateProject({ projectId: project._id, status: value });
+                    }}
+                >
+                    <SelectTrigger className="w-[140px] bg-white/5 border-white/10 h-10">
+                        <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="Planning">Planning</SelectItem>
+                        <SelectItem value="In Progress">In Progress</SelectItem>
+                        <SelectItem value="On Hold">On Hold</SelectItem>
+                        <SelectItem value="Completed">Completed</SelectItem>
+                        <SelectItem value="Cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                </Select>
+                <Button onClick={() => setIsManageMembers(true)} variant="outline">Manage Members</Button>
+            </>
+          )}
+          {!(user?.isAdmin || 
+            user?.managedWorkspaces?.includes(workspaceId!) || 
+            project.members.some(m => m.user._id === user?._id && m.role === 'manager')) && (
+            <Badge variant="outline" className="h-10 px-4 text-base font-medium bg-white/5 border-white/10">
+                {project.status}
+            </Badge>
+          )}
         </div>
       </div>
+      
+      <ManageProjectMembersDialog 
+        isOpen={isManageMembers} 
+        onOpenChange={setIsManageMembers} 
+        project={project} 
+      />
 
       <div className="flex items-center justify-between">
         <Tabs defaultValue="all" className="w-full">

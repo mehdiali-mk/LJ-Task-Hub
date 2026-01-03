@@ -12,8 +12,21 @@ const authMiddleware = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId);
 
+    if (decoded.role === "master_admin") {
+         // Admin Super User Access
+         req.user = {
+             _id: decoded.adminId, // Use admin ID
+             name: "Master Admin",
+             email: "admin@projectmanager.com",
+             role: "super_admin", // Explicit role for controllers
+             isAdmin: true 
+         };
+         next();
+         return;
+    }
+
+    const user = await User.findById(decoded.userId);
     if (!user) {
       return res.status(401).json({
         message: "Unauthorized",

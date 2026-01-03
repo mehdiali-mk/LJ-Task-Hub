@@ -6,6 +6,9 @@ export interface User {
   isEmailVerified: boolean;
   updatedAt: Date;
   profilePicture?: string;
+
+  managedWorkspaces?: string[];
+  isAdmin?: boolean;
 }
 
 export interface Workspace {
@@ -13,6 +16,7 @@ export interface Workspace {
   name: string;
   description?: string;
   owner: User | string;
+  manager?: User; // Manager explicitly assigned
   color: string;
   members: {
     user: User;
@@ -42,7 +46,7 @@ export interface Project {
   tasks: Task[];
   members: {
     user: User;
-    role: "admin" | "member" | "owner" | "viewer";
+    role: "admin" | "member" | "owner" | "viewer" | "manager";
   }[];
   createdAt: Date;
   updatedAt: Date;

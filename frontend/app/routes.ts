@@ -33,8 +33,9 @@ export default [
     route("my-tasks", "routes/dashboard/my-tasks.tsx"),
     route("members", "routes/dashboard/members.tsx"),
     route("archived-tasks", "routes/dashboard/archived-tasks.tsx"),
+    route("admin", "routes/admin/index.tsx"), // Protected Dashboard
   ]),
-
+  
   route(
     "workspace-invite/:workspaceId",
     "routes/dashboard/workspaces/workspace-invite.tsx"
@@ -43,4 +44,7 @@ export default [
   layout("routes/user/user-layout.tsx", [
     route("user/profile", "routes/user/profile.tsx"),
   ]),
+
+  // Admin Routes
+  route("admin/login", "routes/admin/login.tsx"),
 ] satisfies RouteConfig;

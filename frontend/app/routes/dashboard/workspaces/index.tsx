@@ -11,6 +11,7 @@ import {
 import { CreateWorkspace } from "@/components/workspace/create-workspace";
 import { WorkspaceAvatar } from "@/components/workspace/workspace-avatar";
 import { useGetWorkspacesQuery } from "@/hooks/use-workspace";
+import { useAuth } from "@/provider/auth-context";
 import type { Workspace } from "@/types";
 import { PlusCircle, Users } from "lucide-react";
 import { useState } from "react";
@@ -19,6 +20,7 @@ import { format } from "date-fns";
 
 const Workspaces = () => {
   const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
+  const { user } = useAuth();
   const { data: workspaces, isLoading } = useGetWorkspacesQuery() as {
     data: Workspace[];
     isLoading: boolean;
@@ -34,10 +36,12 @@ const Workspaces = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-xl md:text-3xl font-bold">Workspaces</h2>
 
-          <Button onClick={() => setIsCreatingWorkspace(true)}>
-            <PlusCircle className="size-4 mr-2" />
-            New Workspace
-          </Button>
+          {user?.isAdmin && (
+            <Button onClick={() => setIsCreatingWorkspace(true)}>
+              <PlusCircle className="size-4 mr-2" />
+              New Workspace
+            </Button>
+          )}
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -49,8 +53,8 @@ const Workspaces = () => {
             <NoDataFound
               title="No workspaces found"
               description="Create a new workspace to get started"
-              buttonText="Create Workspace"
-              buttonAction={() => setIsCreatingWorkspace(true)}
+              buttonText={user?.isAdmin ? "Create Workspace" : undefined}
+              buttonAction={user?.isAdmin ? () => setIsCreatingWorkspace(true) : undefined}
             />
           )}
         </div>
