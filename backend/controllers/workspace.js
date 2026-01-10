@@ -138,16 +138,17 @@ const getWorkspaceStats = async (req, res) => {
       });
     }
 
-    if (req.user.isAdmin) return; // Admin bypass
+    // Skip member check for admins, but continue to process stats
+    if (!req.user.isAdmin) {
+      const isMember = workspace.members.some(
+        (member) => member.user.toString() === req.user._id.toString()
+      );
 
-    const isMember = workspace.members.some(
-      (member) => member.user.toString() === req.user._id.toString()
-    );
-
-    if (!isMember) {
-      return res.status(403).json({
-        message: "You are not a member of this workspace",
-      });
+      if (!isMember) {
+        return res.status(403).json({
+          message: "You are not a member of this workspace",
+        });
+      }
     }
 
     const [totalProjects, projects] = await Promise.all([
