@@ -5,6 +5,8 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 
 import routes from "./routes/index.js";
+import { sendVerificationCode } from "./controllers/auth-controller.js";
+import authMiddleware from "./middleware/auth-middleware.js";
 
 dotenv.config();
 
@@ -25,9 +27,9 @@ mongoose
   .then(() => console.log("BD Connected successfully."))
   .catch((err) => console.log("Failed to connect to DB:", err));
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
-const PORT = process.env.PORT || 8088;
+const PORT = process.env.PORT || 8099;
 
 app.get("/", async (req, res) => {
   res.status(200).json({
@@ -35,7 +37,15 @@ app.get("/", async (req, res) => {
   });
 });
 
+// EMERGENCY DIRECT ROUTE (Fix for 404)
+app.post("/api-v1/auth/send-verification", authMiddleware, sendVerificationCode);
+
 // http:localhost:500/api-v1/
+// DIAGNOSTIC ROUTE
+app.post("/api-v1/test-direct", (req, res) => {
+    res.status(200).json({ message: "Direct Route Works" });
+});
+
 app.use("/api-v1", routes);
 
 // error middleware
@@ -46,6 +56,7 @@ app.use((err, req, res, next) => {
 
 // not found middleware
 app.use((req, res) => {
+  console.log(`[DEBUG] 404 Not Found: ${req.method} ${req.originalUrl || req.url}`);
   res.status(404).json({
     message: "Not found",
   });

@@ -218,7 +218,7 @@ export const CreateTaskDialog = ({
                             </Button>
                           </PopoverTrigger>
 
-                          <PopoverContent>
+                          <PopoverContent className="w-auto p-0 z-50 bg-transparent border-none shadow-none">
                             <Calendar
                               mode="single"
                               selected={
@@ -248,7 +248,7 @@ export const CreateTaskDialog = ({
                       <FormItem>
                         <FormLabel>Assignees</FormLabel>
                         <FormControl>
-                          <Popover>
+                          <Popover modal={true}>
                             <PopoverTrigger asChild>
                               <Button
                                 variant="outline"
@@ -306,9 +306,12 @@ export const CreateTaskDialog = ({
                                         }}
                                         id={`member-${member.user._id}`}
                                       />
-                                      <span className="truncate flex-1">
+                                      <label 
+                                        htmlFor={`member-${member.user._id}`}
+                                        className="truncate flex-1 cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                      >
                                         {member.user.name}
-                                      </span>
+                                      </label>
                                     </div>
                                   );
                                 })}

@@ -6,8 +6,11 @@ import {
 } from "@react-router/dev/routes";
 
 export default [
+  // Home page - accessible to everyone (logged in or not)
+  index("routes/root/home.tsx"),
+
+  // Auth routes - redirect to dashboard if already logged in
   layout("routes/auth/auth-layout.tsx", [
-    index("routes/root/home.tsx"),
     route("sign-in", "routes/auth/sign-in.tsx"),
     route("sign-up", "routes/auth/sign-up.tsx"),
     route("forgot-password", "routes/auth/forgot-password.tsx"),
@@ -43,6 +46,15 @@ export default [
 
   layout("routes/user/user-layout.tsx", [
     route("user/profile", "routes/user/profile.tsx"),
+  ]),
+
+  // Core System Routes
+  layout("routes/core/core-layout.tsx", [
+    route("about", "routes/core/about.tsx"),
+    route("contact", "routes/core/contact.tsx"),
+    route("support", "routes/core/support/index.tsx"),
+    route("legal/privacy", "routes/core/legal/privacy.tsx"),
+    route("legal/terms", "routes/core/legal/terms.tsx"),
   ]),
 
   // Admin Routes

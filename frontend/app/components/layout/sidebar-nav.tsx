@@ -45,19 +45,30 @@ export const SidebarNav = ({
             key={el.href}
             variant={isActive ? "outline" : "ghost"}
             className={cn(
-              "justify-start hover:bg-white/10 hover:text-white transition-colors duration-200",
+              "justify-start hover:bg-white/10 transition-colors duration-200 group",
               isActive 
-                ? "glass-card border-white/10 text-white font-medium shadow-md bg-white/5" 
-                : "text-gray-400 border-transparent",
+                ? "glass-card border-white/10 font-medium shadow-md bg-white/5" 
+                : "border-transparent",
               isCollapsed && "justify-center px-2"
             )}
             onClick={handleClick}
           >
-            <Icon className={cn("size-4", !isCollapsed && "mr-2", isActive ? "text-primary" : "text-gray-400 group-hover:text-white")} />
+            <Icon className={cn(
+              "size-4 transition-all duration-250", 
+              !isCollapsed && "mr-2", 
+              isActive 
+                ? "text-white opacity-100" 
+                : "text-white/40 opacity-40 group-hover:text-white group-hover:opacity-100"
+            )} />
             {isCollapsed ? (
               <span className="sr-only">{el.title}</span>
             ) : (
-              el.title
+              <span className={cn(
+                "transition-colors",
+                isActive ? "text-white" : "text-gray-400 group-hover:text-white"
+              )}>
+                {el.title}
+              </span>
             )}
           </Button>
         );

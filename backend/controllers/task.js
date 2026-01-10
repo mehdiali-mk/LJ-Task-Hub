@@ -27,14 +27,17 @@ const createTask = async (req, res) => {
       });
     }
 
-    const isMember = workspace.members.some(
-      (member) => member.user.toString() === req.user._id.toString()
-    );
+    // ADMIN BYPASS: Master Admin can create tasks anywhere
+    if (!req.user.isAdmin) {
+        const isMember = workspace.members.some(
+          (member) => member.user.toString() === req.user._id.toString()
+        );
 
-    if (!isMember) {
-      return res.status(403).json({
-        message: "You are not a member of this workspace",
-      });
+        if (!isMember) {
+          return res.status(403).json({
+            message: "You are not a member of this workspace",
+          });
+        }
     }
 
     const newTask = await Task.create({
@@ -109,20 +112,26 @@ const updateTaskTitle = async (req, res) => {
       });
     }
 
-    const member = project.members.find(
-      (m) => m.user.toString() === req.user._id.toString()
-    );
+    // ADMIN BYPASS: Master Admin can update any task
+    if (!req.user.isAdmin) {
+        const member = project.members.find(
+          (m) => m.user.toString() === req.user._id.toString()
+        );
 
-    if (!member) {
-      return res.status(403).json({
-        message: "You are not a member of this project",
-      });
-    }
+        if (!member) {
+          return res.status(403).json({
+            message: "You are not a member of this project",
+          });
+        }
 
-    if (member.role !== "manager") {
-      return res.status(403).json({
-        message: "Only managers can update task title",
-      });
+        const isWorkspaceManager = member.role === "admin" || member.role === "owner";
+        const isManager = member.role === "manager";
+
+        if (!isWorkspaceManager && !isManager) {
+          return res.status(403).json({
+            message: "You are not authorized to update task title",
+          });
+        }
     }
 
     const oldTitle = task.title;
@@ -164,20 +173,26 @@ const updateTaskDescription = async (req, res) => {
       });
     }
 
-    const member = project.members.find(
-      (m) => m.user.toString() === req.user._id.toString()
-    );
+    // ADMIN BYPASS: Master Admin can update any task
+    if (!req.user.isAdmin) {
+        const member = project.members.find(
+          (m) => m.user.toString() === req.user._id.toString()
+        );
 
-    if (!member) {
-      return res.status(403).json({
-        message: "You are not a member of this project",
-      });
-    }
+        if (!member) {
+          return res.status(403).json({
+            message: "You are not a member of this project",
+          });
+        }
 
-    if (member.role !== "manager") {
-      return res.status(403).json({
-        message: "Only managers can update task description",
-      });
+        const isWorkspaceManager = member.role === "admin" || member.role === "owner";
+        const isManager = member.role === "manager";
+
+        if (!isWorkspaceManager && !isManager) {
+          return res.status(403).json({
+            message: "You are not authorized to update task description",
+          });
+        }
     }
 
     const oldDescription =
@@ -224,20 +239,26 @@ const updateTaskStatus = async (req, res) => {
       });
     }
 
-    const member = project.members.find(
-      (m) => m.user.toString() === req.user._id.toString()
-    );
+    // ADMIN BYPASS: Master Admin can update any task
+    if (!req.user.isAdmin) {
+        const member = project.members.find(
+          (m) => m.user.toString() === req.user._id.toString()
+        );
 
-    if (!member) {
-      return res.status(403).json({
-        message: "You are not a member of this project",
-      });
-    }
+        if (!member) {
+          return res.status(403).json({
+            message: "You are not a member of this project",
+          });
+        }
 
-    if (member.role !== "manager") {
-      return res.status(403).json({
-        message: "Only managers can update task status",
-      });
+        const isWorkspaceManager = member.role === "admin" || member.role === "owner";
+        const isManager = member.role === "manager";
+
+        if (!isWorkspaceManager && !isManager) {
+          return res.status(403).json({
+            message: "You are not authorized to update task status",
+          });
+        }
     }
 
     const oldStatus = task.status;
@@ -279,20 +300,26 @@ const updateTaskAssignees = async (req, res) => {
       });
     }
 
-    const member = project.members.find(
-      (m) => m.user.toString() === req.user._id.toString()
-    );
+    // ADMIN BYPASS: Master Admin can update any task
+    if (!req.user.isAdmin) {
+        const member = project.members.find(
+          (m) => m.user.toString() === req.user._id.toString()
+        );
 
-    if (!member) {
-      return res.status(403).json({
-        message: "You are not a member of this project",
-      });
-    }
+        if (!member) {
+          return res.status(403).json({
+            message: "You are not a member of this project",
+          });
+        }
 
-    if (member.role !== "manager") {
-      return res.status(403).json({
-        message: "Only managers can update task assignees",
-      });
+        const isWorkspaceManager = member.role === "admin" || member.role === "owner";
+        const isManager = member.role === "manager";
+
+        if (!isWorkspaceManager && !isManager) {
+          return res.status(403).json({
+            message: "You are not authorized to update task assignees",
+          });
+        }
     }
 
     const oldAssignees = task.assignees;
@@ -334,20 +361,26 @@ const updateTaskPriority = async (req, res) => {
       });
     }
 
-    const member = project.members.find(
-      (m) => m.user.toString() === req.user._id.toString()
-    );
+    // ADMIN BYPASS: Master Admin can update any task
+    if (!req.user.isAdmin) {
+        const member = project.members.find(
+          (m) => m.user.toString() === req.user._id.toString()
+        );
 
-    if (!member) {
-      return res.status(403).json({
-        message: "You are not a member of this project",
-      });
-    }
+        if (!member) {
+          return res.status(403).json({
+            message: "You are not a member of this project",
+          });
+        }
 
-    if (member.role !== "manager") {
-      return res.status(403).json({
-        message: "Only managers can update task priority",
-      });
+        const isWorkspaceManager = member.role === "admin" || member.role === "owner";
+        const isManager = member.role === "manager";
+
+        if (!isWorkspaceManager && !isManager) {
+          return res.status(403).json({
+            message: "You are not authorized to update task priority",
+          });
+        }
     }
 
     const oldPriority = task.priority;
@@ -390,14 +423,17 @@ const addSubTask = async (req, res) => {
       });
     }
 
-    const isMember = project.members.some(
-      (member) => member.user.toString() === req.user._id.toString()
-    );
+    // ADMIN BYPASS: Master Admin can add subtasks to any task
+    if (!req.user.isAdmin) {
+        const isMember = project.members.some(
+          (member) => member.user.toString() === req.user._id.toString()
+        );
 
-    if (!isMember) {
-      return res.status(403).json({
-        message: "You are not a member of this project",
-      });
+        if (!isMember) {
+          return res.status(403).json({
+            message: "You are not a member of this project",
+          });
+        }
     }
 
     const newSubTask = {
@@ -440,10 +476,29 @@ const updateSubTask = async (req, res) => {
       (subTask) => subTask._id.toString() === subTaskId
     );
 
-    if (!subTask) {
-      return res.status(404).json({
-        message: "Subtask not found",
-      });
+    // Authorization: Admin, Owner, Project Manager
+    // Warning: logic below assumes member check passed implicitly by route or prior logic, 
+    // but subtask update typically allows assignees too. Ideally we stick to project manager+ logic for consistency or allow assignees.
+    // For now, mirroring strict control: Admin/Owner/Manager only.
+    
+    // We need to fetch project member info as `updateSubTask` doesn't fetch project/member currently in the snippet shown earlier.
+    // Re-fetching context for safety.
+    const project = await Project.findById(task.project);
+    if (!project) return res.status(404).json({ message: "Project not found" });
+
+    const member = project.members.find(m => m.user.toString() === req.user._id.toString());
+    const isSystemAdmin = req.user.isAdmin;
+    
+    // If not system admin, restrict.
+    if (!isSystemAdmin) {
+         if (!member) return res.status(403).json({ message: "Not a member" });
+         
+         const isWorkspaceManager = member.role === "admin" || member.role === "owner";
+         const isManager = member.role === "manager";
+         
+         if (!isWorkspaceManager && !isManager) {
+              return res.status(403).json({ message: "Unauthorized to update subtask" });
+         }
     }
 
     subTask.completed = completed;
@@ -518,14 +573,17 @@ const addComment = async (req, res) => {
       });
     }
 
-    const isMember = project.members.some(
-      (member) => member.user.toString() === req.user._id.toString()
-    );
+    // ADMIN BYPASS: Master Admin can comment on any task
+    if (!req.user.isAdmin) {
+        const isMember = project.members.some(
+          (member) => member.user.toString() === req.user._id.toString()
+        );
 
-    if (!isMember) {
-      return res.status(403).json({
-        message: "You are not a member of this project",
-      });
+        if (!isMember) {
+          return res.status(403).json({
+            message: "You are not a member of this project",
+          });
+        }
     }
 
     const newComment = await Comment.create({
@@ -727,21 +785,26 @@ const deleteTask = async (req, res) => {
       });
     }
 
-    const member = project.members.find(
-      (m) => m.user.toString() === req.user._id.toString()
-    );
+    // ADMIN BYPASS: Master Admin can delete any task
+    if (!req.user.isAdmin) {
+        const member = project.members.find(
+          (m) => m.user.toString() === req.user._id.toString()
+        );
 
-    if (!member) {
-      return res.status(403).json({
-        message: "You are not a member of this project",
-      });
-    }
+        if (!member) {
+          return res.status(403).json({
+            message: "You are not a member of this project",
+          });
+        }
 
-    // Check if user is a manager
-    if (member.role !== "manager") {
-      return res.status(403).json({
-        message: "Only managers can delete tasks",
-      });
+        const isWorkspaceManager = member.role === "admin" || member.role === "owner";
+        const isManager = member.role === "manager";
+
+        if (!isWorkspaceManager && !isManager) {
+          return res.status(403).json({
+            message: "You are not authorized to delete tasks",
+          });
+        }
     }
 
     // Cascade delete: Comments, ActivityLogs

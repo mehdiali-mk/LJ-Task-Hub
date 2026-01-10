@@ -21,7 +21,7 @@ import { useAuth } from "@/provider/auth-context";
 import type { Project, Task } from "@/types";
 import { format, formatDistanceToNow } from "date-fns";
 import { Trash2, Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 
@@ -33,6 +33,12 @@ const TaskDetails = () => {
     workspaceId: string;
   }>();
   const navigate = useNavigate();
+
+  // Check if user is Master Admin - SSR safe
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    setIsAdmin(!!localStorage.getItem("admin_token"));
+  }, []);
 
   const { data, isLoading } = useTaskByIdQuery(taskId!) as {
     data: {
@@ -106,7 +112,8 @@ const TaskDetails = () => {
   const currentUserMember = project?.members?.find(
     (m) => m.user?._id === user?._id || m.user === user?._id
   );
-  const isManager = currentUserMember?.role === "manager";
+  // Admin users get manager-level access
+  const isManager = isAdmin || currentUserMember?.role === "manager";
 
   return (
     <>

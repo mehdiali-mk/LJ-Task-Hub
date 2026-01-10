@@ -11,6 +11,7 @@ const adminSchema = new Schema(
     },
     password: { type: String, required: true, select: false },
     name: { type: String, required: true, trim: true },
+    profilePicture: { type: String, default: "" },
   },
   { timestamps: true }
 );

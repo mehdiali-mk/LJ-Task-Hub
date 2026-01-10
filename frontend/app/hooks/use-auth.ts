@@ -10,14 +10,14 @@ export const useSignUpMutation = () => {
 
 export const useVerifyEmailMutation = () => {
   return useMutation({
-    mutationFn: (data: { token: string }) =>
+    mutationFn: (data: { identifier: string; otp: string }) =>
       postData("/auth/verify-email", data),
   });
 };
 
 export const useLoginMutation = () => {
   return useMutation({
-    mutationFn: (data: { email: string; password: string }) =>
+    mutationFn: (data: { identifier: string; password: string }) =>
       postData("/auth/login", data),
   });
 };
@@ -26,6 +26,13 @@ export const useForgotPasswordMutation = () => {
   return useMutation({
     mutationFn: (data: { email: string }) =>
       postData("/auth/reset-password-request", data),
+  });
+};
+
+export const useSendVerificationMutation = () => {
+  return useMutation({
+    mutationFn: (data: { channel: "email" | "phone" }) =>
+      postData("/auth/send-verification", data),
   });
 };
 

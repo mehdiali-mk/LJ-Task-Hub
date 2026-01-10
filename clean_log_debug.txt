@@ -1,0 +1,3 @@
+﻿965a833 Fix: Update codebase and remove secrets
+0adff2c Latest All UI and Project Almost done.
+c6af0c5 All basic functionalities completed.

@@ -10,7 +10,8 @@ import {
   addProjectMember,
   updateProjectMemberRole,
   updateProject,
-  removeProjectMember
+  removeProjectMember,
+  deleteProject
 } from "../controllers/project.js";
 
 const router = express.Router();
@@ -65,6 +66,15 @@ router.patch(
     "/:projectId",
     authMiddleware,
     updateProject
+);
+
+router.delete(
+    "/:projectId",
+    authMiddleware,
+    validateRequest({
+        params: z.object({ projectId: z.string() }),
+    }),
+    deleteProject
 );
 
 export default router;

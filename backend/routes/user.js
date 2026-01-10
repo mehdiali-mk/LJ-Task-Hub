@@ -4,6 +4,7 @@ import {
   changePassword,
   getUserProfile,
   updateUserProfile,
+  deleteUser,
 } from "../controllers/user.js";
 import { z } from "zod";
 import { validateRequest } from "zod-express-middleware";
@@ -34,6 +35,17 @@ router.put(
     }),
   }),
   changePassword
+);
+
+router.delete(
+  "/:userId",
+  authenticateUser,
+  // ensure middleware checks isAdmin inside controller or add admin middleware here if strictly separate
+  // The controller `deleteUser` has the check.
+  validateRequest({
+      params: z.object({ userId: z.string() })
+  }),
+  deleteUser
 );
 
 export default router;

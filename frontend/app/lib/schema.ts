@@ -2,16 +2,21 @@ import { ProjectStatus } from "@/types";
 import { z } from "zod";
 
 export const signInSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  identifier: z.string().min(1, "Email or Phone is required"),
   password: z.string().min(6, "Password is required"),
 });
 
 export const signUpSchema = z
   .object({
-    email: z.string().email("Invalid email address"),
+    email: z.string().email("Invalid email address").optional().or(z.literal("")),
     password: z.string().min(8, "Password must be 8 characters"),
     name: z.string().min(3, "Name must be at least 3 characters"),
+    phoneNumber: z.string().optional(),
     confirmPassword: z.string().min(8, "Password must be 8 characters"),
+  })
+  .refine((data) => data.email || data.phoneNumber, {
+    message: "Email or Phone Number is required",
+    path: ["email"],
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ["confirmPassword"],

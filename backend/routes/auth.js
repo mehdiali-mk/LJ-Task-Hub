@@ -13,11 +13,22 @@ import {
   loginUser,
   registerUser,
   resetPasswordRequest,
-  // verifyEmail, // Commented on 10th August 2025
+  verifyEmail,
   verifyResetPasswordTokenAndResetPassword,
+  sendVerificationCode,
 } from "../controllers/auth-controller.js";
+import authMiddleware from "../middleware/auth-middleware.js";
 
 const router = express.Router();
+
+console.log("[DEBUG] Registering Auth Routes including /send-verification");
+
+// Route moved to top for debugging
+router.post(
+  "/send-verification",
+  authMiddleware,
+  sendVerificationCode
+);
 
 router.post(
   "/register",
@@ -38,8 +49,8 @@ router.post(
   "/verify-email",
   validateRequest({
     body: verifyEmailSchema,
-  })
-  // verifyEmail // Commented on 10th August 2025
+  }),
+  verifyEmail
 );
 
 router.post(

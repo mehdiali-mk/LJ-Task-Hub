@@ -16,6 +16,7 @@ import { LogOut, ShieldCheck } from "lucide-react";
 import { Loader } from "@/components/loader";
 import { AssignWorkspaceDialog } from "@/components/admin/assign-workspace-dialog";
 import { fetchData } from "@/lib/fetch-util";
+import { Trash2 } from "lucide-react";
 
 interface User {
   _id: string;
@@ -90,6 +91,20 @@ const AdminDashboard = () => {
     toast.success("Logged out successfully");
   };
 
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
+    try {
+      const token = localStorage.getItem("token") || localStorage.getItem("admin_token");
+      await axios.delete(`${import.meta.env.VITE_API_URL}/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("User deleted successfully");
+      fetchUsers();
+    } catch (error) {
+      toast.error("Failed to delete user");
+    }
+  };
+
   if (loading) return <div className="h-screen flex items-center justify-center"><Loader /></div>;
 
   return (
@@ -141,6 +156,15 @@ const AdminDashboard = () => {
                     >
                         <ShieldCheck className="h-4 w-4 mr-2" />
                         Manage Roles
+                    </Button>
+                    <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleDeleteUser(user._id)}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                    >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
                     </Button>
                   </TableCell>
                 </TableRow>

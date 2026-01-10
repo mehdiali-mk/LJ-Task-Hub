@@ -1,7 +1,6 @@
 import { useAuth } from "@/provider/auth-context";
 import React from "react";
 import { Navigate, Outlet } from "react-router";
-import { FluidBackground } from "@/components/ui/fluid-background";
 
 const AuthLayout = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -16,7 +15,6 @@ const AuthLayout = () => {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden text-white selection:bg-[#00FFFF]/30 isolate flex items-center justify-center">
-      <FluidBackground />
       <div className="w-full flex items-center justify-center">
         <Outlet />
       </div>

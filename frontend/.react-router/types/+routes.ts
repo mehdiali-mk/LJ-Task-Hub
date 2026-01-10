@@ -72,6 +72,21 @@ type Pages = {
   "/user/profile": {
     params: {};
   };
+  "/about": {
+    params: {};
+  };
+  "/contact": {
+    params: {};
+  };
+  "/support": {
+    params: {};
+  };
+  "/legal/privacy": {
+    params: {};
+  };
+  "/legal/terms": {
+    params: {};
+  };
   "/admin/login": {
     params: {};
   };
@@ -80,15 +95,15 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/sign-in" | "/sign-up" | "/forgot-password" | "/reset-password" | "/verify-email" | "/dashboard" | "/workspaces" | "/workspaces/:workspaceId" | "/workspaces/:workspaceId/projects/:projectId" | "/workspaces/:workspaceId/projects/:projectId/tasks/:taskId" | "/my-tasks" | "/members" | "/archived-tasks" | "/admin" | "/workspace-invite/:workspaceId" | "/user/profile" | "/admin/login";
-  };
-  "routes/auth/auth-layout.tsx": {
-    id: "routes/auth/auth-layout";
-    page: "/" | "/sign-in" | "/sign-up" | "/forgot-password" | "/reset-password" | "/verify-email";
+    page: "/" | "/sign-in" | "/sign-up" | "/forgot-password" | "/reset-password" | "/verify-email" | "/dashboard" | "/workspaces" | "/workspaces/:workspaceId" | "/workspaces/:workspaceId/projects/:projectId" | "/workspaces/:workspaceId/projects/:projectId/tasks/:taskId" | "/my-tasks" | "/members" | "/archived-tasks" | "/admin" | "/workspace-invite/:workspaceId" | "/user/profile" | "/about" | "/contact" | "/support" | "/legal/privacy" | "/legal/terms" | "/admin/login";
   };
   "routes/root/home.tsx": {
     id: "routes/root/home";
     page: "/";
+  };
+  "routes/auth/auth-layout.tsx": {
+    id: "routes/auth/auth-layout";
+    page: "/sign-in" | "/sign-up" | "/forgot-password" | "/reset-password" | "/verify-email";
   };
   "routes/auth/sign-in.tsx": {
     id: "routes/auth/sign-in";
@@ -161,6 +176,30 @@ type RouteFiles = {
   "routes/user/profile.tsx": {
     id: "routes/user/profile";
     page: "/user/profile";
+  };
+  "routes/core/core-layout.tsx": {
+    id: "routes/core/core-layout";
+    page: "/about" | "/contact" | "/support" | "/legal/privacy" | "/legal/terms";
+  };
+  "routes/core/about.tsx": {
+    id: "routes/core/about";
+    page: "/about";
+  };
+  "routes/core/contact.tsx": {
+    id: "routes/core/contact";
+    page: "/contact";
+  };
+  "routes/core/support/index.tsx": {
+    id: "routes/core/support/index";
+    page: "/support";
+  };
+  "routes/core/legal/privacy.tsx": {
+    id: "routes/core/legal/privacy";
+    page: "/legal/privacy";
+  };
+  "routes/core/legal/terms.tsx": {
+    id: "routes/core/legal/terms";
+    page: "/legal/terms";
   };
   "routes/admin/login.tsx": {
     id: "routes/admin/login";

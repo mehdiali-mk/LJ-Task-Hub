@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import type { Project, Task, TaskStatus } from "@/types";
 import { format } from "date-fns";
 import { AlertCircle, Calendar, CheckCircle, Clock } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import { ManageProjectMembersDialog } from "@/components/project/manage-project-members-dialog";
 import { useAuth } from "@/provider/auth-context";
@@ -41,6 +41,12 @@ const ProjectDetails = () => {
   const [isEditProject, setIsEditProject] = useState(false);
   const [isDeleteProject, setIsDeleteProject] = useState(false);
 
+  // Check if user is Master Admin - SSR safe
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    setIsAdmin(!!localStorage.getItem("admin_token"));
+  }, []);
+
   const { user } = useAuth();
   const [taskFilter, setTaskFilter] = useState<TaskStatus | "All">("All");
   const { mutate: updateProject } = UseUpdateProject();
@@ -63,9 +69,8 @@ const ProjectDetails = () => {
   const { project, tasks } = data;
   const projectProgress = getProjectProgress(tasks);
 
-  // Permissions
+  // Permissions - Admin from localStorage takes priority
   const isWorkspaceManager = user?.managedWorkspaces?.includes(workspaceId!);
-  const isAdmin = user?.isAdmin;
   const isProjectManager = project.members.some(m => m.user._id === user?._id && m.role === 'manager');
   
   const canEditProject = isAdmin || isWorkspaceManager;

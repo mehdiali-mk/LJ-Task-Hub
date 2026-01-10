@@ -59,19 +59,9 @@ const Dashboard = () => {
     isPending: boolean;
   };
 
-  // Shared background
-  const Background = () => (
-    <div className="absolute inset-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-      <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-[#00FFFF] rounded-full mix-blend-screen filter blur-[150px] opacity-20 animate-blob"></div>
-      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#FFA500] rounded-full mix-blend-screen filter blur-[150px] opacity-15 animate-blob animation-delay-2000"></div>
-      <div className="absolute top-[40%] left-[20%] w-[400px] h-[400px] bg-[#00FF00] rounded-full mix-blend-screen filter blur-[150px] opacity-10 animate-blob animation-delay-4000"></div>
-    </div>
-  );
-
   if (!workspaceId) {
     return (
         <div className="relative min-h-[calc(100vh-4rem)] space-y-8 p-6 md:p-8 overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-black/20 backdrop-blur-xl">
-            <Background />
             <div className="flex items-center justify-between animate-in slide-in-from-bottom-5 fade-in duration-700">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-white drop-shadow-md">Select a Workspace</h1>
@@ -95,7 +85,6 @@ const Dashboard = () => {
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] space-y-8 2xl:space-y-12 p-6 md:p-8 overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-black/20 backdrop-blur-xl">
-      <Background />
 
       <div className="flex items-center justify-between animate-in slide-in-from-bottom-5 fade-in duration-700">
         <div className="flex items-center gap-4">

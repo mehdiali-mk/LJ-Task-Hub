@@ -14,13 +14,16 @@ const authMiddleware = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     if (decoded.role === "master_admin") {
-         // Admin Super User Access
+         // Admin Super User Access - Full synthetic user object
          req.user = {
              _id: decoded.adminId, // Use admin ID
              name: "Master Admin",
              email: "admin@projectmanager.com",
              role: "super_admin", // Explicit role for controllers
-             isAdmin: true 
+             isAdmin: true,
+             // Provide empty arrays for properties that may be accessed
+             managedWorkspaces: [],
+             workspaces: [],
          };
          next();
          return;

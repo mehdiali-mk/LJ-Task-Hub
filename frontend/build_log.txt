@@ -1,0 +1,89 @@
+app/hooks/use-username-validator.ts(219,10): error TS1005: '>' expected.
+app/hooks/use-username-validator.ts(219,19): error TS1005: ')' expected.
+app/hooks/use-username-validator.ts(219,21): error TS1136: Property assignment expected.
+app/hooks/use-username-validator.ts(219,46): error TS1109: Expression expected.
+app/hooks/use-username-validator.ts(220,12): error TS1005: '>' expected.
+app/hooks/use-username-validator.ts(220,21): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(222,11): error TS1005: '>' expected.
+app/hooks/use-username-validator.ts(222,15): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(224,21): error TS1136: Property assignment expected.
+app/hooks/use-username-validator.ts(224,25): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(224,85): error TS1128: Declaration or statement expected.
+app/hooks/use-username-validator.ts(227,22): error TS1136: Property assignment expected.
+app/hooks/use-username-validator.ts(232,12): error TS1128: Declaration or statement expected.
+app/hooks/use-username-validator.ts(233,9): error TS1161: Unterminated regular expression literal.
+app/hooks/use-username-validator.ts(236,14): error TS1005: '>' expected.
+app/hooks/use-username-validator.ts(236,23): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(237,23): error TS1005: ',' expected.
+app/hooks/use-username-validator.ts(238,18): error TS1005: '>' expected.
+app/hooks/use-username-validator.ts(238,27): error TS1005: ')' expected.
+app/hooks/use-username-validator.ts(238,74): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(239,23): error TS1005: '>' expected.
+app/hooks/use-username-validator.ts(239,25): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(239,31): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(239,39): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(239,46): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(239,62): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(239,84): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(239,97): error TS1109: Expression expected.
+app/hooks/use-username-validator.ts(240,14): error TS1110: Type expected.
+app/hooks/use-username-validator.ts(241,11): error TS1128: Declaration or statement expected.
+app/hooks/use-username-validator.ts(241,12): error TS1128: Declaration or statement expected.
+app/hooks/use-username-validator.ts(243,18): error TS1005: '>' expected.
+app/hooks/use-username-validator.ts(243,27): error TS1005: ')' expected.
+app/hooks/use-username-validator.ts(243,55): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(243,75): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(243,87): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(243,109): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(244,25): error TS1005: '>' expected.
+app/hooks/use-username-validator.ts(244,31): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(244,50): error TS1109: Expression expected.
+app/hooks/use-username-validator.ts(245,14): error TS1110: Type expected.
+app/hooks/use-username-validator.ts(246,11): error TS1128: Declaration or statement expected.
+app/hooks/use-username-validator.ts(248,18): error TS1005: '>' expected.
+app/hooks/use-username-validator.ts(248,27): error TS1005: ')' expected.
+app/hooks/use-username-validator.ts(248,52): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(248,72): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(248,84): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(248,106): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(249,23): error TS1005: '>' expected.
+app/hooks/use-username-validator.ts(249,25): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(249,31): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(249,39): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(249,47): error TS1109: Expression expected.
+app/hooks/use-username-validator.ts(250,21): error TS1005: '>' expected.
+app/hooks/use-username-validator.ts(250,22): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(250,45): error TS1109: Expression expected.
+app/hooks/use-username-validator.ts(251,14): error TS1110: Type expected.
+app/hooks/use-username-validator.ts(252,11): error TS1128: Declaration or statement expected.
+app/hooks/use-username-validator.ts(253,10): error TS1110: Type expected.
+app/hooks/use-username-validator.ts(254,8): error TS1161: Unterminated regular expression literal.
+app/hooks/use-username-validator.ts(258,12): error TS1005: '>' expected.
+app/hooks/use-username-validator.ts(258,21): error TS1005: ')' expected.
+app/hooks/use-username-validator.ts(260,10): error TS1161: Unterminated regular expression literal.
+app/hooks/use-username-validator.ts(261,7): error TS1128: Declaration or statement expected.
+app/hooks/use-username-validator.ts(265,14): error TS1005: '>' expected.
+app/hooks/use-username-validator.ts(265,23): error TS1005: ')' expected.
+app/hooks/use-username-validator.ts(266,14): error TS1005: '>' expected.
+app/hooks/use-username-validator.ts(266,23): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(266,55): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(266,59): error TS1434: Unexpected keyword or identifier.
+app/hooks/use-username-validator.ts(266,69): error TS1110: Type expected.
+app/hooks/use-username-validator.ts(267,16): error TS1005: ';' expected.
+app/hooks/use-username-validator.ts(268,25): error TS1005: ',' expected.
+app/hooks/use-username-validator.ts(270,17): error TS1005: '>' expected.
+app/hooks/use-username-validator.ts(270,20): error TS1005: ')' expected.
+app/hooks/use-username-validator.ts(271,17): error TS1005: ',' expected.
+app/hooks/use-username-validator.ts(271,26): error TS1136: Property assignment expected.
+app/hooks/use-username-validator.ts(271,29): error TS1005: ',' expected.
+app/hooks/use-username-validator.ts(271,64): error TS1005: ',' expected.
+app/hooks/use-username-validator.ts(275,16): error TS1161: Unterminated regular expression literal.
+app/hooks/use-username-validator.ts(276,13): error TS1128: Declaration or statement expected.
+app/hooks/use-username-validator.ts(276,14): error TS1128: Declaration or statement expected.
+app/hooks/use-username-validator.ts(277,12): error TS1110: Type expected.
+app/hooks/use-username-validator.ts(278,10): error TS1161: Unterminated regular expression literal.
+app/hooks/use-username-validator.ts(279,7): error TS1128: Declaration or statement expected.
+app/hooks/use-username-validator.ts(279,8): error TS1128: Declaration or statement expected.
+app/hooks/use-username-validator.ts(280,6): error TS1110: Type expected.
+app/hooks/use-username-validator.ts(281,3): error TS1128: Declaration or statement expected.
+app/hooks/use-username-validator.ts(282,1): error TS1128: Declaration or statement expected.

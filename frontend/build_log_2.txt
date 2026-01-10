@@ -1,0 +1,14 @@
+app/components/ui/bento-tile.tsx(19,18): error TS2554: Expected 1 arguments, but got 0.
+app/components/ui/calendar.tsx(61,9): error TS2353: Object literal may only specify known properties, and 'IconLeft' does not exist in type 'Partial<CustomComponents>'.
+app/components/ui/calendar.tsx(61,22): error TS7031: Binding element 'className' implicitly has an 'any' type.
+app/components/ui/calendar.tsx(64,23): error TS7031: Binding element 'className' implicitly has an 'any' type.
+app/lib/hardware-fingerprint.ts(177,37): error TS2307: Cannot find module '@tauri-apps/api/core' or its corresponding type declarations.
+app/lib/hardware-fingerprint.ts(178,24): error TS2347: Untyped function calls may not accept type arguments.
+app/routes/auth/verify-email.tsx(19,11): error TS2353: Object literal may only specify known properties, and 'token' does not exist in type '{ identifier: string; otp: string; }'.
+app/routes/core/about.tsx(2,28): error TS2307: Cannot find module '../../../+types/root' or its corresponding type declarations.
+app/routes/core/contact.tsx(2,28): error TS2307: Cannot find module '../../../+types/root' or its corresponding type declarations.
+app/routes/core/legal/privacy.tsx(2,10): error TS2305: Module '"react-window"' has no exported member 'FixedSizeList'.
+app/routes/core/legal/privacy.tsx(3,8): error TS2613: Module '"I:/Computer Science/Diploma/Sem-5/Final Project/My Project Files/project-manager-main/project-manager-main/frontend/node_modules/react-virtualized-auto-sizer/dist/react-virtualized-auto-sizer"' has no default export. Did you mean to use 'import { AutoSizer } from "I:/Computer Science/Diploma/Sem-5/Final Project/My Project Files/project-manager-main/project-manager-main/frontend/node_modules/react-virtualized-auto-sizer/dist/react-virtualized-auto-sizer"' instead?
+app/routes/core/legal/terms.tsx(2,8): error TS2613: Module '"I:/Computer Science/Diploma/Sem-5/Final Project/My Project Files/project-manager-main/project-manager-main/frontend/node_modules/react-virtualized-auto-sizer/dist/react-virtualized-auto-sizer"' has no default export. Did you mean to use 'import { AutoSizer } from "I:/Computer Science/Diploma/Sem-5/Final Project/My Project Files/project-manager-main/project-manager-main/frontend/node_modules/react-virtualized-auto-sizer/dist/react-virtualized-auto-sizer"' instead?
+app/routes/core/legal/terms.tsx(4,10): error TS2305: Module '"react-window"' has no exported member 'VariableSizeList'.
+app/routes/dashboard/task/task-details.tsx(107,41): error TS2367: This comparison appears to be unintentional because the types 'User' and 'string | undefined' have no overlap.

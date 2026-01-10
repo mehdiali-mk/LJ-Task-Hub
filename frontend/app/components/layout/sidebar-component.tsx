@@ -11,6 +11,9 @@ import {
   Settings,
   Users,
   Layers,
+  Info,
+  HelpCircle,
+  Mail,
 } from "lucide-react";
 
 import { useState } from "react";
@@ -48,16 +51,8 @@ export const SidebarComponent = ({
       href: `/members`,
       icon: Users,
     },
-    // {
-    //   title: "Archived Tasks",
-    //   href: `/archived-tasks`,
-    //   icon: CheckCircle2,
-    // },
-    // {
-    //   title: "Settings",
-    //   href: "/settings",
-    //   icon: Settings,
-    // },
+    // {\n    //   title: "Archived Tasks",\n    //   href: `/archived-tasks`,\n    //   icon: CheckCircle2,\n    // },
+    // {\n    //   title: "Settings",\n    //   href: "/settings",\n    //   icon: Settings,\n    // },
     ...(user?.email === "admin@projectmanager.com" ? [{
         title: "Admin Panel",
         href: "/admin",
@@ -65,20 +60,38 @@ export const SidebarComponent = ({
     }] : []),
   ];
 
+  const coreItems = [
+    {
+      title: "About",
+      href: "/about",
+      icon: Info,
+    },
+    {
+      title: "Support",
+      href: "/support",
+      icon: HelpCircle,
+    },
+    {
+      title: "Contact",
+      href: "/contact",
+      icon: Mail,
+    },
+  ];
+
   return (
     <div
       className={cn(
-        "flex flex-col border-r border-white/20 bg-white/[0.08] backdrop-blur-2xl transition-all duration-300",
+        "flex flex-col border-r border-white/10 sidebar-glass transition-all duration-300",
         isCollapsed ? "w-16 md:w[80px]" : "w-16 md:w-[240px]"
       )}
     >
-      <div className={cn("flex h-14 items-center border-b mb-4", isCollapsed ? "justify-center px-2" : "justify-between px-4")}>
-        <Link to="/dashboard" className={cn("flex items-center", isCollapsed && "hidden")}>
+      <div className={cn("flex h-14 items-center border-b border-white/10 mb-4", isCollapsed ? "justify-center px-2" : "justify-between px-4")}>
+        <Link to="/" className={cn("flex items-center", isCollapsed && "hidden")}>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
-              <Layers className="size-5 text-[#00FFFF]" />
+            <div className="w-8 h-8 rounded-lg deep-glass-sm flex items-center justify-center">
+              <Layers className="size-5 text-glass-primary" />
             </div>
-            <span className="font-semibold text-lg hidden md:block text-white">
+            <span className="font-semibold text-lg hidden md:block text-glass-primary">
               TaskHub
             </span>
           </div>
@@ -109,6 +122,21 @@ export const SidebarComponent = ({
           className={cn(isCollapsed && "items-center space-y-2")}
           currentWorkspace={currentWorkspace}
         />
+        
+        {/* Core Pages Section */}
+        <div className={cn("mt-6 pt-4 border-t border-white/10", isCollapsed && "mx-2")}>
+          {!isCollapsed && (
+            <span className="text-xs font-medium text-gray-500 uppercase tracking-wider px-3 mb-2 block">
+              Info & Support
+            </span>
+          )}
+          <SidebarNav
+            items={coreItems}
+            isCollapsed={isCollapsed}
+            className={cn(isCollapsed && "items-center space-y-2", "mt-2")}
+            currentWorkspace={null}
+          />
+        </div>
       </ScrollArea>
 
       <div>

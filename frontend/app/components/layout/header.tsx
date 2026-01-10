@@ -46,7 +46,7 @@ export const Header = ({
   };
 
   return (
-    <div className="bg-white/[0.05] backdrop-blur-xl sticky top-0 z-40 border-b border-white/10">
+    <div className="deep-glass-sm sticky top-0 z-40 border-b border-white/10">
       <div className="flex h-14 items-center justify-end px-4 sm:px-6 lg:px-8 py-4">
         {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>

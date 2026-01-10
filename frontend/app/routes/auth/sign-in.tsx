@@ -16,38 +16,52 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useLoginMutation } from "@/hooks/use-auth";
+import { useLoginMutation, useVerifyEmailMutation } from "@/hooks/use-auth";
 import { signInSchema } from "@/lib/schema";
 import { useAuth } from "@/provider/auth-context";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Layers } from "lucide-react";
+import { Loader2, Layers, Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useState } from "react";
+import { OTPVerification } from "@/components/ui/otp-input";
 
 type SigninFormData = z.infer<typeof signInSchema>;
 
 const SignIn = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [identifier, setIdentifier] = useState("");
 
   const form = useForm<SigninFormData>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      email: "",
+      identifier: "", // Email or Phone
       password: "",
     },
   });
   const { mutate, isPending } = useLoginMutation();
+  const { mutateAsync: verifyEmail } = useVerifyEmailMutation();
 
   const handleOnSubmit = (values: SigninFormData) => {
     mutate(values, {
-      onSuccess: (data) => {
-        login(data);
-        console.log(data);
-        toast.success("Login successful");
-        navigate("/dashboard");
+      onSuccess: (data: any) => {
+        if (data.token) {
+            // Normal Login
+            login(data);
+            console.log(data);
+            toast.success("Login successful");
+            navigate("/dashboard");
+        } else {
+            // Verification Required (Backend sent 201)
+            setIdentifier(values.identifier);
+            setIsVerifying(true);
+            toast.info(data.message || "Verification required");
+        }
       },
       onError: (error: any) => {
         const errorMessage =
@@ -57,6 +71,23 @@ const SignIn = () => {
       },
     });
   };
+
+  const handleVerifyOTP = async (otp: string): Promise<boolean> => {
+    try {
+      await verifyEmail({ identifier: identifier, otp });
+      toast.success("Verified successfully! Please login.");
+      setIsVerifying(false); // Return to login form to login (or auto-login if verify returns token?)
+      // Backend verifyEmail does NOT return token, just 200 OK.
+      // So user simply logs in again.
+      // Or we can auto-login if we implemented that.
+      // For now, return to form is safe.
+      return true;
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Invalid code");
+      return false;
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="flex items-center gap-2 mb-8">
@@ -67,12 +98,22 @@ const SignIn = () => {
       </div>
       <Card className="max-w-md w-full shadow-xl">
         <CardHeader className="text-center mb-5">
-          <CardTitle className="text-2xl font-bold text-white">Welcome back</CardTitle>
+          <CardTitle className="text-2xl font-bold text-white">
+            {isVerifying ? "Verify Account" : "Welcome back"}
+          </CardTitle>
           <CardDescription className="text-sm text-gray-400">
-            Sign in to your account to continue
+             {isVerifying 
+              ? `Enter the code sent to ${identifier}` 
+              : "Sign in to your account to continue"}
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {isVerifying ? (
+            <OTPVerification 
+              onVerify={handleVerifyOTP}
+              description="Check your email/phone for the 6-digit code."
+            />
+          ) : (
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleOnSubmit)}
@@ -80,14 +121,14 @@ const SignIn = () => {
             >
               <FormField
                 control={form.control}
-                name="email"
+                name="identifier"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email Address</FormLabel>
+                    <FormLabel>Email or Phone</FormLabel>
                     <FormControl>
                       <Input
-                        type="email"
-                        placeholder="email@example.com"
+                        type="text"
+                        placeholder="email@example.com or +1234..."
                         {...field}
                       />
                     </FormControl>
@@ -110,11 +151,24 @@ const SignIn = () => {
                       </Link>
                     </div>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="********"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="********"
+                            {...field}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                        >
+                            {showPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                            ) : (
+                                <Eye className="h-4 w-4" />
+                            )}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -122,18 +176,21 @@ const SignIn = () => {
               />
 
               <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? <Loader2 className="w-4 h-4 mr-2" /> : "Sign in"}
+                {isPending ? <Loader2 className="w-4 h-4 mr-2" /> : "Login"}
               </Button>
             </form>
           </Form>
+          )}
 
-          <CardFooter className="flex items-center justify-center mt-6">
-            <div className="flex items-center justify-center">
-              <p className="text-sm text-muted-foreground">
-                Don&apos;t have an account? <Link to="/sign-up">Sign up</Link>
-              </p>
-            </div>
-          </CardFooter>
+          {!isVerifying && (
+            <CardFooter className="flex items-center justify-center mt-6 p-0">
+                <div className="flex items-center justify-center">
+                <p className="text-sm text-muted-foreground">
+                    Don&apos;t have an account? <Link to="/sign-up">Sign up</Link>
+                </p>
+                </div>
+            </CardFooter>
+          )}
         </CardContent>
       </Card>
     </div>

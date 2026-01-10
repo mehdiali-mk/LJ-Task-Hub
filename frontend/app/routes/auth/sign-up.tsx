@@ -1,5 +1,5 @@
-import { signInSchema, signUpSchema } from "@/lib/schema";
-import React from "react";
+import { signUpSchema } from "@/lib/schema";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -22,36 +22,40 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router";
-import { useSignUpMutation } from "@/hooks/use-auth";
+import { useSignUpMutation, useVerifyEmailMutation } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { Loader2, Layers } from "lucide-react";
+import { OTPVerification } from "@/components/ui/otp-input";
 
 export type SignupFormData = z.infer<typeof signUpSchema>;
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [identifier, setIdentifier] = useState("");
+
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       email: "",
       password: "",
       name: "",
+      phoneNumber: "",
       confirmPassword: "",
     },
   });
 
-  const { mutate, isPending } = useSignUpMutation();
+  const { mutate: register, isPending: isRegistering } = useSignUpMutation();
+  const { mutateAsync: verifyEmail } = useVerifyEmailMutation();
 
   const handleOnSubmit = (values: SignupFormData) => {
-    mutate(values, {
+    register(values, {
       onSuccess: () => {
-        toast.success("Email Verification Required", {
-          description:
-            "Please check your email for a verification link. If you don't see it, please check your spam folder.",
+        toast.success("Account created!", {
+          description: "Please enter the code sent to your email or phone.",
         });
-
-        form.reset();
-        navigate("/sign-in");
+        setIdentifier(values.email || values.phoneNumber || "");
+        setIsVerifying(true);
       },
       onError: (error: any) => {
         const errorMessage =
@@ -60,6 +64,21 @@ const SignUp = () => {
         toast.error(errorMessage);
       },
     });
+  };
+
+  const handleVerifyOTP = async (otp: string): Promise<boolean> => {
+    try {
+      await verifyEmail({ identifier: identifier, otp });
+      toast.success("Verified successfully!");
+      // Short delay to show success
+      setTimeout(() => {
+        navigate("/sign-in");
+      }, 1000);
+      return true;
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Invalid code");
+      return false;
+    }
   };
 
   return (
@@ -73,97 +92,123 @@ const SignUp = () => {
       <Card className="max-w-md w-full shadow-xl">
         <CardHeader className="text-center mb-5">
           <CardTitle className="text-2xl font-bold text-white">
-            Create an account
+            {isVerifying ? "Verify Account" : "Create an account"}
           </CardTitle>
           <CardDescription className="text-sm text-gray-400">
-            Create an account to continue
+            {isVerifying 
+              ? `Enter the code sent to ${identifier}` 
+              : "Create an account to continue"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(handleOnSubmit)}
-              className="space-y-6"
-            >
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email Address</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="email@example.com"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input type="text" placeholder="John Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {isVerifying ? (
+            <OTPVerification 
+              onVerify={handleVerifyOTP}
+              description="Check your email/phone for the 6-digit code."
+            />
+          ) : (
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(handleOnSubmit)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Address (Optional)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text" 
+                          placeholder="email@example.com"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number (Optional)</FormLabel>
+                      <FormControl>
+                        <Input type="tel" placeholder="+1234567890" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="********"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="********"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input type="text" placeholder="John Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? "Signing up..." : "Sign up"}
-              </Button>
-            </form>
-          </Form>
+                <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="password"
+                              placeholder="********"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Confirm Password</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="password"
+                              placeholder="********"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                </div>
 
-          <CardFooter className="flex items-center justify-center mt-6">
-            <div className="flex items-center justify-center">
-              <p className="text-sm text-muted-foreground">
-                Already have an account? <Link to="/sign-in">Sign in</Link>
-              </p>
-            </div>
-          </CardFooter>
+                <Button type="submit" className="w-full mt-2" disabled={isRegistering}>
+                  {isRegistering ? "Signing up..." : "Sign up"}
+                </Button>
+              </form>
+            </Form>
+          )}
+
+          {!isVerifying && (
+            <CardFooter className="flex items-center justify-center mt-6 p-0">
+                <p className="text-sm text-muted-foreground">
+                  Already have an account? <Link to="/sign-in" className="text-white hover:underline">Sign in</Link>
+                </p>
+            </CardFooter>
+          )}
         </CardContent>
       </Card>
     </div>

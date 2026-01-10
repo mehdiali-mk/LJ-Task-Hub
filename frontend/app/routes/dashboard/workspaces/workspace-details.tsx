@@ -6,7 +6,7 @@ import { ProjectList } from "@/components/workspace/project-list";
 import { WorkspaceHeader } from "@/components/workspace/workspace-header";
 import { useGetWorkspaceQuery } from "@/hooks/use-workspace";
 import type { Project, Workspace } from "@/types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import { useAuth } from "@/provider/auth-context";
 
@@ -14,6 +14,12 @@ const WorkspaceDetails = () => {
   const { workspaceId } = useParams<{ workspaceId: string }>();
   const [isCreateProject, setIsCreateProject] = useState(false);
   const [isInviteMember, setIsInviteMember] = useState(false);
+
+  // Check if user is Master Admin - SSR safe
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    setIsAdmin(!!localStorage.getItem("admin_token"));
+  }, []);
 
   if (!workspaceId) {
     return <div>No workspace found</div>;
@@ -39,7 +45,7 @@ const WorkspaceDetails = () => {
   const workspace = data?.workspace;
   const isOwner = workspace?.owner === user?._id || (typeof workspace?.owner === 'object' && (workspace?.owner as any)._id === user?._id);
   const isManager = user?.managedWorkspaces?.includes(workspaceId);
-  const canCreateProject = user?.isAdmin || isOwner || isManager;
+  const canCreateProject = isAdmin || isOwner || isManager;
 
   return (
     <div className="space-y-8">

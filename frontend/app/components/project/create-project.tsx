@@ -66,6 +66,7 @@ export const CreateProjectDialog = ({
     },
   });
   const { mutate, isPending } = UseCreateProject();
+  const startDate = form.watch("startDate");
 
   const onSubmit = (values: CreateProjectFormData) => {
     if (!workspaceId) return;
@@ -268,7 +269,7 @@ export const CreateProjectDialog = ({
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent
-                          className="w-auto min-w-[260px] p-0 z-50"
+                          className="w-auto p-0 z-50 bg-transparent border-none shadow-none"
                           align="start"
                         >
                           <Calendar
@@ -278,6 +279,9 @@ export const CreateProjectDialog = ({
                             }
                             onSelect={(date) => {
                               field.onChange(date?.toISOString() || undefined);
+                            }}
+                            temporalConstraints={{
+                              blockPastDate: true,
                             }}
                           />
                         </PopoverContent>
@@ -312,7 +316,7 @@ export const CreateProjectDialog = ({
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent
-                          className="w-auto min-w-[260px] p-0 z-50"
+                          className="w-auto p-0 z-50 bg-transparent border-none shadow-none"
                           align="start"
                         >
                           <Calendar
@@ -322,6 +326,10 @@ export const CreateProjectDialog = ({
                             }
                             onSelect={(date) => {
                               field.onChange(date?.toISOString() || undefined);
+                            }}
+                            temporalConstraints={{
+                                blockPastDate: true,
+                                minDate: startDate ? new Date(startDate) : undefined
                             }}
                           />
                         </PopoverContent>
@@ -357,7 +365,7 @@ export const CreateProjectDialog = ({
                   <FormItem>
                     <FormLabel>Members</FormLabel>
                     <FormControl>
-                      <Popover>
+                      <Popover modal={true}>
                         <PopoverTrigger asChild>
                           <Button
                             variant={"outline"}
@@ -416,9 +424,12 @@ export const CreateProjectDialog = ({
                                     }}
                                     id={`member-${member.user._id}`}
                                   />
-                                  <span className="truncate flex-1">
+                                  <label 
+                                    htmlFor={`member-${member.user._id}`}
+                                    className="truncate flex-1 cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                  >
                                     {member.user.name}
-                                  </span>
+                                  </label>
 
                                   {selectedMember && (
                                     <Select

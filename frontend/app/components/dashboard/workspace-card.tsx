@@ -31,14 +31,14 @@ export const WorkspaceCard = ({ workspace }: WorkspaceCardProps) => {
                         {workspace.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                        <h3 className="text-sm font-bold text-white leading-tight">
+                        <h3 className="text-sm font-bold leading-tight text-glass-primary">
                             {workspace.name}
                         </h3>
                     </div>
                 </div>
                  <Badge 
                     variant="outline" 
-                    className="text-[10px] font-bold h-5 px-2 backdrop-blur-md"
+                    className="text-[10px] font-bold h-5 px-2 deep-glass-sm"
                     style={{
                         backgroundColor: workspace.color ? `${workspace.color}40` : "#3b82f640", // Stronger background tint
                         color: "#ffffff", // Pure white text for max contrast
@@ -50,7 +50,7 @@ export const WorkspaceCard = ({ workspace }: WorkspaceCardProps) => {
                 </Badge>
             </div>
 
-            <p className="text-[11px] text-gray-300 line-clamp-1 mb-2.5 font-normal leading-relaxed pl-1 tracking-wide">
+            <p className="text-[11px] line-clamp-1 mb-2.5 font-normal leading-relaxed pl-1 tracking-wide text-glass-secondary">
                 {workspace.description || "No description provided."}
             </p>
 

@@ -2,17 +2,22 @@ import { z } from "zod";
 
 const registerSchema = z.object({
   name: z.string().min(3, "Name is required"),
-  email: z.string().email("Invalid email address"),
+  email: z.string().email("Invalid email address").optional().or(z.literal('')),
+  phoneNumber: z.string().min(10, "Invalid phone number").optional().or(z.literal('')),
   password: z.string().min(8, "Password must be at least 8 characters long"),
+}).refine(data => data.email || data.phoneNumber, {
+  message: "Either Email or Phone Number is required",
+  path: ["email"],
 });
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  identifier: z.string().min(1, "Email or Phone is required"), // Replaces 'email'
   password: z.string().min(1, "Password is required"),
 });
 
 const verifyEmailSchema = z.object({
-  token: z.string().min(1, "Token is required"),
+  identifier: z.string().min(1, "Email or Phone is required"), 
+  otp: z.string().length(6, "OTP must be 6 digits"),
 });
 
 const resetPasswordSchema = z.object({

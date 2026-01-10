@@ -4,11 +4,15 @@ import {
   acceptGenerateInvite,
   acceptInviteByToken,
   createWorkspace,
+  deleteWorkspace,
+  removeMemberFromWorkspace,
+  changeMemberRole,
   getWorkspaceDetails,
   getWorkspaceProjects,
   getWorkspaces,
   getWorkspaceStats,
   inviteUserToWorkspace,
+  updateWorkspace,
 } from "../controllers/workspace.js";
 import {
   inviteMemberSchema,
@@ -56,5 +60,45 @@ router.get("/", authMiddleware, getWorkspaces);
 router.get("/:workspaceId", authMiddleware, getWorkspaceDetails);
 router.get("/:workspaceId/projects", authMiddleware, getWorkspaceProjects);
 router.get("/:workspaceId/stats", authMiddleware, getWorkspaceStats);
+
+router.delete(
+  "/:workspaceId",
+  authMiddleware,
+  validateRequest({ params: z.object({ workspaceId: z.string() }) }),
+  deleteWorkspace
+);
+
+router.delete(
+  "/:workspaceId/members/:memberId",
+  authMiddleware,
+  validateRequest({ 
+      params: z.object({ workspaceId: z.string(), memberId: z.string() }) 
+  }),
+  removeMemberFromWorkspace
+);
+
+router.put(
+  "/:workspaceId/members/:memberId",
+  authMiddleware,
+  validateRequest({
+      params: z.object({ workspaceId: z.string(), memberId: z.string() }),
+      body: z.object({ role: z.enum(["owner", "admin", "member", "viewer"]) })
+  }),
+  changeMemberRole
+);
+
+router.patch(
+  "/:workspaceId",
+  authMiddleware,
+  validateRequest({
+      params: z.object({ workspaceId: z.string() }),
+      body: z.object({
+          name: z.string().optional(),
+          description: z.string().optional(),
+          color: z.string().optional(),
+      })
+  }),
+  updateWorkspace
+);
 
 export default router;

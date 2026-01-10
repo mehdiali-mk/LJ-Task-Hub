@@ -1,0 +1,123 @@
+﻿git : remote: error: 
+GH013: Repository rule 
+violations found for 
+refs/heads/main.        
+At line:1 char:1
++ git push origin main > 
+push_debug.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: (rem  
+  ote: error: ...s/main.   
+         :String) [], R    
+emoteException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+remote: 
+remote: - GITHUB PUSH 
+PROTECTION        
+remote:   ÔÇöÔÇöÔÇöÔÇöÔÇöÔÇ
+öÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇ
+öÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇ
+öÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇ
+öÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇö  
+      
+remote:     Resolve the 
+following violations 
+before pushing again       
+ 
+remote: 
+remote:     - Push cannot 
+contain secrets        
+remote: 
+remote:             
+remote:      (?) Learn how 
+to resolve a blocked push  
+      
+remote:      https://docs.g
+ithub.com/code-security/sec
+ret-scanning/working-with-s
+ecret-scanning-and-push-pro
+tection/working-with-push-p
+rotection-from-the-command-
+line#resolving-a-blocked-pu
+sh        
+remote:             
+remote:      (?) This 
+repository does not have 
+Secret Scanning enabled, 
+but is eligible. Enable 
+Secret Scanning to view 
+and manage detected 
+secrets.        
+remote:      Visit the 
+repository settings page, h
+ttps://github.com/mehdiali-
+mk/LJ-Task-Hub/settings/sec
+urity_analysis        
+remote:             
+remote:             
+remote:       ÔÇöÔÇö 
+Twilio Account String 
+Identifier ÔÇöÔÇöÔÇöÔÇöÔÇöÔ
+ÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔ
+ÇöÔÇöÔÇöÔÇö        
+remote:        locations:  
+      
+remote:          - commit: 
+0adff2c67dc52b650eba039de4b
+0f17985e7c3c0        
+remote:            path: 
+backend/.env:17        
+remote:             
+remote:        (?) To 
+push, remove secret from 
+commit(s) or follow this 
+URL to allow the secret.   
+     
+remote:        https://gith
+ub.com/mehdiali-mk/LJ-Task-
+Hub/security/secret-scannin
+g/unblock-secret/3846Nq6zEy
+jnXXddaoSIllph1LX        
+remote:             
+remote:             
+remote:       ÔÇöÔÇö 
+Twilio API Key ÔÇöÔÇöÔÇöÔÇö
+ÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇö
+ÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇö
+ÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇö
+ÔÇöÔÇöÔÇöÔÇöÔÇö        
+remote:        locations:  
+      
+remote:          - commit: 
+0adff2c67dc52b650eba039de4b
+0f17985e7c3c0        
+remote:            path: 
+backend/.env:18        
+remote:             
+remote:        (?) To 
+push, remove secret from 
+commit(s) or follow this 
+URL to allow the secret.   
+     
+remote:        https://gith
+ub.com/mehdiali-mk/LJ-Task-
+Hub/security/secret-scannin
+g/unblock-secret/3846Nr7r0Q
+9UioTjwtBn5NnIEzK        
+remote:             
+remote: 
+remote: 
+To https://github.com/mehdi
+ali-mk/LJ-Task-Hub.git
+ ! [remote rejected] main 
+-> main (push declined due 
+to repository rule 
+violations)
+error: failed to push some 
+refs to 'https://github.com
+/mehdiali-mk/LJ-Task-Hub.gi
+t'

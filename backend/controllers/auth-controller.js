@@ -3,131 +3,147 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Verification from "../models/verification.js";
 import { sendEmail } from "../libs/send-email.js";
+import { sendSms, sendWhatsapp } from "../libs/send-sms.js";
 import aj from "../libs/arcjet.js";
 
 const registerUser = async (req, res) => {
   try {
-    const { email, name, password } = req.body;
-    console.log(email);
-
-    const decision = await aj.protect(req, { email });
-    console.log("Arcjet decision", decision.isDenied());
-
-    if (decision.isDenied()) {
-      res.writeHead(403, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: "Invalid email address" }));
+    const { email, name, password, phoneNumber } = req.body;
+    
+    // Arcjet protection (if email present)
+    if (email) {
+        const decision = await aj.protect(req, { email });
+        if (decision.isDenied()) {
+            res.writeHead(403, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ message: "Invalid email address" }));
+            return;
+        }
     }
 
-    const existingUser = await User.findOne({ email });
+    // Check for duplicates
+    if (email) {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: "Email address already in use" });
+        }
+    }
 
-    if (existingUser) {
-      return res.status(400).json({
-        message: "Email address already in use",
-      });
+    if (phoneNumber) {
+        const existingPhone = await User.findOne({ phoneNumber });
+        if (existingPhone) {
+            return res.status(400).json({ message: "Phone number already in use" });
+        }
+    }
+    
+    if (!email && !phoneNumber) {
+        return res.status(400).json({ message: "Either Email or Phone Number is required" });
     }
 
     const salt = await bcrypt.genSalt(10);
-
     const hashPassword = await bcrypt.hash(password, salt);
 
     const newUser = await User.create({
-      email,
+      email: email || undefined,
       password: hashPassword,
       name,
+      phoneNumber: phoneNumber || undefined,
+      isEmailVerified: false,
+      isPhoneVerified: false,
     });
 
-    const verificationToken = jwt.sign(
-      { userId: newUser._id, purpose: "email-verification" },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     await Verification.create({
       userId: newUser._id,
-      token: verificationToken,
-      expiresAt: new Date(Date.now() + 1 * 60 * 60 * 1000),
+      token: verificationCode,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
     });
 
-    //* START sending verification email is commented on 10th August 2025 email
-    // const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
-    // const emailBody = `<p>Click <a href="${verificationLink}">here</a> to verify your email</p>`;
-    // const emailSubject = "Verify your email";
+    // Send Verification
+    let sent = false;
+    
+    if (email) {
+        const emailBody = `<p>Your verification code is: <strong>${verificationCode}</strong></p><p>This code will expire in 15 minutes.</p>`;
+        const isEmailSent = await sendEmail(email, "Verify your account", emailBody);
+        if (isEmailSent) sent = true;
+    }
 
-    // const isEmailSent = await sendEmail(email, emailSubject, emailBody);
-
-    // if (!isEmailSent) {
-    //   return res.status(500).json({
-    //     message: "Failed to send verification email",
-    //   });
-    // }
-    //* END sending verification email is commented on 10th August 2025 email
+    if (phoneNumber) {
+        const smsBody = `Your TaskHub verification code is: ${verificationCode}`;
+        const isSmsSent = await sendSms(phoneNumber, smsBody);
+        const isWaSent = await sendWhatsapp(phoneNumber, smsBody);
+        if (isSmsSent || isWaSent) sent = true;
+    }
 
     res.status(201).json({
-      message: "You have successfully signed up.",
+      message: "Account created. Verification code sent.",
     });
   } catch (error) {
     console.log(error);
-
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { identifier, password } = req.body;
 
-    const user = await User.findOne({ email }).select("+password");
+    const isEmail = identifier.includes("@");
+    const query = isEmail ? { email: identifier } : { phoneNumber: identifier };
+
+    const user = await User.findOne(query).select("+password");
+    console.log("Login Attempt:", identifier, "Found:", !!user);
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    //* START email verification before login is commented on 10th August 2025 email
-    // if (!user.isEmailVerified) {
-    //   const existingVerification = await Verification.findOne({
-    //     userId: user._id,
-    //   });
+    //* Verification Check
+    const isVerified = isEmail ? user.isEmailVerified : user.isPhoneVerified;
 
-    //   if (existingVerification && existingVerification.expiresAt > new Date()) {
-    //     return res.status(400).json({
-    //       message:
-    //         "Email not verified. Please check your email for the verification link.",
-    //     });
-    //   } else {
-    //     await Verification.findByIdAndDelete(existingVerification._id);
+    if (!isVerified) {
+        console.log("User unverified on this channel. Resending OTP.");
+       // Logic to resend OTP
+      const existingVerification = await Verification.findOne({
+        userId: user._id,
+      });
 
-    //     const verificationToken = jwt.sign(
-    //       { userId: user._id, purpose: "email-verification" },
-    //       process.env.JWT_SECRET,
-    //       { expiresIn: "1h" }
-    //     );
+      if (existingVerification && existingVerification.expiresAt > new Date()) {
+        return res.status(201).json({
+          message:
+            "Account not verified. Please check your email/phone for the verification code.",
+        });
+      } else {
+        if (existingVerification) {
+            await Verification.findByIdAndDelete(existingVerification._id);
+        }
 
-    //     await Verification.create({
-    //       userId: user._id,
-    //       token: verificationToken,
-    //       expiresAt: new Date(Date.now() + 1 * 60 * 60 * 1000),
-    //     });
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    //     // send email
-    //     const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
-    //     const emailBody = `<p>Click <a href="${verificationLink}">here</a> to verify your email</p>`;
-    //     const emailSubject = "Verify your email";
+        await Verification.create({
+          userId: user._id,
+          token: verificationCode,
+          expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        });
 
-    //     const isEmailSent = await sendEmail(email, emailSubject, emailBody);
+        // Send to specific channel
+        if (isEmail && user.email) {
+             const emailBody = `<p>Your verification code is: <strong>${verificationCode}</strong></p>`;
+             await sendEmail(user.email, "Verify Account", emailBody);
+        } else if (!isEmail && user.phoneNumber) {
+             const smsBody = `Your TaskHub verification code is: ${verificationCode}`;
+            sendSms(user.phoneNumber, smsBody);
+            sendWhatsapp(user.phoneNumber, smsBody);
+        }
 
-    //     if (!isEmailSent) {
-    //       return res.status(500).json({
-    //         message: "Failed to send verification email",
-    //       });
-    //     }
-
-    //     res.status(201).json({
-    //       message:
-    //         "Verification email sent to your email. Please check and verify your account.",
-    //     });
-    //   }
-    // }
-    //* END email verification before login is commented on 10th August 2025 email
+        res.status(201).json({
+          message:
+            "Verification code sent. Please check and verify your account.",
+        });
+        return; 
+      }
+    }
+    //* END Verification Check
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -159,59 +175,104 @@ const loginUser = async (req, res) => {
   }
 };
 //* START verification function is commented on 10th August 2025 email
-// const verifyEmail = async (req, res) => {
-//   try {
-//     const { token } = req.body;
+const verifyEmail = async (req, res) => {
+  try {
+    const { identifier, otp } = req.body;
 
-//     const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const isEmail = identifier.includes("@");
+    const query = isEmail ? { email: identifier } : { phoneNumber: identifier };
 
-//     if (!payload) {
-//       return res.status(401).json({ message: "Unauthorized" });
-//     }
+    const user = await User.findOne(query);
 
-//     const { userId, purpose } = payload;
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
 
-//     if (purpose !== "email-verification") {
-//       return res.status(401).json({ message: "Unauthorized" });
-//     }
+    if (isEmail && user.isEmailVerified) {
+      return res.status(400).json({ message: "Email already verified" });
+    }
+    if (!isEmail && user.isPhoneVerified) {
+        return res.status(400).json({ message: "Phone already verified" });
+    }
 
-//     const verification = await Verification.findOne({
-//       userId,
-//       token,
-//     });
+    const verification = await Verification.findOne({
+      userId: user._id,
+      token: otp, // Check if the stored token matches the OTP
+    });
 
-//     if (!verification) {
-//       return res.status(401).json({ message: "Unauthorized" });
-//     }
+    if (!verification) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
 
-//     const isTokenExpired = verification.expiresAt < new Date();
+    const isTokenExpired = verification.expiresAt < new Date();
 
-//     if (isTokenExpired) {
-//       return res.status(401).json({ message: "Token expired" });
-//     }
+    if (isTokenExpired) {
+      return res.status(400).json({ message: "OTP expired" });
+    }
 
-//     const user = await User.findById(userId);
+    if (isEmail) {
+        user.isEmailVerified = true;
+    } else {
+        user.isPhoneVerified = true;
+    }
+    await user.save();
+    console.log("User verified successfully:", isEmail ? "Email" : "Phone");
 
-//     if (!user) {
-//       return res.status(401).json({ message: "Unauthorized" });
-//     }
+    await Verification.findByIdAndDelete(verification._id);
 
-//     if (user.isEmailVerified) {
-//       return res.status(400).json({ message: "Email already verified" });
-//     }
-
-//     user.isEmailVerified = true;
-//     await user.save();
-
-//     await Verification.findByIdAndDelete(verification._id);
-
-//     res.status(200).json({ message: "Email verified successfully" });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
+    res.status(200).json({ message: "Verified successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 //* END verification function is commented on 10th August 2025 email
+
+const sendVerificationCode = async (req, res) => {
+    try {
+        const { channel } = req.body; // 'email' or 'phone'
+        const userId = req.user.userId; // Middleware auth
+        
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        if (channel === 'email') {
+            if (user.isEmailVerified) return res.status(400).json({ message: "Already verified" });
+            if (!user.email) return res.status(400).json({ message: "No email linked" });
+        } else if (channel === 'phone') {
+            if (user.isPhoneVerified) return res.status(400).json({ message: "Already verified" });
+            if (!user.phoneNumber) return res.status(400).json({ message: "No phone linked" });
+        } else {
+            return res.status(400).json({ message: "Invalid channel" });
+        }
+
+        // Clean existing
+        await Verification.deleteMany({ userId: user._id });
+
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+        await Verification.create({
+            userId: user._id,
+            token: verificationCode,
+            expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        });
+
+        if (channel === 'email') {
+             const emailBody = `<p>Your verification code is: <strong>${verificationCode}</strong></p>`;
+             await sendEmail(user.email, "Verify Account", emailBody);
+        } else {
+             const smsBody = `Your TaskHub verification code is: ${verificationCode}`;
+            sendSms(user.phoneNumber, smsBody);
+            sendWhatsapp(user.phoneNumber, smsBody);
+        }
+
+        res.status(200).json({ message: "Verification code sent" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 const resetPasswordRequest = async (req, res) => {
   try {
     const { email } = req.body;
@@ -332,7 +393,8 @@ const verifyResetPasswordTokenAndResetPassword = async (req, res) => {
 export {
   registerUser,
   loginUser,
-  // verifyEmail, // Commented on 10th August 2025
+  verifyEmail,
+  sendVerificationCode,
   resetPasswordRequest,
   verifyResetPasswordTokenAndResetPassword,
 };

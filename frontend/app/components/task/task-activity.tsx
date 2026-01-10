@@ -28,7 +28,7 @@ export const TaskActivity = ({ resourceId }: { resourceId: string }) => {
 
             <div>
               <p className="text-sm">
-                <span className="font-medium">{activity.user.name}</span>{" "}
+                <span className="font-medium">{activity.user?.name || "Master Admin"}</span>{" "}
                 {activity.details?.description}
               </p>
             </div>
