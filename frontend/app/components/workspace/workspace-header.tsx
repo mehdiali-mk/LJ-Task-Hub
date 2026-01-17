@@ -50,8 +50,8 @@ export const WorkspaceHeader = ({
     setIsAdmin(!!localStorage.getItem("admin_token"));
   }, []);
 
-  // Role Checks
-  const isOwner = workspace.owner === user?._id || (typeof workspace.owner === 'object' && (workspace.owner as any)._id === user?._id);
+  // Role Checks - Only Admin and Workspace Manager have elevated permissions
+  // (Owner field removed since only Admin creates workspaces)
   const isManager = user?.managedWorkspaces?.includes(workspace._id);
 
   const handleDeleteWorkspace = async () => {
@@ -83,8 +83,8 @@ export const WorkspaceHeader = ({
             </h2>
           </div>
 
-            {/* Action Buttons: Visible only to Admin, Owner, or Workspace Manager */}
-            {(isAdmin || isManager || isOwner) && (
+            {/* Action Buttons: Visible only to Admin or Workspace Manager */}
+            {(isAdmin || isManager) && (
               <div className="flex items-center gap-3 justify-between md:justify-start mb-4 md:mb-0">
                 <Button
                   variant={"outline"}
@@ -96,7 +96,7 @@ export const WorkspaceHeader = ({
                 </Button>
                 <Button
                   onClick={onCreateProject}
-                  className="bg-primary text-black hover:bg-primary/90"
+                  className="bg-white/[0.08] backdrop-blur-xl border border-white/20 text-white hover:bg-white/[0.15] hover:border-white/30 transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
                 >
                   <Plus className="size-4 mr-2" />
                   Create Project
@@ -130,40 +130,55 @@ export const WorkspaceHeader = ({
           <span className="text-sm text-muted-foreground">Members</span>
 
           <div className="flex space-x-2">
-            {members.map((member) => (
-              <Avatar
-                key={member._id}
-                className="relative h-8 w-8 rounded-full border-2 border-white/10 overflow-hidden"
-                title={member.user.name}
-              >
-                <AvatarImage
-                  src={member.user.profilePicture}
-                  alt={member.user.name}
-                />
-                <AvatarFallback>{member.user.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-            ))}
+            {members.map((member) => {
+              // Skip if member.user is null/undefined
+              if (!member.user) return null;
+              
+              // Check if this member is the workspace manager
+              const isManager = workspace.manager?._id === member.user._id || 
+                               workspace.manager?.toString() === member.user._id?.toString();
+              
+              return (
+                <Avatar
+                  key={member._id}
+                  className="relative h-8 w-8 rounded-full overflow-hidden"
+                  style={{
+                    border: isManager 
+                      ? `3px solid ${workspace.color || '#3b82f6'}` 
+                      : '2px solid rgba(255, 255, 255, 0.1)',
+                    boxShadow: isManager ? `0 0 8px ${workspace.color || '#3b82f6'}40` : 'none'
+                  }}
+                  title={isManager ? `${member.user.name} (Workspace Manager)` : member.user.name}
+                >
+                  <AvatarImage
+                    src={member.user.profilePicture}
+                    alt={member.user.name}
+                  />
+                  <AvatarFallback>{member.user.name?.charAt(0) || '?'}</AvatarFallback>
+                </Avatar>
+              );
+            })}
           </div>
         </div>
       )}
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="bg-zinc-900 border-white/10">
+        <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Delete Workspace</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
+            <AlertDialogTitle className="text-white text-xl font-bold">Delete Workspace</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/60">
               Are you sure you want to delete "{workspace.name}"? This will permanently delete the workspace, all its projects, and all tasks. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
+            <AlertDialogCancel className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteWorkspace}
               disabled={isDeleting}
-              className="bg-red-500 text-white hover:bg-red-600"
+              className="bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 border border-white/20"
             >
               {isDeleting ? "Deleting..." : "Delete Workspace"}
             </AlertDialogAction>

@@ -11,11 +11,15 @@ import {
 } from "../libs/validate-schema.js";
 import {
   loginUser,
+  logoutUser,
   registerUser,
   resetPasswordRequest,
   verifyEmail,
   verifyResetPasswordTokenAndResetPassword,
   sendVerificationCode,
+  enable2FA,
+  disable2FA,
+  verify2FA,
 } from "../controllers/auth-controller.js";
 import authMiddleware from "../middleware/auth-middleware.js";
 
@@ -69,4 +73,13 @@ router.post(
   verifyResetPasswordTokenAndResetPassword
 );
 
+// Logout route - requires authentication to properly track user status
+router.post("/logout", authMiddleware, logoutUser);
+
+// 2FA Routes
+router.post("/enable-2fa", authMiddleware, enable2FA);
+router.post("/disable-2fa", authMiddleware, disable2FA);
+router.post("/verify-2fa", verify2FA);
+
 export default router;
+

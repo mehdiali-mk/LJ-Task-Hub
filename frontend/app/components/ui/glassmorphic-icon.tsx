@@ -3,16 +3,16 @@ import type { LucideIcon } from 'lucide-react';
 
 interface GlassmorphicIconProps {
   icon: LucideIcon;
-  color?: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  animate?: 'spin' | 'none';
 }
 
 export function GlassmorphicIcon({ 
   icon: Icon, 
-  color = '#A81B1B', 
   size = 'md',
-  className = ''
+  className = '',
+  animate = 'none'
 }: GlassmorphicIconProps) {
   const sizeClasses = {
     sm: 'w-10 h-10',
@@ -25,6 +25,8 @@ export function GlassmorphicIcon({
     md: 28,
     lg: 40
   };
+
+  const animateClass = animate === 'spin' ? 'icon-glass-spin' : '';
 
   return (
     <div 
@@ -39,29 +41,21 @@ export function GlassmorphicIcon({
         ${sizeClasses[size]}
         ${className}
       `}
-      style={{
-        willChange: 'transform',
-        boxShadow: `0 0 0 0 ${color}00`,
-      }}
+      style={{ willChange: 'transform' }}
     >
       {/* Inner Glow */}
       <div 
-        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-500"
         style={{ 
-          background: `radial-gradient(circle at center, ${color} 0%, transparent 70%)`,
+          background: 'radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, transparent 70%)',
           filter: 'blur(8px)'
         }}
       />
       
-      {/* SVG Icon */}
+      {/* SVG Icon - Always white, animated */}
       <Icon 
         size={iconSizes[size]} 
-        className="relative z-10 transition-all duration-500"
-        style={{ 
-          color: color,
-          filter: 'drop-shadow(0 0 8px transparent)',
-          willChange: 'transform, filter'
-        }}
+        className={`relative z-10 icon-glass ${animateClass}`}
       />
     </div>
   );

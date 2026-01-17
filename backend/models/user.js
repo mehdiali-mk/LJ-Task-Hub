@@ -7,19 +7,13 @@ const userSchema = new Schema(
       unique: true,
       trim: true,
       lowercase: true,
-      sparse: true, // Allows multiple null/undefined values
-    },
-    phoneNumber: { 
-      type: String, 
-      trim: true,
-      unique: true, 
-      sparse: true,
+      required: true,
     },
     password: { type: String, required: true, select: false },
     name: { type: String, required: true, trim: true },
     profilePicture: { type: String },
     isEmailVerified: { type: Boolean, default: false },
-    isPhoneVerified: { type: Boolean, default: false },
+    is2FAEnabled: { type: Boolean, default: false },
 
     // Professional Portfolio
     description: { type: String, default: "" }, // Markdown supported
@@ -43,6 +37,10 @@ const userSchema = new Schema(
 
     isWorkspaceManager: { type: Boolean, default: false },
     managedWorkspaces: [{ type: Schema.Types.ObjectId, ref: "Workspace" }], // Dynamic source of truth for management role
+
+    // Online Status Tracking
+    isOnline: { type: Boolean, default: false },
+    lastActiveAt: { type: Date }, // Tracks when user was last active (login/logout time)
 
     lastLogin: { type: Date },
   },

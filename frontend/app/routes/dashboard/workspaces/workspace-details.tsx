@@ -43,9 +43,9 @@ const WorkspaceDetails = () => {
 
   const { user } = useAuth();
   const workspace = data?.workspace;
-  const isOwner = workspace?.owner === user?._id || (typeof workspace?.owner === 'object' && (workspace?.owner as any)._id === user?._id);
+  // Only Admin or Workspace Manager can create projects (owner field removed)
   const isManager = user?.managedWorkspaces?.includes(workspaceId);
-  const canCreateProject = isAdmin || isOwner || isManager;
+  const canCreateProject = isAdmin || isManager;
 
   return (
     <div className="space-y-8">

@@ -209,9 +209,23 @@ function createProgram(gl: WebGL2RenderingContext, vertSource: string, fragSourc
 
 function initGL() {
   if (!canvas) return;
-  gl = canvas.getContext('webgl2');
+  
+  try {
+    gl = canvas.getContext('webgl2', {
+      alpha: false,
+      antialias: false,
+      depth: false,
+      stencil: false,
+      powerPreference: 'low-power',
+      failIfMajorPerformanceCaveat: false
+    });
+  } catch (e) {
+    console.warn('WebGL2 context creation failed:', e);
+    return;
+  }
+  
   if (!gl) {
-    console.error('WebGL2 not supported');
+    console.warn('WebGL2 not supported - mesh background disabled');
     return;
   }
 

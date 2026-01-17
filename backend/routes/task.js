@@ -6,6 +6,7 @@ import { taskSchema } from "../libs/validate-schema.js";
 import {
   achievedTask,
   addComment,
+  deleteComment,
   addSubTask,
   createTask,
   getActivityByResourceId,
@@ -179,4 +180,14 @@ router.get(
   }),
   getCommentsByTaskId
 );
+
+router.delete(
+  "/:taskId/comments/:commentId",
+  authMiddleware,
+  validateRequest({
+    params: z.object({ taskId: z.string(), commentId: z.string() }),
+  }),
+  deleteComment
+);
+
 export default router;

@@ -10,11 +10,11 @@ import {
   LogOut,
   Settings,
   Users,
-  Layers,
   Info,
   HelpCircle,
   Mail,
 } from "lucide-react";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 import { useState } from "react";
 import { Link } from "react-router";
@@ -30,6 +30,8 @@ export const SidebarComponent = ({
   const { user, logout } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  const isAdmin = user?.email === "admin@projectmanager.com";
+
   const navItems = [
     {
       title: "Dashboard",
@@ -41,19 +43,19 @@ export const SidebarComponent = ({
       href: "/workspaces",
       icon: Users,
     },
-    {
+    // Only show My Tasks for non-admin users
+    ...(!isAdmin ? [{
       title: "My Tasks",
       href: "/my-tasks",
       icon: ListCheck,
-    },
+    }] : []),
     {
       title: "Members",
       href: `/members`,
       icon: Users,
     },
-    // {\n    //   title: "Archived Tasks",\n    //   href: `/archived-tasks`,\n    //   icon: CheckCircle2,\n    // },
-    // {\n    //   title: "Settings",\n    //   href: "/settings",\n    //   icon: Settings,\n    // },
-    ...(user?.email === "admin@projectmanager.com" ? [{
+    // Admin Panel - only for admin users
+    ...(isAdmin ? [{
         title: "Admin Panel",
         href: "/admin",
         icon: Users,
@@ -81,15 +83,20 @@ export const SidebarComponent = ({
   return (
     <div
       className={cn(
-        "flex flex-col border-r border-white/10 sidebar-glass transition-all duration-300",
+        "flex flex-col border-r border-white/10 sidebar-glass transition-all duration-300 overflow-visible",
         isCollapsed ? "w-16 md:w[80px]" : "w-16 md:w-[240px]"
       )}
     >
       <div className={cn("flex h-14 items-center border-b border-white/10 mb-4", isCollapsed ? "justify-center px-2" : "justify-between px-4")}>
         <Link to="/" className={cn("flex items-center", isCollapsed && "hidden")}>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg deep-glass-sm flex items-center justify-center">
-              <Layers className="size-5 text-glass-primary" />
+            <div className="w-12 h-12 rounded-lg bg-white border border-white/50 flex items-center justify-center overflow-hidden">
+              <DotLottieReact
+                src="https://lottie.host/2bd99e49-b27f-4ad1-a9fd-4c7272da3bbe/hgKC6qcLgu.lottie"
+                loop
+                autoplay
+                style={{ width: '48px', height: '48px', transform: 'scale(1.4)' }}
+              />
             </div>
             <span className="font-semibold text-lg hidden md:block text-glass-primary">
               TaskHub
@@ -115,7 +122,7 @@ export const SidebarComponent = ({
         </Button>
       </div>
 
-      <ScrollArea className="flex-1 px-3 py-2">
+      <div className="flex-1 px-3 py-2 overflow-y-auto overflow-x-visible">
         <SidebarNav
           items={navItems}
           isCollapsed={isCollapsed}
@@ -137,7 +144,7 @@ export const SidebarComponent = ({
             currentWorkspace={null}
           />
         </div>
-      </ScrollArea>
+      </div>
 
       <div>
         <Button

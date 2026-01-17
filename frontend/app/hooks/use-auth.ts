@@ -45,3 +45,22 @@ export const useResetPasswordMutation = () => {
     }) => postData("/auth/reset-password", data),
   });
 };
+
+export const useEnable2FAMutation = () => {
+  return useMutation({
+    mutationFn: () => postData("/auth/enable-2fa", {}),
+  });
+};
+
+export const useDisable2FAMutation = () => {
+  return useMutation({
+    mutationFn: () => postData("/auth/disable-2fa", {}),
+  });
+};
+
+export const useVerify2FAMutation = () => {
+  return useMutation({
+    mutationFn: (data: { userId: string; otp: string }) =>
+      postData("/auth/verify-2fa", data),
+  });
+};

@@ -171,6 +171,23 @@ export const useAddCommentMutation = () => {
   });
 };
 
+export const useDeleteCommentMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { taskId: string; commentId: string }) =>
+      deleteData(`/tasks/${data.taskId}/comments/${data.commentId}`),
+    onSuccess: (data: any, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["comments", variables.taskId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["task-activity", variables.taskId],
+      });
+    },
+  });
+};
+
 export const useGetCommentsByTaskIdQuery = (
   taskId: string | null | undefined
 ) => {

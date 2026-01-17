@@ -36,7 +36,7 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div className="flex h-screen w-full relative overflow-hidden text-white selection:bg-[#00FFFF]/30 isolate">
+    <div className="flex h-screen w-full relative overflow-hidden text-white selection:bg-white/30 isolate">
       <SidebarComponent currentWorkspace={currentWorkspace} />
 
       <div className="flex flex-1 flex-col h-full">

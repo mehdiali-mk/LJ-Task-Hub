@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 import type { Workspace } from "@/types";
 import type { LucideIcon } from "lucide-react";
-import { Button } from "../ui/button";
 import { useLocation, useNavigate } from "react-router";
+import { AnimatedIcon } from "../ui/animated-icon";
 
 interface SidebarNavProps extends React.HtmlHTMLAttributes<HTMLElement> {
   items: {
@@ -25,9 +25,8 @@ export const SidebarNav = ({
   const navigate = useNavigate();
 
   return (
-    <nav className={cn("flex flex-col gap-y-2", className)} {...props}>
+    <nav className={cn("flex flex-col gap-y-1 sidebar-nav-container", className)} {...props}>
       {items.map((el) => {
-        const Icon = el.icon;
         const isActive = location.pathname === el.href;
 
         const handleClick = () => {
@@ -41,36 +40,37 @@ export const SidebarNav = ({
         };
 
         return (
-          <Button
+          <button
             key={el.href}
-            variant={isActive ? "outline" : "ghost"}
             className={cn(
-              "justify-start hover:bg-white/10 transition-colors duration-200 group",
-              isActive 
-                ? "glass-card border-white/10 font-medium shadow-md bg-white/5" 
-                : "border-transparent",
-              isCollapsed && "justify-center px-2"
+              "sidebar-glass-link flex items-center w-full group",
+              isActive && "active",
+              isCollapsed && "justify-center !px-2"
             )}
             onClick={handleClick}
           >
-            <Icon className={cn(
-              "size-4 transition-all duration-250", 
-              !isCollapsed && "mr-2", 
-              isActive 
-                ? "text-white opacity-100" 
-                : "text-white/40 opacity-40 group-hover:text-white group-hover:opacity-100"
-            )} />
+            <AnimatedIcon 
+              icon={el.icon} 
+              size={18}
+              animation="scale"
+              className={cn(
+                !isCollapsed && "mr-3", 
+                isActive 
+                  ? "[&_.icon-glass]:text-white [&_.icon-glass]:opacity-100" 
+                  : "[&_.icon-glass]:text-white/50 group-hover:[&_.icon-glass]:text-white group-hover:[&_.icon-glass]:opacity-100"
+              )}
+            />
             {isCollapsed ? (
               <span className="sr-only">{el.title}</span>
             ) : (
               <span className={cn(
-                "transition-colors",
-                isActive ? "text-white" : "text-gray-400 group-hover:text-white"
+                "text-sm transition-colors",
+                isActive ? "text-white font-medium" : "text-white/60 group-hover:text-white"
               )}>
                 {el.title}
               </span>
             )}
-          </Button>
+          </button>
         );
       })}
     </nav>

@@ -15,7 +15,7 @@ const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#00FFFF', // Cyan
+      main: '#ffffff', // White
     },
     background: {
       paper: 'transparent',
@@ -32,15 +32,15 @@ const darkTheme = createTheme({
           color: '#fff',
           borderRadius: '50%',
           borderWidth: '0px',
-          borderColor: '#00FFFF',
+          borderColor: '#ffffff',
           border: '0px solid',
           backgroundColor: 'transparent',
           '&.Mui-selected': {
-            backgroundColor: '#00FFFF',
+            backgroundColor: '#ffffff',
             color: '#000',
             fontWeight: 'bold',
             '&:hover': {
-              backgroundColor: '#00FFFF',
+              backgroundColor: '#ffffff',
             },
           },
           '&:hover': {
@@ -51,8 +51,8 @@ const darkTheme = createTheme({
           }
         },
         today: {
-             borderColor: '#00FFFF',
-             border: '1px solid #00FFFF',
+             borderColor: '#ffffff',
+             border: '1px solid #ffffff',
         }
       },
     },
@@ -161,7 +161,7 @@ function Calendar({
                      '& .MuiPickersYear-yearButton': {
                         color: 'white',
                         '&.Mui-selected': {
-                            backgroundColor: '#00FFFF',
+                            backgroundColor: '#ffffff',
                             color: 'black'
                         }
                      }

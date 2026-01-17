@@ -16,11 +16,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useLoginMutation, useVerifyEmailMutation } from "@/hooks/use-auth";
+import { useLoginMutation, useVerifyEmailMutation, useVerify2FAMutation } from "@/hooks/use-auth";
 import { signInSchema } from "@/lib/schema";
 import { useAuth } from "@/provider/auth-context";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Layers, Eye, EyeOff } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -35,29 +36,37 @@ const SignIn = () => {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [is2FAVerifying, setIs2FAVerifying] = useState(false);
   const [identifier, setIdentifier] = useState("");
+  const [pending2FAUserId, setPending2FAUserId] = useState<string | null>(null);
 
   const form = useForm<SigninFormData>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      identifier: "", // Email or Phone
+      identifier: "",
       password: "",
     },
   });
   const { mutate, isPending } = useLoginMutation();
   const { mutateAsync: verifyEmail } = useVerifyEmailMutation();
+  const { mutateAsync: verify2FA } = useVerify2FAMutation();
 
   const handleOnSubmit = (values: SigninFormData) => {
     mutate(values, {
       onSuccess: (data: any) => {
         if (data.token) {
-            // Normal Login
+            // Normal Login (2FA not enabled)
             login(data);
-            console.log(data);
             toast.success("Login successful");
             navigate("/dashboard");
+        } else if (data.requires2FA) {
+            // 2FA Required
+            setPending2FAUserId(data.userId);
+            setIdentifier(values.identifier);
+            setIs2FAVerifying(true);
+            toast.info("2FA code sent to your email");
         } else {
-            // Verification Required (Backend sent 201)
+            // Email Verification Required (Backend sent message but no token)
             setIdentifier(values.identifier);
             setIsVerifying(true);
             toast.info(data.message || "Verification required");
@@ -72,15 +81,27 @@ const SignIn = () => {
     });
   };
 
+  // Handle 2FA OTP verification
+  const handle2FAVerify = async (otp: string): Promise<boolean> => {
+    if (!pending2FAUserId) return false;
+    try {
+      const data = await verify2FA({ userId: pending2FAUserId, otp });
+      login(data as any);
+      toast.success("Login successful");
+      navigate("/dashboard");
+      return true;
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Invalid code");
+      return false;
+    }
+  };
+
+  // Handle email verification OTP
   const handleVerifyOTP = async (otp: string): Promise<boolean> => {
     try {
       await verifyEmail({ identifier: identifier, otp });
       toast.success("Verified successfully! Please login.");
-      setIsVerifying(false); // Return to login form to login (or auto-login if verify returns token?)
-      // Backend verifyEmail does NOT return token, just 200 OK.
-      // So user simply logs in again.
-      // Or we can auto-login if we implemented that.
-      // For now, return to form is safe.
+      setIsVerifying(false);
       return true;
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Invalid code");
@@ -90,28 +111,40 @@ const SignIn = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <div className="flex items-center gap-2 mb-8">
-        <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 ring-1 ring-white/10 flex items-center justify-center shadow-inner">
-           <Layers className="size-6 text-[#00FFFF]" />
+      <Link to="/" className="flex flex-col items-center gap-2 mb-8 group cursor-pointer">
+        <div className="w-16 h-16 rounded-xl bg-white border border-white/50 flex items-center justify-center overflow-hidden shadow-lg transition-transform group-hover:scale-105 group-hover:-translate-y-0.5">
+           <DotLottieReact
+             src="https://lottie.host/2bd99e49-b27f-4ad1-a9fd-4c7272da3bbe/hgKC6qcLgu.lottie"
+             loop
+             autoplay
+             style={{ width: '64px', height: '64px', transform: 'scale(1.4)' }}
+           />
         </div>
-        <span className="font-bold text-2xl hidden md:block text-white tracking-tighter">TaskHub</span>
-      </div>
+        <span className="font-bold text-2xl text-glass-heading-morph tracking-tighter group-hover:opacity-80 transition-opacity">TaskHub</span>
+      </Link>
       <Card className="max-w-md w-full shadow-xl">
         <CardHeader className="text-center mb-5">
-          <CardTitle className="text-2xl font-bold text-white">
-            {isVerifying ? "Verify Account" : "Welcome back"}
+          <CardTitle className="text-2xl font-bold text-glass-heading-morph">
+            {is2FAVerifying ? "Two-Factor Authentication" : isVerifying ? "Verify Account" : "Welcome back"}
           </CardTitle>
-          <CardDescription className="text-sm text-gray-400">
-             {isVerifying 
-              ? `Enter the code sent to ${identifier}` 
-              : "Sign in to your account to continue"}
+          <CardDescription className="text-sm text-white/50">
+             {is2FAVerifying 
+               ? "Enter the 6-digit code sent to your email"
+               : isVerifying 
+               ? `Enter the code sent to ${identifier}` 
+               : "Sign in to your account to continue"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {isVerifying ? (
+          {is2FAVerifying ? (
+            <OTPVerification 
+              onVerify={handle2FAVerify}
+              description="Check your email for the 2FA code."
+            />
+          ) : isVerifying ? (
             <OTPVerification 
               onVerify={handleVerifyOTP}
-              description="Check your email/phone for the 6-digit code."
+              description="Check your email for the 6-digit code."
             />
           ) : (
           <Form {...form}>
@@ -124,11 +157,11 @@ const SignIn = () => {
                 name="identifier"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email or Phone</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="email@example.com or +1234..."
+                        placeholder="email@example.com"
                         {...field}
                       />
                     </FormControl>
@@ -145,7 +178,7 @@ const SignIn = () => {
                       <FormLabel>Password</FormLabel>
                       <Link
                         to="/forgot-password"
-                        className="text-sm text-blue-600"
+                        className="text-sm text-white/60 hover:text-white transition-colors"
                       >
                         Forgot password?
                       </Link>

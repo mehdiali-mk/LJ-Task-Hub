@@ -18,7 +18,7 @@ const Homepage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div ref={containerRef} className="relative min-h-screen w-full overflow-hidden text-white selection:bg-[#00FFFF]/30 isolate">
+    <div ref={containerRef} className="relative min-h-screen w-full overflow-hidden text-white selection:bg-white/30 isolate">
       {/* Background is handled by MeshBackground in root.tsx */}
 
       {/* Navigation */}
@@ -31,19 +31,19 @@ const Homepage = () => {
 
              
              <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-none">
-              <span className="text-glass-hero">Rhythm of</span> <br/>
-              <span className="text-glass-heading">Productivity.</span>
+              <span className="text-glass-hero-morph">Orchestrate</span> <br/>
+              <span className="text-glass-heading-morph">Your Success.</span>
             </h1>
             
-            <p className="mt-6 max-w-2xl mx-auto text-xl sm:text-2xl mb-10 leading-relaxed font-light text-glass-secondary">
-              Manage projects with the fluidity of sound. 
-              Immersive, responsive, and completely in tune with your team.
+            <p className="mt-6 max-w-2xl mx-auto text-xl sm:text-2xl mb-10 leading-relaxed font-light text-glass-subtitle">
+              Transform chaos into clarity. Seamlessly plan, track, and deliver 
+              projects with precision—empowering teams to achieve excellence.
             </p>
             
             <div className="flex flex-col sm:flex-row justify-center gap-6 mb-20">
               <Link to="/sign-up">
-                <Button size="lg" className="rounded-full h-16 px-10 text-xl font-bold bg-white text-black hover:bg-gray-100 hover:scale-105 transition-all duration-500 border-none shadow-lg">
-                  Start Listening <ArrowRight className="ml-3 w-6 h-6" />
+                <Button size="lg" className="btn-glass-morph rounded-full h-16 px-10 text-xl font-bold transition-all duration-500 border-none shadow-lg">
+                  Get Started <ArrowRight className="ml-3 w-6 h-6" />
                 </Button>
               </Link>
             </div>
@@ -53,32 +53,191 @@ const Homepage = () => {
           <div className="relative mt-12 mx-auto max-w-6xl animate-in fade-in slide-in-from-bottom-24 duration-1000 delay-200">
              <div className="rounded-3xl p-3 bg-white/[0.08] backdrop-blur-3xl border border-white/20 ring-1 ring-white/10 shadow-[0_20px_100px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_100px_rgba(0,255,255,0.1)] transition-shadow duration-700">
                  <div className="rounded-2xl overflow-hidden bg-black/80 aspect-[16/9] flex items-center justify-center relative shadow-inner border border-white/5 group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#00FFFF]/10 via-transparent to-[#FFA500]/10 opacity-50 group-hover:opacity-75 transition-opacity duration-700"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-[#FFA500]/10 opacity-50 group-hover:opacity-75 transition-opacity duration-700"></div>
                      
-                    {/* UI Mockup Content */} 
-                    <div className="absolute inset-0 p-8 grid grid-cols-12 gap-6">
+                    {/* Demo Dashboard Content */} 
+                    <div className="absolute inset-0 p-4 md:p-6 grid grid-cols-12 gap-3 md:gap-4">
                          {/* Sidebar */}
-                         <div className="hidden md:block col-span-3 glass-card rounded-2xl h-full opacity-60 flex flex-col p-4 gap-4">
-                            <div className="w-8 h-8 rounded-full bg-white/10"></div>
-                            <div className="h-4 w-24 bg-white/10 rounded-full"></div>
-                            <div className="h-4 w-32 bg-white/5 rounded-full"></div>
-                             <div className="h-4 w-20 bg-white/5 rounded-full"></div>
-                         </div>
-                         {/* Main */}
-                         <div className="col-span-12 md:col-span-9 space-y-6">
-                              <div className="w-full h-20 glass-card rounded-2xl flex items-center justify-between px-8 opacity-80">
-                                   <div className="w-48 h-6 bg-white/20 rounded-full"></div>
-                                   <div className="w-10 h-10 rounded-full bg-[#00FFFF]/20 border border-[#00FFFF]/50"></div>
+                         <div className="hidden md:flex col-span-2 glass-card rounded-xl h-full flex-col p-3 gap-3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
+                                <span className="text-[8px] font-bold text-white">T</span>
                               </div>
-                              <div className="grid grid-cols-3 gap-6 h-48">
-                                   <div className="glass-card-lime glass-card rounded-2xl opacity-70 p-4 relative overflow-hidden group/card hover:opacity-100 cursor-pointer">
-                                      <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#00FF00] shadow-[0_0_10px_#00FF00]"></div>
+                              <span className="text-[10px] font-bold text-white/90">TaskHub</span>
+                            </div>
+                            <div className="space-y-1.5">
+                              <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-white/10">
+                                <div className="w-3 h-3 rounded bg-cyan-400/30"></div>
+                                <span className="text-[8px] text-white/80">Dashboard</span>
+                              </div>
+                              <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-white/5">
+                                <div className="w-3 h-3 rounded bg-white/20"></div>
+                                <span className="text-[8px] text-white/50">Projects</span>
+                              </div>
+                              <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-white/5">
+                                <div className="w-3 h-3 rounded bg-white/20"></div>
+                                <span className="text-[8px] text-white/50">My Tasks</span>
+                              </div>
+                              <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-white/5">
+                                <div className="w-3 h-3 rounded bg-white/20"></div>
+                                <span className="text-[8px] text-white/50">Members</span>
+                              </div>
+                            </div>
+                            <div className="mt-auto">
+                              <div className="flex items-center gap-2 px-2 py-1.5">
+                                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-purple-400 to-pink-500"></div>
+                                <span className="text-[8px] text-white/70">John Doe</span>
+                              </div>
+                            </div>
+                         </div>
+                         
+                         {/* Main Content */}
+                         <div className="col-span-12 md:col-span-10 space-y-3 md:space-y-4 overflow-hidden">
+                              {/* Header */}
+                              <div className="flex items-center justify-between">
+                                   <div>
+                                     <h2 className="text-xs md:text-sm font-bold text-white">Dashboard</h2>
+                                     <p className="text-[8px] md:text-[10px] text-white/50">Welcome back to your workspace</p>
                                    </div>
-                                   <div className="glass-card-orange glass-card rounded-2xl opacity-70 p-4 relative overflow-hidden group/card hover:opacity-100 cursor-pointer">
-                                      <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#FFA500] shadow-[0_0_10px_#FFA500]"></div>
+                                   <div className="flex items-center gap-2">
+                                     <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 border-2 border-white/20"></div>
                                    </div>
-                                   <div className="glass-card rounded-2xl opacity-70 p-4 relative overflow-hidden group/card hover:opacity-100 cursor-pointer">
-                                      <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#00FFFF] shadow-[0_0_10px_#00FFFF]"></div>
+                              </div>
+                              
+                              {/* Stats Cards */}
+                              <div className="grid grid-cols-4 gap-2 md:gap-3">
+                                   <div className="glass-card rounded-xl p-2 md:p-3">
+                                      <div className="flex items-center justify-between mb-1">
+                                        <span className="text-[7px] md:text-[9px] text-white/60 uppercase tracking-wide">Total Tasks</span>
+                                        <div className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center">
+                                          <div className="w-2 h-2 rounded-sm bg-blue-400"></div>
+                                        </div>
+                                      </div>
+                                      <p className="text-sm md:text-lg font-bold text-white">248</p>
+                                      <p className="text-[7px] text-green-400">+12% this week</p>
+                                   </div>
+                                   <div className="glass-card rounded-xl p-2 md:p-3">
+                                      <div className="flex items-center justify-between mb-1">
+                                        <span className="text-[7px] md:text-[9px] text-white/60 uppercase tracking-wide">In Progress</span>
+                                        <div className="w-4 h-4 rounded-full bg-orange-500/20 flex items-center justify-center">
+                                          <div className="w-2 h-2 rounded-sm bg-orange-400"></div>
+                                        </div>
+                                      </div>
+                                      <p className="text-sm md:text-lg font-bold text-white">64</p>
+                                      <p className="text-[7px] text-orange-400">8 due today</p>
+                                   </div>
+                                   <div className="glass-card rounded-xl p-2 md:p-3">
+                                      <div className="flex items-center justify-between mb-1">
+                                        <span className="text-[7px] md:text-[9px] text-white/60 uppercase tracking-wide">Completed</span>
+                                        <div className="w-4 h-4 rounded-full bg-green-500/20 flex items-center justify-center">
+                                          <div className="w-2 h-2 rounded-sm bg-green-400"></div>
+                                        </div>
+                                      </div>
+                                      <p className="text-sm md:text-lg font-bold text-white">156</p>
+                                      <p className="text-[7px] text-green-400">63% completion</p>
+                                   </div>
+                                   <div className="glass-card rounded-xl p-2 md:p-3">
+                                      <div className="flex items-center justify-between mb-1">
+                                        <span className="text-[7px] md:text-[9px] text-white/60 uppercase tracking-wide">Projects</span>
+                                        <div className="w-4 h-4 rounded-full bg-purple-500/20 flex items-center justify-center">
+                                          <div className="w-2 h-2 rounded-sm bg-purple-400"></div>
+                                        </div>
+                                      </div>
+                                      <p className="text-sm md:text-lg font-bold text-white">12</p>
+                                      <p className="text-[7px] text-purple-400">3 active</p>
+                                   </div>
+                              </div>
+                              
+                              {/* Charts & Tasks Row */}
+                              <div className="grid grid-cols-12 gap-2 md:gap-3 flex-1">
+                                   {/* Task Trends Chart */}
+                                   <div className="col-span-5 glass-card rounded-xl p-2 md:p-3">
+                                      <h3 className="text-[8px] md:text-[10px] font-semibold text-white/80 mb-2">Task Trends</h3>
+                                      <div className="h-16 md:h-20 flex items-end justify-between gap-1 px-1">
+                                        <div className="w-full h-[40%] bg-gradient-to-t from-cyan-500/60 to-cyan-400/30 rounded-t"></div>
+                                        <div className="w-full h-[65%] bg-gradient-to-t from-cyan-500/60 to-cyan-400/30 rounded-t"></div>
+                                        <div className="w-full h-[45%] bg-gradient-to-t from-cyan-500/60 to-cyan-400/30 rounded-t"></div>
+                                        <div className="w-full h-[80%] bg-gradient-to-t from-cyan-500/60 to-cyan-400/30 rounded-t"></div>
+                                        <div className="w-full h-[55%] bg-gradient-to-t from-cyan-500/60 to-cyan-400/30 rounded-t"></div>
+                                        <div className="w-full h-[90%] bg-gradient-to-t from-cyan-500/60 to-cyan-400/30 rounded-t"></div>
+                                        <div className="w-full h-[70%] bg-gradient-to-t from-cyan-500/60 to-cyan-400/30 rounded-t"></div>
+                                      </div>
+                                      <div className="flex justify-between mt-1 px-1">
+                                        <span className="text-[6px] text-white/40">Mon</span>
+                                        <span className="text-[6px] text-white/40">Tue</span>
+                                        <span className="text-[6px] text-white/40">Wed</span>
+                                        <span className="text-[6px] text-white/40">Thu</span>
+                                        <span className="text-[6px] text-white/40">Fri</span>
+                                        <span className="text-[6px] text-white/40">Sat</span>
+                                        <span className="text-[6px] text-white/40">Sun</span>
+                                      </div>
+                                   </div>
+                                   
+                                   {/* Pie Charts */}
+                                   <div className="col-span-3 glass-card rounded-xl p-2 md:p-3 flex flex-col items-center justify-center">
+                                      <h3 className="text-[8px] md:text-[10px] font-semibold text-white/80 mb-2 self-start">Priority</h3>
+                                      <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border-4 border-red-500 border-t-yellow-400 border-r-green-400 border-b-blue-400 relative">
+                                        <div className="absolute inset-2 rounded-full bg-black/60 flex items-center justify-center">
+                                          <span className="text-[8px] font-bold text-white">100%</span>
+                                        </div>
+                                      </div>
+                                      <div className="flex gap-2 mt-2">
+                                        <div className="flex items-center gap-1">
+                                          <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                                          <span className="text-[6px] text-white/60">High</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                          <div className="w-1.5 h-1.5 rounded-full bg-yellow-400"></div>
+                                          <span className="text-[6px] text-white/60">Med</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                          <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+                                          <span className="text-[6px] text-white/60">Low</span>
+                                        </div>
+                                      </div>
+                                   </div>
+                                   
+                                   {/* Recent Projects */}
+                                   <div className="col-span-4 glass-card rounded-xl p-2 md:p-3">
+                                      <h3 className="text-[8px] md:text-[10px] font-semibold text-white/80 mb-2">Recent Projects</h3>
+                                      <div className="space-y-1.5">
+                                        <div className="flex items-center gap-2 p-1.5 rounded-lg bg-white/5">
+                                          <div className="w-5 h-5 rounded bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+                                            <span className="text-[7px] font-bold text-white">W</span>
+                                          </div>
+                                          <div className="flex-1">
+                                            <p className="text-[8px] font-medium text-white/90">Website Redesign</p>
+                                            <div className="w-full h-1 bg-white/10 rounded-full mt-0.5">
+                                              <div className="w-3/4 h-full bg-cyan-400 rounded-full"></div>
+                                            </div>
+                                          </div>
+                                          <span className="text-[7px] text-cyan-400">75%</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 p-1.5 rounded-lg bg-white/5">
+                                          <div className="w-5 h-5 rounded bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center">
+                                            <span className="text-[7px] font-bold text-white">M</span>
+                                          </div>
+                                          <div className="flex-1">
+                                            <p className="text-[8px] font-medium text-white/90">Mobile App</p>
+                                            <div className="w-full h-1 bg-white/10 rounded-full mt-0.5">
+                                              <div className="w-1/2 h-full bg-purple-400 rounded-full"></div>
+                                            </div>
+                                          </div>
+                                          <span className="text-[7px] text-purple-400">50%</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 p-1.5 rounded-lg bg-white/5">
+                                          <div className="w-5 h-5 rounded bg-gradient-to-br from-orange-500 to-red-400 flex items-center justify-center">
+                                            <span className="text-[7px] font-bold text-white">A</span>
+                                          </div>
+                                          <div className="flex-1">
+                                            <p className="text-[8px] font-medium text-white/90">API Integration</p>
+                                            <div className="w-full h-1 bg-white/10 rounded-full mt-0.5">
+                                              <div className="w-1/4 h-full bg-orange-400 rounded-full"></div>
+                                            </div>
+                                          </div>
+                                          <span className="text-[7px] text-orange-400">25%</span>
+                                        </div>
+                                      </div>
                                    </div>
                               </div>
                          </div>
@@ -95,7 +254,7 @@ const Homepage = () => {
       {/* Features Section - Bento Grid */}
       <div className="py-32 relative z-10" id="features">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl font-black text-center mb-16 tracking-tighter text-glass-heading">FEATURES</h2>
+            <h2 className="text-4xl font-black text-center mb-16 tracking-tighter text-glass-hero-morph">FEATURES</h2>
             <FeaturesBentoGrid 
               features={[
                 { 
@@ -124,6 +283,12 @@ const Homepage = () => {
                   color: "#A81B1B"
                 },
                 { 
+                  title: "Smart Automation", 
+                  description: "Automate repetitive tasks and workflows to boost team efficiency.",
+                  iconType: "gear", 
+                  color: "#6366F1"
+                },
+                { 
                   title: "Deep Insights", 
                   description: "Analytics that reveal the pulse of your productivity.",
                   iconType: "chart", 
@@ -144,7 +309,7 @@ const Homepage = () => {
       {/* Testimonials - 3D Carousel */}
       <div className="py-24 relative z-10" id="testimonials">
          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl font-black text-center mb-16 tracking-tighter text-glass-heading">TESTIMONIALS</h2>
+            <h2 className="text-4xl font-black text-center mb-16 tracking-tighter text-glass-hero-morph">TESTIMONIALS</h2>
             <Testimonials3DCarousel 
               testimonials={[
                 {
@@ -167,6 +332,55 @@ const Homepage = () => {
                   expertise: "Full Stack",
                   text: "Finally, a dark mode that actually feels 'dark' and not just gray. The animations are buttery smooth.",
                   color: "#1A1A3E"
+                },
+                {
+                  name: "Emma W.",
+                  role: "Project Manager",
+                  expertise: "Agile Coach",
+                  text: "TaskHub transformed how our team collaborates. The real-time sync is a game-changer for remote work.",
+                  color: "#6366F1"
+                },
+                {
+                  name: "David K.",
+                  role: "CTO",
+                  expertise: "Tech Leader",
+                  text: "We evaluated 15 project management tools. TaskHub won hands down for its intuitive design and powerful features.",
+                  color: "#10B981"
+                },
+                {
+                  name: "Lisa R.",
+                  role: "Marketing Lead",
+                  expertise: "Growth Expert",
+                  text: "The analytics dashboard gives us insights we never had before. Campaign tracking has never been easier.",
+                  color: "#F59E0B"
+                },
+                {
+                  name: "James H.",
+                  role: "Startup Founder",
+                  expertise: "Entrepreneur",
+                  text: "From day one, TaskHub felt like it was built for startups. Fast, flexible, and scales with us.",
+                  color: "#EC4899"
+                },
+                {
+                  name: "Anna P.",
+                  role: "Team Lead",
+                  expertise: "Operations",
+                  text: "Our productivity increased by 40% after switching to TaskHub. The automation features are incredible.",
+                  color: "#8B5CF6"
+                },
+                {
+                  name: "Chris B.",
+                  role: "Freelancer",
+                  expertise: "Solo Pro",
+                  text: "As a solo professional, I need tools that don't slow me down. TaskHub is fast, minimal, and powerful.",
+                  color: "#0EA5E9"
+                },
+                {
+                  name: "Rachel L.",
+                  role: "Agency Owner",
+                  expertise: "Creative Director",
+                  text: "Managing multiple client projects used to be chaos. TaskHub brought structure without killing creativity.",
+                  color: "#EF4444"
                 }
               ]}
             />

@@ -26,7 +26,7 @@ import {
   useUserProfileQuery,
 } from "@/hooks/use-user";
 import { useAuth } from "@/provider/auth-context";
-import { useSendVerificationMutation, useVerifyEmailMutation } from "@/hooks/use-auth";
+import { useSendVerificationMutation, useVerifyEmailMutation, useEnable2FAMutation, useDisable2FAMutation } from "@/hooks/use-auth";
 import type { User } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Badge } from "@/components/ui/badge";
@@ -36,17 +36,17 @@ import { TimelineNode } from "@/components/portfolio/timeline-node";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
-import { AlertCircle, Camera, CheckCircle, Loader, Loader2, Shield, XCircle } from "lucide-react";
+import { AlertCircle, Camera, CheckCircle, Loader, Loader2, Shield, XCircle, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { CameraModal } from "@/components/profile/camera-capture";
-import { MFAStatus, TOTPSetup } from "@/components/security/totp-setup";
 import { postData } from "@/lib/fetch-util";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { OTPVerification } from "@/components/ui/otp-input";
 
 /**
@@ -99,7 +99,6 @@ const profileSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   profilePicture: z.string().optional(),
   email: z.string().email("Invalid email address"),
-  phoneNumber: z.string().optional(),
   // Portfolio
   description: z.string().optional(),
   designation: z.enum(["Developer", "Designer", "Manager", "Product Owner", "Other"]).default("Other"),
@@ -121,6 +120,10 @@ const Profile = () => {
   // Hooks for Verification
   const { mutateAsync: sendVerification, isPending: isSendingCode } = useSendVerificationMutation();
   const { mutateAsync: verifyEmail } = useVerifyEmailMutation();
+  
+  // 2FA Mutations
+  const { mutateAsync: enable2FA, isPending: isEnabling2FA } = useEnable2FAMutation();
+  const { mutateAsync: disable2FA, isPending: isDisabling2FA } = useDisable2FAMutation();
 
   // Sync AuthContext with fresh API data
   useEffect(() => {
@@ -129,10 +132,18 @@ const Profile = () => {
     }
   }, [user, authUser, updateUser]);
 
-  // Camera and MFA state
+  // Camera state
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [isMFASetupOpen, setIsMFASetupOpen] = useState(false);
-  const [mfaEnabled, setMfaEnabled] = useState(false);
+  
+  // Initialize 2FA enabled status from user
+  useEffect(() => {
+    if (user?.is2FAEnabled !== undefined) {
+      setMfaEnabled(user.is2FAEnabled);
+    }
+  }, [user?.is2FAEnabled]);
+  const [mfaEnabled, setMfaEnabled] = useState(user?.is2FAEnabled || false);
+  const [is2FAEnableDialogOpen, setIs2FAEnableDialogOpen] = useState(false);
+  const [is2FADisableDialogOpen, setIs2FADisableDialogOpen] = useState(false);
 
   // Check if user is Master Admin (simplify profile for admin) - SSR safe
   const [isAdmin, setIsAdmin] = useState(false);
@@ -142,7 +153,6 @@ const Profile = () => {
 
   // Verification State
   const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false);
-  const [verifyingChannel, setVerifyingChannel] = useState<"email" | "phone" | null>(null);
 
   const form = useForm<ChangePasswordFormData>({
     resolver: zodResolver(changePasswordSchema),
@@ -158,7 +168,6 @@ const Profile = () => {
       name: user?.name || "",
       profilePicture: user?.profilePicture || "",
       email: user?.email || "",
-      phoneNumber: user?.phoneNumber || "",
       description: user?.description || "",
       designation: (user?.designation as DesignationType) || "Other",
       expertise: user?.expertise || [],
@@ -168,7 +177,6 @@ const Profile = () => {
       name: user?.name || "",
       profilePicture: user?.profilePicture || "",
       email: user?.email || "",
-      phoneNumber: user?.phoneNumber || "",
       description: user?.description || "",
       designation: (user?.designation as DesignationType) || "Other",
       expertise: user?.expertise || [],
@@ -208,20 +216,18 @@ const Profile = () => {
 
   const handleProfileFormSubmit = (values: ProfileFormData) => {
     updateUserProfile(
-      values, // Send all values (name, pic, email, phone, bio, etc)
+      values,
       {
         onSuccess: () => {
           toast.success("Profile updated successfully");
           if (user) {
-             // Check if email/phone changed to reset verification
+             // Check if email changed to reset verification
              const isEmailChanged = values.email !== user.email;
-             const isPhoneChanged = values.phoneNumber !== user.phoneNumber;
              
              updateUser({ 
                  ...user, 
                  ...values, 
                  isEmailVerified: isEmailChanged ? false : user.isEmailVerified,
-                 isPhoneVerified: isPhoneChanged ? false : user.isPhoneVerified
              });
           }
         },
@@ -264,21 +270,11 @@ const Profile = () => {
     }
   };
 
-  // Handle MFA setup completion
-  const handleMFAComplete = async (secret: string): Promise<boolean> => {
-    console.log("MFA Setup complete with secret:", secret);
-    setMfaEnabled(true);
-    setIsMFASetupOpen(false);
-    toast.success("Two-factor authentication enabled!");
-    return true;
-  };
-
-  // Handle Verification Start
-  const handleStartVerification = async (channel: "email" | "phone") => {
+  // Handle Verification Start (Email only)
+  const handleStartVerification = async () => {
     try {
-        setVerifyingChannel(channel);
-        await sendVerification({ channel });
-        toast.success(`Verification code sent to your ${channel}.`);
+        await sendVerification({ channel: "email" });
+        toast.success("Verification code sent to your email.");
         setIsVerifyModalOpen(true);
     } catch (error: any) {
         toast.error(error.message || "Failed to send verification code");
@@ -288,31 +284,16 @@ const Profile = () => {
 
   // Handle OTP Submit
   const handleVerifyOTP = async (otp: string): Promise<boolean> => {
-    if (!verifyingChannel || !user) return false;
-    
-    // Determine identifier based on channel. 
-    // IMPORTANT: Verify the CURRENT value in the form or the Saved User value?
-    // Verification is for the SAVED value. If user changed it but didn't save, verification will fail/be wrong.
-    // So we use user.email/user.phoneNumber.
-    const identifier = verifyingChannel === 'email' ? user.email : user.phoneNumber;
-    if (!identifier) {
-        toast.error("No identifier found to verify");
+    if (!user?.email) {
+        toast.error("No email found to verify");
         return false;
     }
 
     try {
-        await verifyEmail({ identifier, otp });
-        toast.success(`${verifyingChannel === 'email' ? 'Email' : 'Phone'} verified!`);
-        
-        // Optimistic update
-        if (verifyingChannel === 'email') {
-            updateUser({ ...user, isEmailVerified: true });
-        } else {
-            updateUser({ ...user, isPhoneVerified: true });
-        }
-        
+        await verifyEmail({ identifier: user.email, otp });
+        toast.success("Email verified!");
+        updateUser({ ...user, isEmailVerified: true });
         setIsVerifyModalOpen(false);
-        setVerifyingChannel(null);
         return true;
     } catch (error: any) {
         toast.error(error.message || "Invalid Code");
@@ -454,7 +435,7 @@ const Profile = () => {
                        )}
                        {!user?.isEmailVerified && user?.email && (
                            <Button size="sm" variant="ghost" className="h-6 text-xs text-blue-400 hover:text-blue-300" 
-                             onClick={() => handleStartVerification("email")} 
+                             onClick={() => handleStartVerification()} 
                              type="button"
                              disabled={isSendingCode}
                            >
@@ -470,51 +451,6 @@ const Profile = () => {
                       <FormItem>
                         <FormControl>
                           <Input {...field} type="email" className="input-glass" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-              </div>
-              )}
-
-              {/* Phone Section with Status - Hidden for Admin */}
-              {!isAdmin && (
-              <div className="grid gap-2">
-                <div className="flex items-center justify-between">
-                    <Label htmlFor="phoneNumber" className="text-glass-secondary">Phone Number</Label>
-                     {user?.phoneNumber ? (
-                        <div className="flex items-center gap-2">
-                            {user?.isPhoneVerified ? (
-                                <span className="flex items-center text-green-400 text-xs font-medium">
-                                    <CheckCircle className="w-3 h-3 mr-1" /> Verified
-                                </span>
-                            ) : (
-                                <span className="flex items-center text-red-400 text-xs font-medium">
-                                    <XCircle className="w-3 h-3 mr-1" /> Not verified
-                                </span>
-                            )}
-                            {!user?.isPhoneVerified && (
-                                <Button size="sm" variant="ghost" className="h-6 text-xs text-blue-400 hover:text-blue-300"
-                                    onClick={() => handleStartVerification("phone")}
-                                    type="button"
-                                    disabled={isSendingCode}
-                                >
-                                    Verify Now
-                                </Button>
-                            )}
-                        </div>
-                     ) : (
-                         <span className="text-xs text-glass-muted">Not Linked</span>
-                     )}
-                </div>
-                 <FormField
-                    control={profileForm.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input {...field} placeholder="+1234567890" className="input-glass" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -791,28 +727,146 @@ const Profile = () => {
             Two-Factor Authentication
           </CardTitle>
           <CardDescription className="text-glass-secondary">
-            Add an extra layer of security to your account.
+            Add an extra layer of security to your account. When enabled, you'll receive an OTP via email every time you log in.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          {isMFASetupOpen ? (
-            <TOTPSetup
-              userEmail={user?.email || ""}
-              onComplete={handleMFAComplete}
-              onCancel={() => setIsMFASetupOpen(false)}
-            />
-          ) : (
-            <MFAStatus
-              enabled={mfaEnabled}
-              onEnable={() => setIsMFASetupOpen(true)}
-              onDisable={() => {
-                setMfaEnabled(false);
-                toast.success("Two-factor authentication disabled");
-              }}
-            />
-          )}
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${mfaEnabled ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/5 text-gray-400'}`}>
+                <Shield className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="font-medium text-white">Email 2FA</p>
+                <p className="text-sm text-gray-400">
+                  {mfaEnabled ? "Enabled - OTP sent on every login" : "Disabled"}
+                </p>
+              </div>
+            </div>
+            
+            {/* Show enable/disable based on current state */}
+            {mfaEnabled ? (
+              <Button 
+                variant="outline" 
+                className="text-rose-400 border-rose-400/30 hover:bg-rose-400/10"
+                onClick={() => setIs2FADisableDialogOpen(true)}
+              >
+                Disable
+              </Button>
+            ) : user?.isEmailVerified ? (
+              <Button 
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                onClick={() => setIs2FAEnableDialogOpen(true)}
+              >
+                Enable
+              </Button>
+            ) : (
+              <div className="text-sm text-amber-400">
+                Verify email first
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
+      )}
+
+      {/* 2FA Enable Confirmation Modal - Using Portal for proper centering */}
+      {is2FAEnableDialogOpen && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center"
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+        >
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setIs2FAEnableDialogOpen(false)}
+          />
+          {/* Modal Content */}
+          <div className="relative z-10 w-full max-w-md mx-4 p-6 rounded-xl bg-zinc-900 border border-white/10 shadow-2xl">
+            <button 
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+              onClick={() => setIs2FAEnableDialogOpen(false)}
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <h2 className="text-xl font-semibold text-white mb-2">Enable Two-Factor Authentication?</h2>
+            <p className="text-gray-400 text-sm mb-6">
+              Once enabled, you will receive a 6-digit OTP via email every time you log in. Make sure you have access to your email.
+            </p>
+            <div className="flex gap-3">
+              <Button variant="outline" className="flex-1" onClick={() => setIs2FAEnableDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                onClick={async () => {
+                  try {
+                    await enable2FA();
+                    setMfaEnabled(true);
+                    if (user) updateUser({ ...user, is2FAEnabled: true });
+                    toast.success("Two-factor authentication enabled! You will receive an OTP on login.");
+                    setIs2FAEnableDialogOpen(false);
+                  } catch (error: any) {
+                    toast.error(error.response?.data?.message || "Failed to enable 2FA");
+                  }
+                }}
+              >
+                Enable 2FA
+              </Button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* 2FA Disable Confirmation Modal - Using Portal for proper centering */}
+      {is2FADisableDialogOpen && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center"
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+        >
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setIs2FADisableDialogOpen(false)}
+          />
+          {/* Modal Content */}
+          <div className="relative z-10 w-full max-w-md mx-4 p-6 rounded-xl bg-zinc-900 border border-white/10 shadow-2xl">
+            <button 
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+              onClick={() => setIs2FADisableDialogOpen(false)}
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <h2 className="text-xl font-semibold text-white mb-2">Disable Two-Factor Authentication?</h2>
+            <p className="text-gray-400 text-sm mb-6">
+              This will remove the extra security layer from your account. You will no longer need to enter an OTP when logging in.
+            </p>
+            <div className="flex gap-3">
+              <Button variant="outline" className="flex-1" onClick={() => setIs2FADisableDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive" 
+                className="flex-1"
+                onClick={async () => {
+                  try {
+                    await disable2FA();
+                    setMfaEnabled(false);
+                    if (user) updateUser({ ...user, is2FAEnabled: false });
+                    toast.success("Two-factor authentication disabled");
+                    setIs2FADisableDialogOpen(false);
+                  } catch (error: any) {
+                    toast.error(error.response?.data?.message || "Failed to disable 2FA");
+                  }
+                }}
+              >
+                Disable 2FA
+              </Button>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
 
       {/* Password Card */}
@@ -922,13 +976,13 @@ const Profile = () => {
         onClose={() => setIsCameraOpen(false)}
       />
 
-      {/* Verification Dialog */}
+      {/* Email Verification Dialog */}
       <Dialog open={isVerifyModalOpen} onOpenChange={setIsVerifyModalOpen}>
         <DialogContent className="deep-glass border-white/10 text-white sm:max-w-md">
             <DialogHeader>
-                <DialogTitle>Verify {verifyingChannel === 'email' ? "Email Address" : "Phone Number"}</DialogTitle>
+                <DialogTitle>Verify Email Address</DialogTitle>
                 <DialogDescription className="text-gray-400">
-                    Enter the code sent to your {verifyingChannel}.
+                    Enter the code sent to your email.
                 </DialogDescription>
             </DialogHeader>
             <div className="py-4">

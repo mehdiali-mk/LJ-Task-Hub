@@ -50,7 +50,7 @@ const ForgotPassword = () => {
       <div className="w-full max-w-md space-y-6">
         <div className="flex flex-col items-center justify-center space-y-2 mb-6">
            <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 ring-1 ring-white/10 flex items-center justify-center shadow-inner mb-2">
-             <Layers className="size-6 text-[#00FFFF]" />
+             <Layers className="size-6 text-white/80" />
            </div>
           <h1 className="text-2xl font-bold text-white">Forgot Password</h1>
           <p className="text-gray-400 text-center">

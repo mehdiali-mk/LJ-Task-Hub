@@ -30,16 +30,16 @@ export const UpcomingTasks = ({ data }: { data: Task[] }) => {
         ) : (
           data?.map((task) => (
             <Link
-              to={`/workspaces${workspaceId}/projects/${task.project}/tasks/${task._id}`}
+              to={`/workspaces/${workspaceId}/projects/${task.project}/tasks/${task._id}`}
               key={task._id}
               className="flex items-start space-x-3 border-b border-white/10 pb-3 last:border-0 hover:bg-white/5 p-2 rounded-lg transition-colors"
             >
               <div
                 className={cn(
                   "mt-0.5 rounded-full p-1",
-                  task.priority === "High" && "bg-red-500/20 text-red-300",
-                  task.priority === "Medium" && "bg-yellow-500/20 text-yellow-300",
-                  task.priority === "Low" && "bg-blue-500/20 text-blue-300"
+                  task.priority === "High" && "bg-white/[0.08] backdrop-blur-sm text-red-400/90 border border-white/20",
+                  task.priority === "Medium" && "bg-white/[0.08] backdrop-blur-sm text-amber-400/90 border border-white/20",
+                  task.priority === "Low" && "bg-white/[0.08] backdrop-blur-sm text-blue-400/90 border border-white/20"
                 )}
               >
                 {task.status === "Done" ? (

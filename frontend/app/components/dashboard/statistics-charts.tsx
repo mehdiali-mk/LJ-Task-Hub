@@ -129,10 +129,10 @@ export const StatisticsCharts = ({
           <ChartPie className="size-5 text-gray-400/50" />
         </CardHeader>
 
-        <CardContent className="w-full flex-1 flex items-center justify-center overflow-x-auto md:overflow-x-hidden">
-          <div className="min-w-[350px] flex items-center justify-center">
+        <CardContent className="w-full flex-1 flex items-center justify-center overflow-hidden">
+          <div className="w-full flex items-center justify-center">
             <ChartContainer
-              className="h-[300px] w-full"
+              className="h-[280px] w-full"
               config={{
                 Completed: { color: "#10b981" },
                 "In Progress": { color: "#3b82f6" },
@@ -146,19 +146,20 @@ export const StatisticsCharts = ({
                   cy="50%"
                   dataKey="value"
                   nameKey="name"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={2}
-                  label={({ name, percent }) =>
-                    `${name} (${(percent * 100).toFixed(0)}%)`
-                  }
+                  innerRadius={55}
+                  outerRadius={85}
+                  paddingAngle={3}
+                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
                   labelLine={false}
                 >
                   {projectStatusData?.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} stroke="rgba(0,0,0,0.2)" />
                   ))}
                 </Pie>
-                <ChartTooltip contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} />
+                <ChartTooltip 
+                  content={<ChartTooltipContent />}
+                  contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} 
+                />
                 <ChartLegend content={<ChartLegendContent />} />
               </PieChart>
             </ChartContainer>
@@ -177,10 +178,10 @@ export const StatisticsCharts = ({
           </div>
         </CardHeader>
 
-        <CardContent className="w-full flex-1 flex items-center justify-center overflow-x-auto md:overflow-x-hidden">
-          <div className="min-w-[350px] flex items-center justify-center">
+        <CardContent className="w-full flex-1 flex items-center justify-center overflow-hidden">
+          <div className="w-full flex items-center justify-center">
             <ChartContainer
-              className="h-[300px] w-full"
+              className="h-[280px] w-full"
               config={{
                 High: { color: "#ef4444" },
                 Medium: { color: "#f59e0b" },
@@ -192,21 +193,22 @@ export const StatisticsCharts = ({
                   data={taskPriorityData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={2}
+                  innerRadius={55}
+                  outerRadius={85}
+                  paddingAngle={3}
                   dataKey="value"
                   nameKey="name"
-                  label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}%`
-                  }
+                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
                   labelLine={false}
                 >
                   {taskPriorityData?.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} stroke="rgba(0,0,0,0.2)" />
                   ))}
                 </Pie>
-                <ChartTooltip contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} />
+                <ChartTooltip 
+                  content={<ChartTooltipContent />}
+                  contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} 
+                />
                 <ChartLegend content={<ChartLegendContent />} />
               </PieChart>
             </ChartContainer>

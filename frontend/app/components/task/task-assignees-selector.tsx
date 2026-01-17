@@ -157,7 +157,8 @@ export const TaskAssigneesSelector = ({
               </Button>
               <Button
                 size={"sm"}
-                className="font-light bg-primary text-black hover:bg-primary/90"
+                variant="primary"
+                className="font-light"
                 disabled={isPending}
                 onClickCapture={() => handleSave()}
               >

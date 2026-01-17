@@ -28,17 +28,17 @@ export const ProjectCard = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "In Progress":
-        return "bg-blue-500/20 text-blue-300 border-blue-500/30";
+        return "bg-white/[0.08] backdrop-blur-sm text-blue-400/90 border-white/20";
       case "Completed":
-        return "bg-green-500/20 text-green-300 border-green-500/30";
+        return "bg-white/[0.08] backdrop-blur-sm text-emerald-400/90 border-white/20";
       case "Cancelled":
-        return "bg-red-500/20 text-red-300 border-red-500/30";
+        return "bg-white/[0.08] backdrop-blur-sm text-red-400/90 border-white/20";
       case "On Hold":
-        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
+        return "bg-white/[0.08] backdrop-blur-sm text-amber-400/90 border-white/20";
       case "Planning":
-        return "bg-purple-500/20 text-purple-300 border-purple-500/30";
+        return "bg-white/[0.08] backdrop-blur-sm text-purple-400/90 border-white/20";
       default:
-        return "bg-gray-500/20 text-gray-300 border-gray-500/30";
+        return "bg-white/[0.08] backdrop-blur-sm text-white/70 border-white/20";
     }
   };
 

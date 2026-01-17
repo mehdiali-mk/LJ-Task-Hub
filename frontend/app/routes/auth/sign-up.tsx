@@ -24,7 +24,8 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router";
 import { useSignUpMutation, useVerifyEmailMutation } from "@/hooks/use-auth";
 import { toast } from "sonner";
-import { Loader2, Layers } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { OTPVerification } from "@/components/ui/otp-input";
 
 export type SignupFormData = z.infer<typeof signUpSchema>;
@@ -40,7 +41,6 @@ const SignUp = () => {
       email: "",
       password: "",
       name: "",
-      phoneNumber: "",
       confirmPassword: "",
     },
   });
@@ -52,9 +52,9 @@ const SignUp = () => {
     register(values, {
       onSuccess: () => {
         toast.success("Account created!", {
-          description: "Please enter the code sent to your email or phone.",
+          description: "Please enter the verification code sent to your email.",
         });
-        setIdentifier(values.email || values.phoneNumber || "");
+        setIdentifier(values.email);
         setIsVerifying(true);
       },
       onError: (error: any) => {
@@ -69,7 +69,7 @@ const SignUp = () => {
   const handleVerifyOTP = async (otp: string): Promise<boolean> => {
     try {
       await verifyEmail({ identifier: identifier, otp });
-      toast.success("Verified successfully!");
+      toast.success("Email verified successfully!");
       // Short delay to show success
       setTimeout(() => {
         navigate("/sign-in");
@@ -83,18 +83,23 @@ const SignUp = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <div className="flex items-center gap-2 mb-8">
-        <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 ring-1 ring-white/10 flex items-center justify-center shadow-inner">
-           <Layers className="size-6 text-[#00FFFF]" />
+      <Link to="/" className="flex flex-col items-center gap-2 mb-8 group cursor-pointer">
+        <div className="w-16 h-16 rounded-xl bg-white border border-white/50 flex items-center justify-center overflow-hidden shadow-lg transition-transform group-hover:scale-105 group-hover:-translate-y-0.5">
+           <DotLottieReact
+             src="https://lottie.host/2bd99e49-b27f-4ad1-a9fd-4c7272da3bbe/hgKC6qcLgu.lottie"
+             loop
+             autoplay
+             style={{ width: '64px', height: '64px', transform: 'scale(1.4)' }}
+           />
         </div>
-        <span className="font-bold text-2xl hidden md:block text-white tracking-tighter">TaskHub</span>
-      </div>
+        <span className="font-bold text-2xl text-glass-heading-morph tracking-tighter group-hover:opacity-80 transition-opacity">TaskHub</span>
+      </Link>
       <Card className="max-w-md w-full shadow-xl">
         <CardHeader className="text-center mb-5">
-          <CardTitle className="text-2xl font-bold text-white">
-            {isVerifying ? "Verify Account" : "Create an account"}
+          <CardTitle className="text-2xl font-bold text-glass-heading-morph">
+            {isVerifying ? "Verify Your Email" : "Create an account"}
           </CardTitle>
-          <CardDescription className="text-sm text-gray-400">
+          <CardDescription className="text-sm text-white/50">
             {isVerifying 
               ? `Enter the code sent to ${identifier}` 
               : "Create an account to continue"}
@@ -104,7 +109,7 @@ const SignUp = () => {
           {isVerifying ? (
             <OTPVerification 
               onVerify={handleVerifyOTP}
-              description="Check your email/phone for the 6-digit code."
+              description="Check your email for the 6-digit verification code."
             />
           ) : (
             <Form {...form}>
@@ -117,27 +122,13 @@ const SignUp = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email Address (Optional)</FormLabel>
+                      <FormLabel>Email Address</FormLabel>
                       <FormControl>
                         <Input
-                          type="text" 
+                          type="email" 
                           placeholder="email@example.com"
                           {...field}
                         />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="phoneNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number (Optional)</FormLabel>
-                      <FormControl>
-                        <Input type="tel" placeholder="+1234567890" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

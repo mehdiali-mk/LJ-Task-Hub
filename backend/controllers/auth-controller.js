@@ -151,6 +151,30 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
+    // 2FA Check - if enabled, send OTP and require verification
+    if (user.is2FAEnabled) {
+      // Clean existing verifications
+      await Verification.deleteMany({ userId: user._id });
+
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+      await Verification.create({
+        userId: user._id,
+        token: verificationCode,
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+      });
+
+      // Send 2FA code to email
+      const emailBody = `<p>Your two-factor authentication code is: <strong>${verificationCode}</strong></p><p>This code will expire in 15 minutes.</p>`;
+      await sendEmail(user.email, "Two-Factor Authentication Code", emailBody);
+
+      return res.status(200).json({
+        requires2FA: true,
+        userId: user._id,
+        message: "2FA code sent to your email",
+      });
+    }
+
     const token = jwt.sign(
       { userId: user._id, purpose: "login" },
       process.env.JWT_SECRET,
@@ -158,6 +182,8 @@ const loginUser = async (req, res) => {
     );
 
     user.lastLogin = new Date();
+    user.isOnline = true;
+    user.lastActiveAt = new Date();
     await user.save();
 
     const userData = user.toObject();
@@ -171,6 +197,26 @@ const loginUser = async (req, res) => {
   } catch (error) {
     console.log(error);
 
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const logoutUser = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.isOnline = false;
+    user.lastActiveAt = new Date();
+    await user.save();
+
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -390,11 +436,114 @@ const verifyResetPasswordTokenAndResetPassword = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// Enable 2FA for user
+const enable2FA = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    
+    if (!user.isEmailVerified) {
+      return res.status(400).json({ message: "Please verify your email first" });
+    }
+    
+    if (user.is2FAEnabled) {
+      return res.status(400).json({ message: "2FA is already enabled" });
+    }
+    
+    user.is2FAEnabled = true;
+    await user.save();
+    
+    res.status(200).json({ message: "Two-factor authentication enabled" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Disable 2FA for user
+const disable2FA = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    
+    if (!user.is2FAEnabled) {
+      return res.status(400).json({ message: "2FA is not enabled" });
+    }
+    
+    user.is2FAEnabled = false;
+    await user.save();
+    
+    res.status(200).json({ message: "Two-factor authentication disabled" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Verify 2FA OTP during login
+const verify2FA = async (req, res) => {
+  try {
+    const { userId, otp } = req.body;
+    
+    const user = await User.findById(userId);
+    if (!user) return res.status(400).json({ message: "User not found" });
+    
+    const verification = await Verification.findOne({
+      userId: user._id,
+      token: otp,
+    });
+    
+    if (!verification) {
+      return res.status(400).json({ message: "Invalid or expired code" });
+    }
+    
+    if (verification.expiresAt < new Date()) {
+      return res.status(400).json({ message: "Code expired" });
+    }
+    
+    // Clean up verification
+    await Verification.findByIdAndDelete(verification._id);
+    
+    // Issue token
+    const token = jwt.sign(
+      { userId: user._id, purpose: "login" },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+    
+    user.lastLogin = new Date();
+    user.isOnline = true;
+    user.lastActiveAt = new Date();
+    await user.save();
+    
+    const userData = user.toObject();
+    delete userData.password;
+    
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      user: userData,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export {
   registerUser,
   loginUser,
+  logoutUser,
   verifyEmail,
   sendVerificationCode,
   resetPasswordRequest,
   verifyResetPasswordTokenAndResetPassword,
+  enable2FA,
+  disable2FA,
+  verify2FA,
 };

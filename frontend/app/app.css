@@ -70,8 +70,8 @@ body {
   --popover: #000000;
   --popover-foreground: #ffffff;
   
-  /* Cyan - Primary Action */
-  --primary: #00FFFF; 
+  /* White - Primary Action */
+  --primary: #ffffff; 
   --primary-foreground: #000000;
   
   /* Lime - Secondary/Accents */
@@ -88,23 +88,23 @@ body {
   --destructive: #ef4444;
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.1);
-  --ring: #00FFFF;
+  --ring: rgba(255, 255, 255, 0.5);
   
   /* Charts - Neon Palette */
-  --chart-1: #00FFFF; /* Cyan */
-  --chart-2: #00FF00; /* Lime */
+  --chart-1: #94a3b8; /* Slate */
+  --chart-2: #a78bfa; /* Violet */
   --chart-3: #FFA500; /* Orange */
   --chart-4: #d946ef; /* Magenta */
   --chart-5: #eab308;
   
   --sidebar: #000000;
   --sidebar-foreground: #ffffff;
-  --sidebar-primary: #00FFFF;
+  --sidebar-primary: #ffffff;
   --sidebar-primary-foreground: #000000;
   --sidebar-accent: rgba(255, 255, 255, 0.1);
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: #00FFFF;
+  --sidebar-ring: rgba(255, 255, 255, 0.5);
 }
 
 .dark {
@@ -115,9 +115,9 @@ body {
   --card-foreground: #ffffff;
   --popover: #000000;
   --popover-foreground: #ffffff;
-  --primary: #00FFFF;
+  --primary: #ffffff;
   --primary-foreground: #000000;
-  --secondary: #00FF00;
+  --secondary: #a78bfa;
   --secondary-foreground: #000000;
   --muted: rgba(255, 255, 255, 0.1);
   --muted-foreground: #a1a1aa;
@@ -126,20 +126,20 @@ body {
   --destructive: #ef4444;
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.1);
-  --ring: #00FFFF;
-  --chart-1: #00FFFF;
-  --chart-2: #00FF00;
+  --ring: rgba(255, 255, 255, 0.5);
+  --chart-1: #94a3b8;
+  --chart-2: #a78bfa;
   --chart-3: #FFA500;
   --chart-4: #d946ef;
   --chart-5: #eab308;
   --sidebar: #000000;
   --sidebar-foreground: #ffffff;
-  --sidebar-primary: #00FFFF;
+  --sidebar-primary: #ffffff;
   --sidebar-primary-foreground: #000000;
   --sidebar-accent: rgba(255, 255, 255, 0.1);
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: #00FFFF;
+  --sidebar-ring: rgba(255, 255, 255, 0.5);
 }
 
 @layer base {
@@ -247,109 +247,116 @@ body {
    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* ========================================
-   TORCH LIGHT TEXT EFFECT
-   A flowing shimmer that moves left to right
-   ======================================== */
-
-/* Keyframe for the torch sweep */
-@keyframes torch-sweep {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
+/* =====================================================
+   ICON GLASS - Consistent glassmorphic icon styling
+   ===================================================== */
+.icon-glass {
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform, filter;
 }
 
-/* Subtle torch effect for regular text */
-.torch-text {
+.icon-glass:hover,
+.group:hover .icon-glass {
+  color: rgba(255, 255, 255, 1);
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
+}
+
+/* Animated spin for gear-like icons */
+.icon-glass-spin:hover,
+.group:hover .icon-glass-spin {
+  animation: icon-spin 2s linear infinite;
+}
+
+@keyframes icon-spin {
+  from { transform: rotate(0deg) scale(1.1); }
+  to { transform: rotate(360deg) scale(1.1); }
+}
+
+/* =====================================================
+   SIDEBAR GLASS LINK - Glassmorphic sidebar menu items
+   ===================================================== */
+.sidebar-glass-link {
+  position: relative;
+  overflow: visible;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid transparent;
+  background: transparent;
+}
+
+.sidebar-glass-link:hover {
+  color: rgba(255, 255, 255, 1);
   background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.7) 0%,
-    rgba(255, 255, 255, 0.7) 40%,
-    rgba(255, 255, 255, 1) 50%,
-    rgba(255, 255, 255, 0.7) 60%,
-    rgba(255, 255, 255, 0.7) 100%
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.04) 100%
   );
-  background-size: 200% 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  animation: torch-sweep 8s linear infinite;
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: translateX(2px);
 }
 
-/* More visible torch for titles */
-.torch-title {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.6) 0%,
-    rgba(255, 255, 255, 0.6) 35%,
-    rgba(168, 27, 27, 0.9) 45%,
-    rgba(255, 255, 255, 1) 50%,
-    rgba(232, 160, 64, 0.9) 55%,
-    rgba(255, 255, 255, 0.6) 65%,
-    rgba(255, 255, 255, 0.6) 100%
-  );
-  background-size: 200% 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  animation: torch-sweep 6s linear infinite;
+.sidebar-glass-link.active {
+  color: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-/* Intense torch for hero elements */
-.torch-hero {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.5) 0%,
-    rgba(255, 255, 255, 0.5) 30%,
-    rgba(168, 27, 27, 1) 40%,
-    rgba(255, 255, 255, 1) 50%,
-    rgba(232, 160, 64, 1) 60%,
-    rgba(255, 255, 255, 0.5) 70%,
-    rgba(255, 255, 255, 0.5) 100%
-  );
-  background-size: 200% 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  animation: torch-sweep 4s linear infinite;
+/* Ensure icons don't get cut off */
+.sidebar-nav-container {
+  overflow: visible !important;
 }
 
-/* Muted torch for secondary text */
-.torch-muted {
-  background: linear-gradient(
-    90deg,
-    rgba(160, 160, 170, 0.8) 0%,
-    rgba(160, 160, 170, 0.8) 45%,
-    rgba(200, 200, 210, 1) 50%,
-    rgba(160, 160, 170, 0.8) 55%,
-    rgba(160, 160, 170, 0.8) 100%
-  );
-  background-size: 200% 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  animation: torch-sweep 10s linear infinite;
+
+/* =====================================================
+   KINETIC ICON ANIMATIONS - Hover-triggered animations
+   ===================================================== */
+
+/* Gear icon - rotates smoothly on hover */
+.kinetic-gear {
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.group:hover .kinetic-gear {
+  animation: kinetic-rotate 3s linear infinite;
+}
+@keyframes kinetic-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* Starboy themed torch (crimson + amber) */
-.torch-starboy {
-  background: linear-gradient(
-    90deg,
-    rgba(168, 27, 27, 0.8) 0%,
-    rgba(168, 27, 27, 0.8) 30%,
-    rgba(255, 255, 255, 1) 50%,
-    rgba(232, 160, 64, 0.8) 70%,
-    rgba(232, 160, 64, 0.8) 100%
-  );
-  background-size: 200% 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  animation: torch-sweep 5s linear infinite;
+/* Action icons (zap, users, chart, layout) - bounce up on hover */
+.kinetic-action {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+.group:hover .kinetic-action {
+  animation: kinetic-bounce 0.6s ease-in-out infinite alternate;
+}
+@keyframes kinetic-bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-3px); }
+}
+
+/* Standard icons (shield, lock) - pulse on hover */
+.kinetic-icon {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.group:hover .kinetic-icon {
+  animation: kinetic-pulse 1s ease-in-out infinite;
+}
+@keyframes kinetic-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
 
 /* ========================================
    SERENE GLASS UI LANGUAGE
@@ -407,6 +414,145 @@ body {
   -webkit-background-clip: text;
   color: transparent;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+/* ========================================
+   GLASSMORPHIC TEXT SYSTEM
+   Pure frosted glass effect - no heavy shadows
+   ======================================== */
+
+/* Hero glassmorphic text - frosted glass appearance */
+.text-glass-hero-morph {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 800;
+  font-style: normal;
+  /* Semi-transparent to show background through */
+  color: rgba(255, 255, 255, 0.42);
+  /* Very subtle top edge for 3D emboss feel - no drop shadow */
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+  letter-spacing: -0.02em;
+  /* Subtle filter for frosted feel */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Heading glassmorphic text - slightly more visible */
+.text-glass-heading-morph {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 800;
+  font-style: normal;
+  /* Semi-transparent to show background through */
+  color: rgba(255, 255, 255, 0.48);
+  /* Very subtle top edge for 3D emboss feel - no drop shadow */
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  letter-spacing: -0.02em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtitle glassmorphic text */
+.text-glass-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.01em;
+}
+
+/* ========================================
+   NAVBAR GLASS LINK - Premium 3D glass effect
+   ======================================== */
+.nav-glass-link {
+  position: relative;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.nav-glass-link:hover {
+  color: rgba(255, 255, 255, 1);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    /* Inner glow for glass depth */
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+    /* Outer shadow for 3D lift */
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 0 20px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transform: translateY(-1px);
+}
+
+.nav-glass-link.active {
+  color: rgba(255, 255, 255, 1);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    0 0 25px rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ========================================
+   FOOTER GLASS LINK - Subtle glass effect
+   ======================================== */
+.footer-glass-link {
+  display: inline-block;
+  padding: 4px 0;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+  font-weight: 400;
+  transition: all 0.3s ease;
+  background: transparent;
+}
+
+.footer-glass-link:hover {
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+}
+
+/* Glassmorphic button */
+.btn-glass-morph {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: rgba(255, 255, 255, 0.9);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.btn-glass-morph:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 8px 24px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px) scale(1.02);
 }
 
 /* === 2. DEEP GLASS COMPONENT STACK === */

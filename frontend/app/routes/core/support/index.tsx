@@ -37,7 +37,7 @@ const DECISION_TREE: Record<string, Node> = {
       { label: "Technical Issue", nextId: "tech_issues" },
       { label: "Feature Request", nextId: "feature_request" },
     ],
-    icon: <HelpCircle className="w-12 h-12 text-[#00FFFF]" />,
+    icon: <HelpCircle className="w-12 h-12 text-white/80" />,
   },
   account_issues: {
     id: "account_issues",
@@ -47,14 +47,14 @@ const DECISION_TREE: Record<string, Node> = {
       { label: "I can't sign up", nextId: "signup_issue" },
       { label: "Account locked/banned", nextId: "contact_support" },
     ],
-    icon: <ShieldAlert className="w-12 h-12 text-orange-400" />,
+    icon: <ShieldAlert className="w-12 h-12 icon-glass" />,
   },
   forgot_password: {
     id: "forgot_password",
     title: "Reset Your Password",
     content: "Don't worry, it happens! You can reset your password by clicking the link below. We'll send a recovery email to your inbox.",
     action: { label: "Reset Password", href: "/forgot-password" },
-    icon: <RotateCcw className="w-12 h-12 text-[#00FF00]" />,
+    icon: <RotateCcw className="w-12 h-12 text-white/80" />,
   },
   signup_issue: {
     id: "signup_issue",
@@ -67,7 +67,7 @@ const DECISION_TREE: Record<string, Node> = {
     title: "Contact Support",
     content: "It looks like this issue requires human assistance. Please contact our support team directly.",
     action: { label: "Contact Us", href: "/contact" },
-    icon: <Mail className="w-12 h-12 text-pink-500" />,
+    icon: <Mail className="w-12 h-12 icon-glass" />,
   },
   billing_issues: {
     id: "billing_issues",
@@ -138,7 +138,7 @@ export default function SupportPage() {
   return (
     <div className="w-full max-w-2xl mx-auto py-12">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-black tracking-tighter text-white mb-4">Support Center</h1>
+        <h1 className="text-4xl font-black tracking-tighter text-glass-hero-morph mb-4">Support Center</h1>
         <p className="text-glass-secondary">Let's find a solution for you.</p>
       </div>
 
@@ -164,30 +164,30 @@ export default function SupportPage() {
 
                   {!isResolution ? (
                     <>
-                      <h2 className="text-2xl font-bold text-white mb-8">{currentNode.question}</h2>
+                      <h2 className="text-2xl font-bold text-glass-heading-morph mb-8">{currentNode.question}</h2>
                       <div className="grid grid-cols-1 w-full gap-4">
                         {(currentNode as DecisionNode).options.map((option) => (
                           <button
                             key={option.nextId}
                             onClick={() => handleOptionClick(option.nextId)}
-                            className="w-full p-4 rounded-xl deep-glass-sm hover:-translate-y-0.5 hover:scale-[1.01] border border-white/10 hover:border-[#00FFFF]/50 transition-all duration-300 text-left flex items-center justify-between group"
+                            className="w-full p-4 rounded-xl deep-glass-sm hover:-translate-y-0.5 hover:scale-[1.01] border border-white/10 hover:border-white/30 transition-all duration-300 text-left flex items-center justify-between group"
                           >
                             <span className="font-medium text-gray-200 group-hover:text-white">{option.label}</span>
-                            <ArrowLeft className="w-4 h-4 rotate-180 opacity-0 group-hover:opacity-100 transition-opacity text-[#00FFFF]" />
+                            <ArrowLeft className="w-4 h-4 rotate-180 opacity-0 group-hover:opacity-100 transition-opacity text-white/80" />
                           </button>
                         ))}
                       </div>
                     </>
                   ) : (
                     <>
-                      <div className="w-16 h-16 rounded-full bg-[#00FF00]/10 flex items-center justify-center mb-6 border border-[#00FF00]/20">
-                          <CheckCircle className="w-8 h-8 text-[#00FF00]" />
+                      <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-6 border border-white/20">
+                          <CheckCircle className="w-8 h-8 text-white/80" />
                       </div>
-                      <h2 className="text-2xl font-bold text-white mb-4">{(currentNode as ResolutionNode).title}</h2>
+                      <h2 className="text-2xl font-bold text-glass-heading-morph mb-4">{(currentNode as ResolutionNode).title}</h2>
                       <p className="text-glass-secondary mb-8 leading-relaxed">{(currentNode as ResolutionNode).content}</p>
                       
                       {(currentNode as ResolutionNode).action && (
-                        <Button className="w-full bg-[#00FFFF] text-black hover:bg-[#00FFFF]/90 font-bold h-12 rounded-xl">
+                        <Button className="w-full bg-white text-black hover:bg-white/90 font-bold h-12 rounded-xl">
                           <a href={(currentNode as ResolutionNode).action!.href}>
                             {(currentNode as ResolutionNode).action!.label}
                           </a>
@@ -205,7 +205,7 @@ export default function SupportPage() {
         <div className="flex justify-center mt-8">
           <button
             onClick={handleReset}
-            className="text-sm font-medium text-gray-400 hover:text-[#00FFFF] transition-colors"
+            className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
           >
             Start Over
           </button>

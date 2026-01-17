@@ -131,18 +131,34 @@ async function seedDatabase() {
 
         const bio = `Professional ${role} with ${faker.number.int({min: 2, max: 15})} years of experience. Expert in ${getRandom(EXPERTISE_TAGS)} and ${getRandom(EXPERTISE_TAGS)}. previously worked at ${faker.company.name()}.`;
 
+        // Simulate online status - about 30% of users are online
+        const isOnline = Math.random() < 0.3;
+        
+        // For online users, lastActiveAt is recent (within last few hours)
+        // For offline users, lastActiveAt could be minutes, hours, or days ago
+        let lastActiveAt;
+        if (isOnline) {
+            // Online users: active within last 1-180 minutes
+            const minutesAgo = faker.number.int({ min: 1, max: 180 });
+            lastActiveAt = new Date(Date.now() - minutesAgo * 60 * 1000);
+        } else {
+            // Offline users: last active between 5 minutes and 30 days ago
+            const randomTimeAgo = faker.number.int({ min: 5, max: 43200 }); // 5 min to 30 days in minutes
+            lastActiveAt = new Date(Date.now() - randomTimeAgo * 60 * 1000);
+        }
+
         const userDoc = {
             name: fullName,
             email: email,
             password: commonPassword,
-            phoneNumber: faker.phone.number({ style: 'national' }),
             isEmailVerified: true,
-            isPhoneVerified: true,
             description: bio,
             designation: i < 30 ? "Manager" : (i < 130 ? "Product Owner" : "Developer"),
             expertise: getRandomSubset(EXPERTISE_TAGS, 4),
             isWorkspaceManager: isWSManager,
             managedWorkspaces: [], // Will populate later
+            isOnline: isOnline, // Online status tracking
+            lastActiveAt: lastActiveAt, // Last activity timestamp
             experience: [
                 {
                     title: role,
@@ -181,8 +197,8 @@ async function seedDatabase() {
             joinedAt: faker.date.past({ years: 2 })
         }));
         
-        // Add Manager as Owner/Admin
-        wsMembers.push({ user: manager._id, role: "owner", joinedAt: faker.date.past({ years: 3 }) });
+        // Add Manager as Admin
+        wsMembers.push({ user: manager._id, role: "admin", joinedAt: faker.date.past({ years: 3 }) });
 
         // Add 3 Project Managers
         const assignedPMs = getRandomSubset(projectManagers, 3);
@@ -194,7 +210,6 @@ async function seedDatabase() {
             name: wsName,
             description: `High-performance workspace for ${wsName} operations.`,
             color: faker.color.rgb(),
-            owner: manager._id,
             members: wsMembers
         });
 
@@ -292,7 +307,10 @@ async function seedDatabase() {
                 action: "created_task",
                 resourceType: "Task",
                 resourceId: task._id,
-                details: { project: project.title },
+                details: { 
+                    description: `created task "${task.title}" in project "${project.title}"`,
+                    project: project.title 
+                },
                 createdAt: createdAt
             });
 
@@ -324,7 +342,10 @@ async function seedDatabase() {
                     action: "added_comment",
                     resourceType: "Task",
                     resourceId: task._id,
-                    details: { task: task.title },
+                    details: { 
+                        description: `commented on "${task.title}"`,
+                        task: task.title 
+                    },
                     createdAt: commentTime
                  });
             }

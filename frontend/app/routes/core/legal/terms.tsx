@@ -1,11 +1,4 @@
 import React from "react";
-import { AutoSizer } from "react-virtualized-auto-sizer";
-import * as ReactWindow from "react-window";
-
-// @ts-ignore
-const VariableSizeList = (ReactWindow.VariableSizeList || ReactWindow.default?.VariableSizeList || ReactWindow) as any;
-// @ts-ignore
-const AutoSizerAny = (AutoSizer || (AutoSizer as any).default) as any;
 
 export function meta({}: any) {
   return [
@@ -14,87 +7,94 @@ export function meta({}: any) {
   ];
 }
 
-const TERMS_CONTENT = [
-  { type: "header", text: "Terms of Service" },
-  { type: "date", text: "Effective Date: January 1, 2026" },
-  { type: "section", title: "1. Acceptance of Terms", text: "By accessing or using the TaskHub service, website, or any applications (including mobile applications) made available by TaskHub (together, the 'Service'), however accessed, you agree to be bound by these terms of use ('Terms of Use'). The Service is owned or controlled by TaskHub. These Terms of Use affect your legal rights and obligations. If you do not agree to be bound by all of these Terms of Use, do not access or use the Service." },
-  { type: "section", title: "2. Basic Terms", text: "You may not post violent, nude, partially nude, discriminatory, unlawful, infringing, hateful, pornographic or sexually suggestive photos or other content via the Service." },
-  { type: "list", items: ["You are responsible for any activity that occurs through your account.", "You agree you will not sell, transfer, license or assign your account.", "You are solely responsible for your conduct and any data, text, files, information, usernames, images, graphics, photos, profiles, audio and video clips, sounds, musical works, works of authorship, applications, links and other content or materials."] },
-  { type: "section", title: "3. General Conditions", text: "We reserve the right to modify or terminate the Service or your access to the Service for any reason, without notice, at any time, and without liability to you." },
-  // ... repeated content to simulate length for virtual scrolling demonstration
-  ...Array.from({ length: 100 }, (_, i) => ({
-    type: "section",
-    title: `${4 + i}. Clause ${i + 1}`,
-    text: "Review carefully. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-  })),
-  { type: "footer", text: "End of Terms" }
+const sections = [
+  {
+    title: "1. Acceptance of Terms",
+    content: "By accessing or using TaskHub, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our service. We reserve the right to modify these terms at any time."
+  },
+  {
+    title: "2. Description of Service",
+    content: "TaskHub provides a project management and team collaboration platform. We offer various features including task management, project tracking, team communication, and analytics tools."
+  },
+  {
+    title: "3. User Accounts",
+    content: "You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You must provide accurate and complete information when creating an account."
+  },
+  {
+    title: "4. Acceptable Use",
+    content: "You agree not to use TaskHub for any unlawful purpose or in any way that could damage, disable, or impair our services. You may not attempt to gain unauthorized access to any part of the service."
+  },
+  {
+    title: "5. Intellectual Property",
+    content: "TaskHub and its original content, features, and functionality are owned by TaskHub and are protected by international copyright, trademark, and other intellectual property laws."
+  },
+  {
+    title: "6. User Content",
+    content: "You retain ownership of any content you submit to TaskHub. By submitting content, you grant us a license to use, modify, and display that content in connection with providing our services."
+  },
+  {
+    title: "7. Termination",
+    content: "We may terminate or suspend your account at any time without prior notice if you breach these Terms. Upon termination, your right to use the service will immediately cease."
+  },
+  {
+    title: "8. Limitation of Liability",
+    content: "TaskHub shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of or inability to use the service."
+  },
+  {
+    title: "9. Governing Law",
+    content: "These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which TaskHub operates, without regard to conflict of law principles."
+  },
+  {
+    title: "10. Contact Information",
+    content: "If you have any questions about these Terms, please contact us at legal@taskhub.com or through our support channels."
+  }
 ];
 
-const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
-  const item = TERMS_CONTENT[index];
-  
-  return (
-    <div style={style} className="px-2">
-      {item.type === "header" && (
-        <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-8 text-glass-heading pt-8">
-          {item.text}
-        </h1>
-      )}
-      {item.type === "date" && (
-        <p className="text-gray-400 mb-8 font-mono">{item.text}</p>
-      )}
-      {item.type === "section" && (
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">{item.title}</h2>
-          <p className="text-glass-secondary leading-relaxed">{item.text}</p>
-        </div>
-      )}
-      {item.type === "list" && (
-        <ul className="list-disc pl-6 space-y-2 mb-6 text-glass-secondary">
-          {item.items?.map((li, idx) => (
-            <li key={idx} className="pl-2">{li}</li>
-          ))}
-        </ul>
-      )}
-       {item.type === "footer" && (
-        <div className="py-12 border-t border-white/10 mt-8 text-center text-gray-500 text-sm uppercase tracking-widest">
-            {item.text}
-        </div>
-      )}
-    </div>
-  );
-};
-
 export default function TermsPage() {
-  const getItemSize = (index: number) => {
-     // A crude estimation for demo purposes.
-     const item = TERMS_CONTENT[index];
-     switch (item.type) {
-         case 'header': return 120;
-         case 'date': return 60;
-         case 'section': return 180;
-         case 'list': return 100 + ((item.items?.length || 0) * 30);
-         case 'footer': return 100;
-         default: return 100;
-     }
-  };
-
   return (
-    <div className="h-[calc(100vh-200px)] w-full max-w-4xl mx-auto backdrop-blur-3xl bg-black/85 border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative">
-       <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none z-10"></div>
-       <AutoSizerAny>
-        {({ height, width }: { height: number; width: number }) => (
-          <VariableSizeList
-            height={height}
-            width={width}
-            itemCount={TERMS_CONTENT.length}
-            itemSize={getItemSize}
-            className="scrollbar-none"
-          >
-            {Row}
-          </VariableSizeList>
-        )}
-      </AutoSizerAny>
+    <div className="min-h-screen py-20">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-glass-hero-morph mb-6">
+            Terms of Service
+          </h1>
+          <p className="text-white/50 text-sm font-mono">
+            Effective Date: January 1, 2026
+          </p>
+        </div>
+
+        {/* Content Card */}
+        <div className="rounded-3xl p-8 md:p-12 deep-glass">
+          <p className="text-white/70 leading-relaxed mb-12">
+            Welcome to TaskHub. Please read these Terms of Service carefully before using our platform. By using TaskHub, you agree to be bound by these terms.
+          </p>
+
+          {/* Sections */}
+          <div className="space-y-10">
+            {sections.map((section, index) => (
+              <div key={index} className="border-l-2 border-white/10 pl-6 hover:border-white/30 transition-colors">
+                <h2 className="text-xl md:text-2xl font-bold text-glass-heading-morph mb-3">
+                  {section.title}
+                </h2>
+                <p className="text-white/60 leading-relaxed">
+                  {section.content}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Footer */}
+          <div className="mt-16 pt-8 border-t border-white/10 text-center">
+            <p className="text-white/40 text-sm">
+              Questions about our terms?{" "}
+              <a href="mailto:legal@taskhub.com" className="footer-glass-link">
+                Contact our legal team
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

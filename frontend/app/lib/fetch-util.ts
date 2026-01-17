@@ -17,14 +17,36 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Add a global handler for 401 errors
+// Add a global handler for errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      // Dispatch a custom event to trigger logout in AuthProvider
+    // Handle network/connection errors
+    if (!error.response) {
+      if (error.code === 'ERR_NETWORK') {
+        console.warn('Network error - please check your connection or if the server is running');
+      } else if (error.code === 'ECONNABORTED') {
+        console.warn('Request timeout - server may be slow or unresponsive');
+      } else {
+        console.warn('Request failed:', error.message);
+      }
+      return Promise.reject(error);
+    }
+    
+    // Handle 401 Unauthorized - trigger logout
+    if (error.response.status === 401) {
       window.dispatchEvent(new Event("force-logout"));
     }
+    
+    // Handle other common errors
+    if (error.response.status === 403) {
+      console.warn('Access denied - you may not have permission for this action');
+    } else if (error.response.status === 404) {
+      console.warn('Resource not found:', error.config?.url);
+    } else if (error.response.status >= 500) {
+      console.warn('Server error - please try again later');
+    }
+    
     return Promise.reject(error);
   }
 );

@@ -5,7 +5,7 @@ import { MarketingFooter } from "@/components/layout/marketing-footer";
 
 export default function CoreLayout() {
   return (
-    <div className="relative min-h-screen w-full overflow-hidden text-white selection:bg-[#00FFFF]/30 isolate flex flex-col">
+    <div className="relative min-h-screen w-full overflow-hidden text-white selection:bg-white/30 isolate flex flex-col">
        {/* Background is handled by MeshBackground in root.tsx */}
        
        <MarketingNavbar />

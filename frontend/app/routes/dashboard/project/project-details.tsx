@@ -128,8 +128,14 @@ const ProjectDetails = () => {
             </span>
           </div>
 
-
-          <Button onClick={() => setIsCreateTask(true)} className="bg-primary text-black hover:bg-primary/90">Add Task</Button>
+          {canManageStatus && (
+            <Button 
+              onClick={() => setIsCreateTask(true)} 
+              className="bg-white/[0.08] backdrop-blur-xl border border-white/20 text-white hover:bg-white/[0.15] hover:border-white/30 transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
+            >
+              Add Task
+            </Button>
+          )}
           {canManageStatus && (
             <>
                 <Select
@@ -381,10 +387,10 @@ const TaskCard = ({ task, onClick }: { task: Task; onClick: () => void }) => {
           <Badge
             className={
               task.priority === "High"
-                ? "bg-red-500 text-white"
+                ? "bg-white/[0.08] backdrop-blur-sm text-red-400/90 border border-white/20"
                 : task.priority === "Medium"
-                ? "bg-orange-500 text-white"
-                : "bg-slate-500 text-white"
+                ? "bg-white/[0.08] backdrop-blur-sm text-amber-400/90 border border-white/20"
+                : "bg-white/[0.08] backdrop-blur-sm text-blue-400/90 border border-white/20"
             }
           >
             {task.priority}

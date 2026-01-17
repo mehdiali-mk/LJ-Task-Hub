@@ -114,23 +114,29 @@ const updateTaskTitle = async (req, res) => {
 
     // ADMIN BYPASS: Master Admin can update any task
     if (!req.user.isAdmin) {
-        const member = project.members.find(
-          (m) => m.user.toString() === req.user._id.toString()
-        );
+        // Check if user is a Workspace Manager for this project's workspace
+        const workspaceId = project.workspace.toString();
+        const isWsManager = req.user.managedWorkspaces && 
+          req.user.managedWorkspaces.some(id => id.toString() === workspaceId);
+        
+        if (!isWsManager) {
+            const member = project.members.find(
+              (m) => m.user.toString() === req.user._id.toString()
+            );
 
-        if (!member) {
-          return res.status(403).json({
-            message: "You are not a member of this project",
-          });
-        }
+            if (!member) {
+              return res.status(403).json({
+                message: "You are not a member of this project",
+              });
+            }
 
-        const isWorkspaceManager = member.role === "admin" || member.role === "owner";
-        const isManager = member.role === "manager";
+            const hasProjectRole = member.role === "admin" || member.role === "owner" || member.role === "manager";
 
-        if (!isWorkspaceManager && !isManager) {
-          return res.status(403).json({
-            message: "You are not authorized to update task title",
-          });
+            if (!hasProjectRole) {
+              return res.status(403).json({
+                message: "You are not authorized to update task title",
+              });
+            }
         }
     }
 
@@ -175,23 +181,29 @@ const updateTaskDescription = async (req, res) => {
 
     // ADMIN BYPASS: Master Admin can update any task
     if (!req.user.isAdmin) {
-        const member = project.members.find(
-          (m) => m.user.toString() === req.user._id.toString()
-        );
+        // Check if user is a Workspace Manager for this project's workspace
+        const workspaceId = project.workspace.toString();
+        const isWsManager = req.user.managedWorkspaces && 
+          req.user.managedWorkspaces.some(id => id.toString() === workspaceId);
+        
+        if (!isWsManager) {
+            const member = project.members.find(
+              (m) => m.user.toString() === req.user._id.toString()
+            );
 
-        if (!member) {
-          return res.status(403).json({
-            message: "You are not a member of this project",
-          });
-        }
+            if (!member) {
+              return res.status(403).json({
+                message: "You are not a member of this project",
+              });
+            }
 
-        const isWorkspaceManager = member.role === "admin" || member.role === "owner";
-        const isManager = member.role === "manager";
+            const hasProjectRole = member.role === "admin" || member.role === "owner" || member.role === "manager";
 
-        if (!isWorkspaceManager && !isManager) {
-          return res.status(403).json({
-            message: "You are not authorized to update task description",
-          });
+            if (!hasProjectRole) {
+              return res.status(403).json({
+                message: "You are not authorized to update task description",
+              });
+            }
         }
     }
 
@@ -241,23 +253,29 @@ const updateTaskStatus = async (req, res) => {
 
     // ADMIN BYPASS: Master Admin can update any task
     if (!req.user.isAdmin) {
-        const member = project.members.find(
-          (m) => m.user.toString() === req.user._id.toString()
-        );
+        // Check if user is a Workspace Manager for this project's workspace
+        const workspaceId = project.workspace.toString();
+        const isWsManager = req.user.managedWorkspaces && 
+          req.user.managedWorkspaces.some(id => id.toString() === workspaceId);
+        
+        if (!isWsManager) {
+            const member = project.members.find(
+              (m) => m.user.toString() === req.user._id.toString()
+            );
 
-        if (!member) {
-          return res.status(403).json({
-            message: "You are not a member of this project",
-          });
-        }
+            if (!member) {
+              return res.status(403).json({
+                message: "You are not a member of this project",
+              });
+            }
 
-        const isWorkspaceManager = member.role === "admin" || member.role === "owner";
-        const isManager = member.role === "manager";
+            const hasProjectRole = member.role === "admin" || member.role === "owner" || member.role === "manager";
 
-        if (!isWorkspaceManager && !isManager) {
-          return res.status(403).json({
-            message: "You are not authorized to update task status",
-          });
+            if (!hasProjectRole) {
+              return res.status(403).json({
+                message: "You are not authorized to update task status",
+              });
+            }
         }
     }
 
@@ -302,23 +320,29 @@ const updateTaskAssignees = async (req, res) => {
 
     // ADMIN BYPASS: Master Admin can update any task
     if (!req.user.isAdmin) {
-        const member = project.members.find(
-          (m) => m.user.toString() === req.user._id.toString()
-        );
+        // Check if user is a Workspace Manager for this project's workspace
+        const workspaceId = project.workspace.toString();
+        const isWsManager = req.user.managedWorkspaces && 
+          req.user.managedWorkspaces.some(id => id.toString() === workspaceId);
+        
+        if (!isWsManager) {
+            const member = project.members.find(
+              (m) => m.user.toString() === req.user._id.toString()
+            );
 
-        if (!member) {
-          return res.status(403).json({
-            message: "You are not a member of this project",
-          });
-        }
+            if (!member) {
+              return res.status(403).json({
+                message: "You are not a member of this project",
+              });
+            }
 
-        const isWorkspaceManager = member.role === "admin" || member.role === "owner";
-        const isManager = member.role === "manager";
+            const hasProjectRole = member.role === "admin" || member.role === "owner" || member.role === "manager";
 
-        if (!isWorkspaceManager && !isManager) {
-          return res.status(403).json({
-            message: "You are not authorized to update task assignees",
-          });
+            if (!hasProjectRole) {
+              return res.status(403).json({
+                message: "You are not authorized to update task assignees",
+              });
+            }
         }
     }
 
@@ -363,23 +387,29 @@ const updateTaskPriority = async (req, res) => {
 
     // ADMIN BYPASS: Master Admin can update any task
     if (!req.user.isAdmin) {
-        const member = project.members.find(
-          (m) => m.user.toString() === req.user._id.toString()
-        );
+        // Check if user is a Workspace Manager for this project's workspace
+        const workspaceId = project.workspace.toString();
+        const isWsManager = req.user.managedWorkspaces && 
+          req.user.managedWorkspaces.some(id => id.toString() === workspaceId);
+        
+        if (!isWsManager) {
+            const member = project.members.find(
+              (m) => m.user.toString() === req.user._id.toString()
+            );
 
-        if (!member) {
-          return res.status(403).json({
-            message: "You are not a member of this project",
-          });
-        }
+            if (!member) {
+              return res.status(403).json({
+                message: "You are not a member of this project",
+              });
+            }
 
-        const isWorkspaceManager = member.role === "admin" || member.role === "owner";
-        const isManager = member.role === "manager";
+            const hasProjectRole = member.role === "admin" || member.role === "owner" || member.role === "manager";
 
-        if (!isWorkspaceManager && !isManager) {
-          return res.status(403).json({
-            message: "You are not authorized to update task priority",
-          });
+            if (!hasProjectRole) {
+              return res.status(403).json({
+                message: "You are not authorized to update task priority",
+              });
+            }
         }
     }
 
@@ -611,6 +641,92 @@ const addComment = async (req, res) => {
   }
 };
 
+const deleteComment = async (req, res) => {
+  try {
+    const { taskId, commentId } = req.params;
+
+    const comment = await Comment.findById(commentId);
+
+    if (!comment) {
+      return res.status(404).json({
+        message: "Comment not found",
+      });
+    }
+
+    // Verify the comment belongs to the task
+    if (comment.task.toString() !== taskId) {
+      return res.status(400).json({
+        message: "Comment does not belong to this task",
+      });
+    }
+
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json({
+        message: "Task not found",
+      });
+    }
+
+    const project = await Project.findById(task.project);
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
+
+    // Check authorization
+    const isCommentOwner = comment.author.toString() === req.user._id.toString();
+    
+    // Check if user is Admin
+    const isAdmin = req.user.isAdmin;
+    
+    // Check if user is Workspace Manager
+    const workspaceId = project.workspace.toString();
+    const isWsManager = req.user.managedWorkspaces && 
+      req.user.managedWorkspaces.some(id => id.toString() === workspaceId);
+    
+    // Check if user is Project Manager
+    const member = project.members.find(
+      (m) => m.user.toString() === req.user._id.toString()
+    );
+    const isProjectManager = member && member.role === "manager";
+
+    // Authorization logic:
+    // - Admin, Workspace Manager, Project Manager can delete ANY comment
+    // - Regular users can only delete their OWN comments
+    const canDeleteAnyComment = isAdmin || isWsManager || isProjectManager;
+    
+    if (!canDeleteAnyComment && !isCommentOwner) {
+      return res.status(403).json({
+        message: "You can only delete your own comments",
+      });
+    }
+
+    // Remove comment from task's comments array
+    task.comments = task.comments.filter(
+      (cId) => cId.toString() !== commentId
+    );
+    await task.save();
+
+    // Delete the comment
+    await Comment.findByIdAndDelete(commentId);
+
+    // Record activity
+    await recordActivity(req.user._id, "deleted_comment", "Task", taskId, {
+      description: `deleted a comment`,
+    });
+
+    res.status(200).json({ message: "Comment deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
 const watchTask = async (req, res) => {
   try {
     const { taskId } = req.params;
@@ -787,23 +903,29 @@ const deleteTask = async (req, res) => {
 
     // ADMIN BYPASS: Master Admin can delete any task
     if (!req.user.isAdmin) {
-        const member = project.members.find(
-          (m) => m.user.toString() === req.user._id.toString()
-        );
+        // Check if user is a Workspace Manager for this project's workspace
+        const workspaceId = project.workspace.toString();
+        const isWsManager = req.user.managedWorkspaces && 
+          req.user.managedWorkspaces.some(id => id.toString() === workspaceId);
+        
+        if (!isWsManager) {
+            const member = project.members.find(
+              (m) => m.user.toString() === req.user._id.toString()
+            );
 
-        if (!member) {
-          return res.status(403).json({
-            message: "You are not a member of this project",
-          });
-        }
+            if (!member) {
+              return res.status(403).json({
+                message: "You are not a member of this project",
+              });
+            }
 
-        const isWorkspaceManager = member.role === "admin" || member.role === "owner";
-        const isManager = member.role === "manager";
+            const hasProjectRole = member.role === "admin" || member.role === "owner" || member.role === "manager";
 
-        if (!isWorkspaceManager && !isManager) {
-          return res.status(403).json({
-            message: "You are not authorized to delete tasks",
-          });
+            if (!hasProjectRole) {
+              return res.status(403).json({
+                message: "You are not authorized to delete tasks",
+              });
+            }
         }
     }
 
@@ -844,6 +966,7 @@ export {
   getActivityByResourceId,
   getCommentsByTaskId,
   addComment,
+  deleteComment,
   watchTask,
   achievedTask,
   getMyTasks,

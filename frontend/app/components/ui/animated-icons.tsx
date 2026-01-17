@@ -2,20 +2,20 @@ import React from 'react';
 
 interface AnimatedIconProps {
   className?: string;
-  color?: string;
 }
 
 // All icons use CSS animations that trigger on parent hover via .group class
 // The icons have kinetic-* classes that define the animations in app.css
+// All icons use currentColor for stroke to work with the icon-glass CSS class
 
 // Animated Gear Icon - rotates on hover
-export function AnimatedGearIcon({ className = '', color = '#A81B1B' }: AnimatedIconProps) {
+export function AnimatedGearIcon({ className = '' }: AnimatedIconProps) {
   return (
     <svg
       className={`kinetic-gear ${className}`}
       viewBox="0 0 24 24"
       fill="none"
-      stroke={color}
+      stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -27,13 +27,13 @@ export function AnimatedGearIcon({ className = '', color = '#A81B1B' }: Animated
 }
 
 // Animated Zap/Lightning Icon - glows on hover
-export function AnimatedZapIcon({ className = '', color = '#E8A040' }: AnimatedIconProps) {
+export function AnimatedZapIcon({ className = '' }: AnimatedIconProps) {
   return (
     <svg
       className={`kinetic-action ${className}`}
       viewBox="0 0 24 24"
       fill="none"
-      stroke={color}
+      stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -44,13 +44,13 @@ export function AnimatedZapIcon({ className = '', color = '#E8A040' }: AnimatedI
 }
 
 // Animated Shield Icon - pulses on hover
-export function AnimatedShieldIcon({ className = '', color = '#1A1A3E' }: AnimatedIconProps) {
+export function AnimatedShieldIcon({ className = '' }: AnimatedIconProps) {
   return (
     <svg
       className={`kinetic-icon ${className}`}
       viewBox="0 0 24 24"
       fill="none"
-      stroke={color}
+      stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -62,13 +62,13 @@ export function AnimatedShieldIcon({ className = '', color = '#1A1A3E' }: Animat
 }
 
 // Animated Users Icon - lifts on hover
-export function AnimatedUsersIcon({ className = '', color = '#A81B1B' }: AnimatedIconProps) {
+export function AnimatedUsersIcon({ className = '' }: AnimatedIconProps) {
   return (
     <svg
       className={`kinetic-action ${className}`}
       viewBox="0 0 24 24"
       fill="none"
-      stroke={color}
+      stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -82,13 +82,13 @@ export function AnimatedUsersIcon({ className = '', color = '#A81B1B' }: Animate
 }
 
 // Animated Chart Icon - lifts with glow
-export function AnimatedChartIcon({ className = '', color = '#E8A040' }: AnimatedIconProps) {
+export function AnimatedChartIcon({ className = '' }: AnimatedIconProps) {
   return (
     <svg
       className={`kinetic-action ${className}`}
       viewBox="0 0 24 24"
       fill="none"
-      stroke={color}
+      stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -101,13 +101,13 @@ export function AnimatedChartIcon({ className = '', color = '#E8A040' }: Animate
 }
 
 // Animated Lock Icon - shakes on hover
-export function AnimatedLockIcon({ className = '', color = '#1A1A3E' }: AnimatedIconProps) {
+export function AnimatedLockIcon({ className = '' }: AnimatedIconProps) {
   return (
     <svg
       className={`kinetic-icon ${className}`}
       viewBox="0 0 24 24"
       fill="none"
-      stroke={color}
+      stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -119,13 +119,13 @@ export function AnimatedLockIcon({ className = '', color = '#1A1A3E' }: Animated
 }
 
 // Animated Layout Icon - scales on hover
-export function AnimatedLayoutIcon({ className = '', color = '#A81B1B' }: AnimatedIconProps) {
+export function AnimatedLayoutIcon({ className = '' }: AnimatedIconProps) {
   return (
     <svg
       className={`kinetic-action ${className}`}
       viewBox="0 0 24 24"
       fill="none"
-      stroke={color}
+      stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"

@@ -110,10 +110,16 @@ const TaskDetails = () => {
 
 
   const currentUserMember = project?.members?.find(
-    (m) => m.user?._id === user?._id || m.user === user?._id
+    (m) => m.user?._id === user?._id || m.user?.toString() === user?._id?.toString()
   );
-  // Admin users get manager-level access
-  const isManager = isAdmin || currentUserMember?.role === "manager";
+  
+  // Check if user is a Workspace Manager (has this workspace in their managedWorkspaces)
+  const isWorkspaceManager = user?.managedWorkspaces?.some(
+    (wsId) => wsId === workspaceId || wsId === project?.workspace?.toString()
+  );
+  
+  // Admin users, Workspace Managers, or Project Managers get manager-level access
+  const isManager = isAdmin || isWorkspaceManager || currentUserMember?.role === "manager";
 
   return (
     <>
@@ -172,14 +178,13 @@ const TaskDetails = () => {
             <div className="flex flex-col md:flex-row justify-between items-start mb-4">
               <div>
                 <Badge
-                  variant={
+                  className={
                     task.priority === "High"
-                      ? "destructive"
+                      ? "bg-white/[0.08] backdrop-blur-sm text-red-400/90 border border-white/20"
                       : task.priority === "Medium"
-                      ? "default"
-                      : "outline"
+                      ? "bg-white/[0.08] backdrop-blur-sm text-amber-400/90 border border-white/20"
+                      : "bg-white/[0.08] backdrop-blur-sm text-blue-400/90 border border-white/20"
                   }
-                  className="mb-2 capitalize"
                 >
                   {task.priority} Priority
                 </Badge>
@@ -235,7 +240,7 @@ const TaskDetails = () => {
             <SubTasksDetails subTasks={task.subtasks || []} taskId={task._id} />
           </div>
 
-          <CommentSection taskId={task._id} members={project.members as any} />
+          <CommentSection taskId={task._id} members={project.members as any} canDeleteAnyComment={isManager} />
         </div>
 
         {/* right side */}

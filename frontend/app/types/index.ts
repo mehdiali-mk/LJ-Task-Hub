@@ -4,8 +4,7 @@ export interface User {
   name: string;
   createdAt: Date;
   isEmailVerified: boolean;
-  isPhoneVerified: boolean;
-  phoneNumber?: string;
+  is2FAEnabled?: boolean;
   updatedAt: Date;
   profilePicture?: string;
 
@@ -17,12 +16,11 @@ export interface Workspace {
   _id: string;
   name: string;
   description?: string;
-  owner: User | string;
-  manager?: User; // Manager explicitly assigned
+  manager?: User; // Manager explicitly assigned via managedWorkspaces
   color: string;
   members: {
     user: User;
-    role: "admin" | "member" | "owner" | "viewer";
+    role: "admin" | "member" | "viewer";
     joinedAt: Date;
   }[];
   createdAt: Date;
@@ -48,7 +46,7 @@ export interface Project {
   tasks: Task[];
   members: {
     user: User;
-    role: "admin" | "member" | "owner" | "viewer" | "manager";
+    role: "admin" | "member" | "viewer" | "manager";
   }[];
   createdAt: Date;
   updatedAt: Date;
@@ -101,7 +99,7 @@ export interface Attachment {
 export interface MemberProps {
   _id: string;
   user: User;
-  role: "admin" | "member" | "owner" | "viewer";
+  role: "admin" | "member" | "viewer";
   joinedAt: Date;
 }
 

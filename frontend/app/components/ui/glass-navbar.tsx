@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Layers } from "lucide-react";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { Button } from "@/components/ui/button";
 
 export function GlassNavbar() {
@@ -8,8 +8,13 @@ export function GlassNavbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <Link to="/" className="flex-shrink-0 flex items-center gap-3 group cursor-pointer">
-            <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 ring-1 ring-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors backdrop-blur-md shadow-inner">
-               <Layers className="text-[#00FFFF] w-6 h-6 group-hover:text-[#00FF00] transition-colors" />
+            <div className="w-14 h-14 rounded-xl bg-white border border-white/50 ring-1 ring-white/30 flex items-center justify-center group-hover:shadow-lg transition-all backdrop-blur-md overflow-hidden">
+               <DotLottieReact
+                 src="https://lottie.host/2bd99e49-b27f-4ad1-a9fd-4c7272da3bbe/hgKC6qcLgu.lottie"
+                 loop
+                 autoplay
+                 style={{ width: '56px', height: '56px', transform: 'scale(1.4)' }}
+               />
             </div>
             <span className="font-bold text-2xl tracking-tighter text-white">TaskHub</span>
           </Link>

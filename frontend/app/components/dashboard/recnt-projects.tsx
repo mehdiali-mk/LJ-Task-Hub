@@ -12,17 +12,17 @@ export const RecentProjects = ({ data }: { data: Project[] }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "In Progress":
-        return "bg-blue-500/20 text-blue-300 border-blue-500/30";
+        return "bg-white/[0.08] backdrop-blur-sm text-blue-400/90 border-white/20";
       case "Completed":
-        return "bg-green-500/20 text-green-300 border-green-500/30";
+        return "bg-white/[0.08] backdrop-blur-sm text-emerald-400/90 border-white/20";
       case "Cancelled":
-        return "bg-red-500/20 text-red-300 border-red-500/30";
+        return "bg-white/[0.08] backdrop-blur-sm text-red-400/90 border-white/20";
       case "On Hold":
-        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
+        return "bg-white/[0.08] backdrop-blur-sm text-amber-400/90 border-white/20";
       case "Planning":
-        return "bg-purple-500/20 text-purple-300 border-purple-500/30";
+        return "bg-white/[0.08] backdrop-blur-sm text-purple-400/90 border-white/20";
       default:
-        return "bg-gray-500/20 text-gray-300 border-gray-500/30";
+        return "bg-white/[0.08] backdrop-blur-sm text-white/70 border-white/20";
     }
   };
 
@@ -45,7 +45,7 @@ export const RecentProjects = ({ data }: { data: Project[] }) => {
               <div key={project._id} className="border border-white/10 rounded-lg p-4 bg-white/5 hover:bg-white/10 transition-colors">
                 <div className="flex items-center justify-between mb-2">
                   <Link
-                    to={`/workspaces${workspaceId}/projects/${project._id}`}
+                    to={`/workspaces/${workspaceId}/projects/${project._id}`}
                   >
                     <h3 className="font-medium text-gray-100 hover:text-primary transition-colors">
                       {project.title}
@@ -54,7 +54,7 @@ export const RecentProjects = ({ data }: { data: Project[] }) => {
 
                   <span
                     className={cn(
-                      "px-2 py-1 text-xs rounded-full font-semibold border",
+                      "px-3 py-1.5 text-xs rounded-lg font-semibold border whitespace-nowrap backdrop-blur-sm shadow-sm",
                       getStatusColor(project.status)
                     )}
                   >

@@ -1,13 +1,5 @@
 import React, { useRef, useCallback, useState, useEffect } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { 
-  AnimatedLayoutIcon, 
-  AnimatedZapIcon, 
-  AnimatedShieldIcon, 
-  AnimatedUsersIcon, 
-  AnimatedChartIcon, 
-  AnimatedLockIcon 
-} from './animated-icons';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 
 // ============================================
 // BENTO TILE WITH HOVER GLOW
@@ -77,58 +69,48 @@ export function BentoTileMotion({
       `}
       style={{ contain: 'layout paint' }}
     >
-      {/* Hover-Glow Light Source */}
-      <div 
-        className="absolute pointer-events-none transition-opacity duration-300"
-        style={{
-          left: `${mousePos.x}px`,
-          top: `${mousePos.y}px`,
-          width: '350px',
-          height: '350px',
-          transform: 'translate(-50%, -50%)',
-          background: `radial-gradient(circle, ${glowColor} 0%, transparent 70%)`,
-          opacity: isHovered ? 0.8 : 0,
-          filter: 'blur(30px)',
-        }}
-      />
       <div className="relative z-10 h-full p-6 md:p-8">{children}</div>
     </motion.div>
   );
 }
-
 // ============================================
 // ANIMATED ICON WRAPPER
 // ============================================
+import { LayoutGrid, Zap, Shield, Users, BarChart3, Lock, Settings } from 'lucide-react';
+import { AnimatedIcon } from './animated-icon';
+
 interface AnimatedIconWrapperProps {
-  iconType: 'layout' | 'zap' | 'shield' | 'users' | 'chart' | 'lock';
-  color: string;
+  iconType: 'layout' | 'zap' | 'shield' | 'users' | 'chart' | 'lock' | 'gear';
   className?: string;
 }
 
-export function AnimatedIconWrapper({ iconType, color, className = '' }: AnimatedIconWrapperProps) {
-  const icons = {
-    layout: AnimatedLayoutIcon,
-    zap: AnimatedZapIcon,
-    shield: AnimatedShieldIcon,
-    users: AnimatedUsersIcon,
-    chart: AnimatedChartIcon,
-    lock: AnimatedLockIcon,
+export function AnimatedIconWrapper({ iconType, className = '' }: AnimatedIconWrapperProps) {
+  const iconConfig = {
+    layout: { icon: LayoutGrid, animation: 'pulse' as const },
+    zap: { icon: Zap, animation: 'bounce' as const },
+    shield: { icon: Shield, animation: 'pulse' as const },
+    users: { icon: Users, animation: 'bounce' as const },
+    chart: { icon: BarChart3, animation: 'bounce' as const },
+    lock: { icon: Lock, animation: 'shake' as const },
+    gear: { icon: Settings, animation: 'rotate' as const },
   };
 
-  const IconComponent = icons[iconType];
+  const config = iconConfig[iconType];
 
   return (
-    <motion.div 
+    <div 
       className={`
         w-14 h-14 rounded-2xl deep-glass-sm
-        flex items-center justify-center transition-all duration-500
+        flex items-center justify-center
         ${className}
       `}
-      whileHover={{ scale: 1.15 }}
-      transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
-      <IconComponent className="w-7 h-7 icon-glass" color={color} />
-    </motion.div>
+      <AnimatedIcon 
+        icon={config.icon} 
+        size={28} 
+        animation={config.animation}
+      />
+    </div>
   );
 }
 
@@ -138,7 +120,7 @@ export function AnimatedIconWrapper({ iconType, color, className = '' }: Animate
 interface FeatureItem {
   title: string;
   description: string;
-  iconType: 'layout' | 'zap' | 'shield' | 'users' | 'chart' | 'lock';
+  iconType: 'layout' | 'zap' | 'shield' | 'users' | 'chart' | 'lock' | 'gear';
   color: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }
@@ -161,7 +143,6 @@ export function FeaturesBentoGrid({ features, className = '' }: FeaturesBentoPro
           <div className="flex flex-col h-full group">
             <AnimatedIconWrapper 
               iconType={feature.iconType}
-              color={feature.color}
               className="mb-6"
             />
             <h3 className="text-xl md:text-2xl font-bold mb-3 tracking-tight text-glass-heading">
@@ -178,7 +159,7 @@ export function FeaturesBentoGrid({ features, className = '' }: FeaturesBentoPro
 }
 
 // ============================================
-// 3D TESTIMONIALS CAROUSEL
+// TESTIMONIALS CAROUSEL WITH SLIDING ANIMATION
 // ============================================
 interface TestimonialItem {
   name: string;
@@ -194,101 +175,196 @@ interface Testimonials3DProps {
 }
 
 export function Testimonials3DCarousel({ testimonials, className = '' }: Testimonials3DProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+  
+  const totalItems = testimonials.length;
+  const visibleCount = 3;
+  
+  // Get the 3 visible card indices with wrapping
+  const getVisibleIndices = () => {
+    const indices = [];
+    for (let i = 0; i < visibleCount; i++) {
+      let index = (currentIndex + i) % totalItems;
+      indices.push(index);
+    }
+    return indices;
+  };
+  
+  const visibleIndices = getVisibleIndices();
+  
+  const handlePrev = () => {
+    setDirection(-1);
+    setCurrentIndex((prev) => (prev === 0 ? totalItems - 1 : prev - 1));
+  };
+  
+  const handleNext = () => {
+    setDirection(1);
+    setCurrentIndex((prev) => (prev === totalItems - 1 ? 0 : prev + 1));
+  };
+
   return (
-    <div 
-      className={`grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 ${className}`}
-      style={{ perspective: '1000px' }}
-    >
-      {testimonials.map((testimonial, index) => (
-        <Testimonial3DCard 
-          key={index}
-          testimonial={testimonial}
-          index={index}
-        />
-      ))}
+    <div className={`relative w-full ${className}`}>
+      {/* Main Container with arrows and cards */}
+      <div className="flex items-center gap-4 md:gap-8">
+        {/* Left Arrow */}
+        <button
+          onClick={handlePrev}
+          className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full btn-glass-morph flex items-center justify-center group transition-all duration-300 hover:scale-110"
+          aria-label="Previous testimonial"
+        >
+          <svg 
+            className="w-5 h-5 md:w-6 md:h-6 text-white/80 group-hover:text-white transition-colors" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        {/* Cards Container */}
+        <div 
+          className="flex-1 overflow-hidden py-4"
+          style={{ perspective: '1200px' }}
+        >
+          <AnimatePresence initial={false} mode="popLayout" custom={direction}>
+            <motion.div 
+              className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6"
+              key={currentIndex}
+              custom={direction}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              variants={{
+                enter: (dir: number) => ({
+                  x: dir > 0 ? '100%' : '-100%',
+                  opacity: 0,
+                }),
+                center: {
+                  x: 0,
+                  opacity: 1,
+                },
+                exit: (dir: number) => ({
+                  x: dir > 0 ? '-100%' : '100%',
+                  opacity: 0,
+                }),
+              }}
+              transition={{
+                x: { type: 'tween', duration: 0.5, ease: [0.32, 0.72, 0, 1] },
+                opacity: { duration: 0.3 },
+              }}
+              style={{ transformStyle: 'preserve-3d' }}
+            >
+              {visibleIndices.map((testimonialIndex, i) => {
+                const testimonial = testimonials[testimonialIndex];
+                
+                return (
+                  <motion.div
+                    key={testimonialIndex}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      duration: 0.4,
+                      delay: i * 0.1,
+                      ease: 'easeOut'
+                    }}
+                  >
+                    <TestimonialCard testimonial={testimonial} />
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Right Arrow */}
+        <button
+          onClick={handleNext}
+          className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full btn-glass-morph flex items-center justify-center group transition-all duration-300 hover:scale-110"
+          aria-label="Next testimonial"
+        >
+          <svg 
+            className="w-5 h-5 md:w-6 md:h-6 text-white/80 group-hover:text-white transition-colors" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Dots Indicator */}
+      <div className="flex justify-center gap-2 mt-8">
+        {testimonials.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => {
+              setDirection(index > currentIndex ? 1 : -1);
+              setCurrentIndex(index);
+            }}
+            className={`h-2 rounded-full transition-all duration-300 ${
+              index === currentIndex 
+                ? 'bg-white/80 w-6' 
+                : 'bg-white/20 hover:bg-white/40 w-2'
+            }`}
+            aria-label={`Go to testimonial ${index + 1}`}
+          />
+        ))}
+      </div>
     </div>
   );
 }
 
-interface Testimonial3DCardProps {
+interface TestimonialCardProps {
   testimonial: TestimonialItem;
-  index: number;
 }
 
-function Testimonial3DCard({ testimonial, index }: Testimonial3DCardProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(cardRef, { once: true, margin: "-50px" });
-  const [isHovered, setIsHovered] = useState(false);
-
+function TestimonialCard({ testimonial }: TestimonialCardProps) {
   return (
-    <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 40, rotateX: 15 }}
-      animate={isInView ? { opacity: 1, y: 0, rotateX: 0 } : { opacity: 0, y: 40, rotateX: 15 }}
-      transition={{ 
-        duration: 0.7, 
-        delay: index * 0.15,
-        ease: [0.25, 0.46, 0.45, 0.94]
-      }}
-      style={{ 
-        transformStyle: 'preserve-3d'
-      }}
-      whileHover={{ 
-        scale: 1.02,
-        rotateX: -2,
-        rotateY: index === 0 ? 2 : index === 2 ? -2 : 0
-      }}
-      className="relative rounded-3xl p-6 md:p-8
-        deep-glass
-        transition-all duration-300
-        hover:-translate-y-1
-        group"
-    >
+    <div className="rounded-2xl p-5 md:p-6 deep-glass transition-all duration-300 h-full hover:-translate-y-1 hover:shadow-xl">
       {/* Verified Expertise Badge */}
-      <div className="absolute top-4 right-4 flex items-center gap-2 px-3 py-1.5 rounded-full deep-glass-sm">
-        <svg className="w-3.5 h-3.5 text-emerald-400 icon-glass" fill="currentColor" viewBox="0 0 20 20">
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full deep-glass-sm w-fit mb-4">
+        <svg className="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
         </svg>
         <span className="text-xs font-medium text-glass-secondary">{testimonial.expertise}</span>
       </div>
 
       {/* Stars */}
-      <div className="flex gap-1 mb-6 mt-8">
+      <div className="flex gap-1 mb-4">
         {[...Array(5)].map((_, i) => (
-          <motion.svg 
+          <svg 
             key={i}
-            className="w-4 h-4 text-white/20"
+            className="w-4 h-4 text-amber-400"
             fill="currentColor"
             viewBox="0 0 20 20"
-            initial={{ opacity: 0.2 }}
-            whileInView={{ opacity: 1, color: '#D4AF37' }}
-            transition={{ delay: i * 0.1 + 0.3, duration: 0.3 }}
           >
             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </motion.svg>
+          </svg>
         ))}
       </div>
 
       {/* Quote */}
-      <p className="text-lg font-light italic leading-relaxed mb-6 text-glass-secondary">
+      <p className="text-sm md:text-base font-light italic leading-relaxed mb-5 text-glass-secondary min-h-[70px]">
         "{testimonial.text}"
       </p>
 
       {/* Author */}
-      <div className="flex items-center gap-4 mt-auto">
-        <motion.div 
-          className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-black"
+      <div className="flex items-center gap-3 mt-auto">
+        <div 
+          className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-black text-sm"
           style={{ backgroundColor: testimonial.color }}
-          whileHover={{ scale: 1.1 }}
-          transition={{ duration: 0.2 }}
         >
           {testimonial.name.charAt(0)}
-        </motion.div>
+        </div>
         <div>
-          <h4 className="font-semibold text-glass-primary">{testimonial.name}</h4>
-          <p className="text-sm uppercase tracking-wider text-glass-muted">{testimonial.role}</p>
+          <h4 className="font-semibold text-glass-primary text-sm">{testimonial.name}</h4>
+          <p className="text-xs uppercase tracking-wider text-glass-muted">{testimonial.role}</p>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
+

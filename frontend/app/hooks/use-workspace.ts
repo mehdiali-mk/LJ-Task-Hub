@@ -45,8 +45,8 @@ export const useGetWorkspaceDetailsQuery = (
 
 export const useInviteMemberMutation = () => {
   return useMutation({
-    mutationFn: (data: { email: string; role: string; workspaceId: string }) =>
-      postData(`/workspaces/${data.workspaceId}/invite-member`, data),
+    mutationFn: (data: { email: string; workspaceId: string }) =>
+      postData(`/workspaces/${data.workspaceId}/invite-member`, { email: data.email }),
   });
 };
 

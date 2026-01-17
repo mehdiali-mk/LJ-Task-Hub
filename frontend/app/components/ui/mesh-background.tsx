@@ -10,28 +10,37 @@ export function MeshBackground() {
   useEffect(() => {
     if (!canvasRef.current || isTransferedRef.current) return;
 
-    // Initialize Worker
-    workerRef.current = new Worker();
-
+    // Check if OffscreenCanvas is supported first
     const canvas = canvasRef.current;
-    
-    // Check if OffscreenCanvas is supported
     if (!canvas.transferControlToOffscreen) {
-        console.warn("OffscreenCanvas not supported on this browser. Fallback or error.");
-        return;
+      console.warn("OffscreenCanvas not supported - mesh background disabled");
+      return;
     }
 
-    const offscreen = canvas.transferControlToOffscreen();
-    isTransferedRef.current = true;
+    try {
+      // Initialize Worker
+      workerRef.current = new Worker();
+      
+      // Handle worker errors
+      workerRef.current.onerror = (e) => {
+        console.warn('Mesh background worker error:', e.message);
+      };
 
-    workerRef.current.postMessage({
-      type: 'init',
-      payload: {
-        canvas: offscreen,
-        width: window.innerWidth,
-        height: window.innerHeight,
-      },
-    }, [offscreen]);
+      const offscreen = canvas.transferControlToOffscreen();
+      isTransferedRef.current = true;
+
+      workerRef.current.postMessage({
+        type: 'init',
+        payload: {
+          canvas: offscreen,
+          width: window.innerWidth,
+          height: window.innerHeight,
+        },
+      }, [offscreen]);
+    } catch (e) {
+      console.warn('Failed to initialize mesh background:', e);
+      return;
+    }
 
     const handleResize = () => {
       workerRef.current?.postMessage({

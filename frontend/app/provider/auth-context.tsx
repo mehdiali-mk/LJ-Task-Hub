@@ -74,6 +74,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
+    // Call backend logout API to update online status
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Logout API call failed:", error);
+      // Continue with local logout even if API fails
+    }
+
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 

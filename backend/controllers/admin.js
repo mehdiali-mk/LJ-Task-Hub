@@ -42,12 +42,58 @@ export const loginAdmin = async (req, res) => {
   }
 };
 
-// Get All Users
+// Get All Users with sorting and searching
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password");
-    res.status(200).json(users);
+    const { sortBy = 'name', sortOrder = 'asc', search = '' } = req.query;
+
+    // Build search query
+    let query = {};
+    if (search) {
+      const searchRegex = new RegExp(search, 'i'); // Case-insensitive search
+      query = {
+        $or: [
+          { name: searchRegex },
+          { email: searchRegex }
+        ]
+      };
+    }
+
+    // Determine sort field and order
+    let sortOptions = {};
+    const order = sortOrder === 'desc' ? -1 : 1;
+
+    switch (sortBy) {
+      case 'status':
+        // Sort by isOnline (online first when ascending, offline first when descending)
+        sortOptions = { isOnline: order, name: 1 };
+        break;
+      case 'role':
+        // Sort by isWorkspaceManager (managers first when ascending)
+        sortOptions = { isWorkspaceManager: order, name: 1 };
+        break;
+      case 'name':
+      default:
+        sortOptions = { name: order };
+        break;
+    }
+
+    const users = await User.find(query)
+      .select("-password")
+      .sort(sortOptions);
+
+    // Add computed role field for frontend display
+    const usersWithRole = users.map(user => {
+      const userObj = user.toObject();
+      userObj.role = user.managedWorkspaces && user.managedWorkspaces.length > 0 
+        ? 'Workspace Manager' 
+        : 'User';
+      return userObj;
+    });
+
+    res.status(200).json(usersWithRole);
   } catch (error) {
+    console.error("Error fetching users:", error);
     res.status(500).json({ message: "Error fetching users" });
   }
 };

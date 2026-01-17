@@ -14,11 +14,10 @@ const createWorkspace = async (req, res) => {
       name,
       description,
       color,
-      owner: req.user._id,
       members: [
         {
           user: req.user._id,
-          role: "owner",
+          role: "admin",
           joinedAt: new Date(),
         },
       ],
@@ -37,7 +36,10 @@ const getWorkspaces = async (req, res) => {
   try {
     const query = req.user.isAdmin ? {} : { "members.user": req.user._id };
 
-    const workspaceDocs = await Workspace.find(query).sort({ createdAt: -1 }).lean();
+    const workspaceDocs = await Workspace.find(query)
+        .populate("members.user", "name email profilePicture")
+        .sort({ createdAt: -1 })
+        .lean();
     
     // Attach dynamic manager info to each workspace
     const workspaces = await Promise.all(workspaceDocs.map(async (ws) => {
@@ -73,7 +75,12 @@ const getWorkspaceDetails = async (req, res) => {
     const workspace = { ...workspaceDoc, manager };
 
     res.status(200).json(workspace);
-  } catch (error) {}
+  } catch (error) {
+    console.error("getWorkspaceDetails Error:", error);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
 };
 
 const getWorkspaceProjects = async (req, res) => {
@@ -99,8 +106,6 @@ const getWorkspaceProjects = async (req, res) => {
     const workspace = { ...workspaceDoc, manager };
 
     const projects = await Project.find({
-      workspace: workspaceId,
-      isArchived: false,
       workspace: workspaceId,
       isArchived: false,
       ...(req.user.isAdmin ? {} : { members: { $elemMatch: { user: req.user._id } } }),
@@ -347,7 +352,7 @@ const getWorkspaceStats = async (req, res) => {
 const inviteUserToWorkspace = async (req, res) => {
   try {
     const { workspaceId } = req.params;
-    const { email, role } = req.body;
+    const { email } = req.body;
 
     const workspace = await Workspace.findById(workspaceId);
 
@@ -358,8 +363,6 @@ const inviteUserToWorkspace = async (req, res) => {
     }
 
     // Authorization Check: Admin, Owner, or Workspace Manager
-    // Authorization Check: Admin, Owner, or Workspace Manager
-    // Dynamic Check: Does req.user manage this workspace?
     const isManager = req.user.managedWorkspaces && req.user.managedWorkspaces.some(id => id.toString() === workspaceId);
     const isAdmin = req.user.isAdmin;
     
@@ -381,7 +384,7 @@ const inviteUserToWorkspace = async (req, res) => {
 
     if (!existingUser) {
       return res.status(400).json({
-        message: "User not found",
+        message: "No user found with this email address. Please ensure the user is registered on the platform.",
       });
     }
 
@@ -391,7 +394,7 @@ const inviteUserToWorkspace = async (req, res) => {
 
     if (isMember) {
       return res.status(400).json({
-        message: "User already a member of this workspace",
+        message: "This user is already a member of this workspace",
       });
     }
 
@@ -402,7 +405,7 @@ const inviteUserToWorkspace = async (req, res) => {
 
     if (isInvited && isInvited.expiresAt > new Date()) {
       return res.status(400).json({
-        message: "User already invited to this workspace",
+        message: "An invitation has already been sent to this user. Please wait for them to accept or the invitation to expire.",
       });
     }
 
@@ -410,11 +413,14 @@ const inviteUserToWorkspace = async (req, res) => {
       await WorkspaceInvite.deleteOne({ _id: isInvited._id });
     }
 
+    // Default role is always 'member' since we removed role selection
+    const inviteRole = "member";
+
     const inviteToken = jwt.sign(
       {
         user: existingUser._id,
         workspaceId: workspaceId,
-        role: role || "member",
+        role: inviteRole,
       },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
@@ -424,20 +430,47 @@ const inviteUserToWorkspace = async (req, res) => {
       user: existingUser._id,
       workspaceId: workspaceId,
       token: inviteToken,
-      role: role || "member",
+      role: inviteRole,
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
 
     const invitationLink = `${process.env.FRONTEND_URL}/workspace-invite/${workspace._id}?tk=${inviteToken}`;
 
     const emailContent = `
-      <p>You have been invited to join ${workspace.name} workspace</p>
-      <p>Click here to join: <a href="${invitationLink}">${invitationLink}</a></p>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #333;">You're Invited to Join a Workspace! 🎉</h2>
+        
+        <p style="color: #555; font-size: 16px;">
+          Hello <strong>${existingUser.name}</strong>,
+        </p>
+        
+        <p style="color: #555; font-size: 16px;">
+          You have been invited to join the workspace "<strong>${workspace.name}</strong>" on TaskHub.
+        </p>
+        
+        ${workspace.description ? `<p style="color: #777; font-size: 14px; font-style: italic;">${workspace.description}</p>` : ''}
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${invitationLink}" 
+             style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+            Accept Invitation
+          </a>
+        </div>
+        
+        <p style="color: #777; font-size: 14px;">
+          Or copy and paste this link in your browser:<br/>
+          <a href="${invitationLink}" style="color: #3b82f6;">${invitationLink}</a>
+        </p>
+        
+        <p style="color: #999; font-size: 12px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+          This invitation will expire in 7 days. If you didn't expect this invitation, you can safely ignore this email.
+        </p>
+      </div>
     `;
 
     await sendEmail(
       email,
-      "You have been invited to join a workspace",
+      `You've been invited to join "${workspace.name}" workspace`,
       emailContent
     );
 

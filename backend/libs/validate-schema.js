@@ -32,7 +32,6 @@ const emailSchema = z.object({
 
 const inviteMemberSchema = z.object({
   email: z.string().email("Invalid email address"),
-  role: z.enum(["admin", "member", "viewer"]),
 });
 
 const tokenSchema = z.object({
