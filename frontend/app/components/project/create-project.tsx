@@ -350,6 +350,8 @@ export const CreateProjectDialog = ({
                       name="members"
                       render={({ field }) => {
                         const selectedMembers = field.value || [];
+                        // Filter out members with null/undefined user objects
+                        const validMembers = workspaceMembers.filter(m => m.user && m.user._id);
 
                         return (
                           <FormItem>
@@ -365,9 +367,9 @@ export const CreateProjectDialog = ({
                                       <span className="text-white/40">Select Members</span>
                                     ) : selectedMembers.length <= 2 ? (
                                       selectedMembers.map((m) => {
-                                        const member = workspaceMembers.find((wm) => wm.user._id === m.user);
-                                        return `${member?.user.name} (${member?.role})`;
-                                      }).join(", ")
+                                        const member = validMembers.find((wm) => wm.user?._id === m.user);
+                                        return member ? `${member.user.name} (${member.role})` : '';
+                                      }).filter(Boolean).join(", ")
                                     ) : (
                                       `${selectedMembers.length} members selected`
                                     )}
@@ -375,56 +377,60 @@ export const CreateProjectDialog = ({
                                 </PopoverTrigger>
                                 <PopoverContent className="w-full max-w-60 overflow-y-auto bg-zinc-900/95 border-white/20 backdrop-blur-xl rounded-xl" align="start">
                                   <div className="flex flex-col gap-2">
-                                    {workspaceMembers.map((member) => {
-                                      const selectedMember = selectedMembers.find((m) => m.user === member.user._id);
+                                    {validMembers.length === 0 ? (
+                                      <p className="text-white/50 text-sm text-center py-2">No members available</p>
+                                    ) : (
+                                      validMembers.map((member) => {
+                                        const selectedMember = selectedMembers.find((m) => m.user === member.user._id);
 
-                                      return (
-                                        <div key={member._id} className="flex items-center gap-2 p-2 border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
-                                          <Checkbox
-                                            checked={!!selectedMember}
-                                            onCheckedChange={(checked) => {
-                                              if (checked) {
-                                                field.onChange([...selectedMembers, { user: member.user._id, role: "contributor" }]);
-                                              } else {
-                                                field.onChange(selectedMembers.filter((m) => m.user !== member.user._id));
-                                              }
-                                            }}
-                                            id={`member-${member.user._id}`}
-                                            className="border-white/30"
-                                          />
-                                          <label 
-                                            htmlFor={`member-${member.user._id}`}
-                                            className="truncate flex-1 cursor-pointer text-sm font-medium leading-none text-white/80"
-                                          >
-                                            {member.user.name}
-                                          </label>
-
-                                          {selectedMember && (
-                                            <Select
-                                              value={selectedMember.role}
-                                              onValueChange={(role) => {
-                                                field.onChange(
-                                                  selectedMembers.map((m) =>
-                                                    m.user === member.user._id
-                                                      ? { ...m, role: role as "contributor" | "manager" | "viewer" }
-                                                      : m
-                                                  )
-                                                );
+                                        return (
+                                          <div key={member._id} className="flex items-center gap-2 p-2 border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                                            <Checkbox
+                                              checked={!!selectedMember}
+                                              onCheckedChange={(checked) => {
+                                                if (checked) {
+                                                  field.onChange([...selectedMembers, { user: member.user._id, role: "contributor" }]);
+                                                } else {
+                                                  field.onChange(selectedMembers.filter((m) => m.user !== member.user._id));
+                                                }
                                               }}
+                                              id={`member-${member.user._id}`}
+                                              className="border-white/30"
+                                            />
+                                            <label 
+                                              htmlFor={`member-${member.user._id}`}
+                                              className="truncate flex-1 cursor-pointer text-sm font-medium leading-none text-white/80"
                                             >
-                                              <SelectTrigger className="w-24 h-7 text-xs bg-white/5 border-white/20">
-                                                <SelectValue placeholder="Role" />
-                                              </SelectTrigger>
-                                              <SelectContent className="bg-zinc-900/95 border-white/20 backdrop-blur-xl">
-                                                <SelectItem value="manager">Manager</SelectItem>
-                                                <SelectItem value="contributor">Contributor</SelectItem>
-                                                <SelectItem value="viewer">Viewer</SelectItem>
-                                              </SelectContent>
-                                            </Select>
-                                          )}
-                                        </div>
-                                      );
-                                    })}
+                                              {member.user.name}
+                                            </label>
+
+                                            {selectedMember && (
+                                              <Select
+                                                value={selectedMember.role}
+                                                onValueChange={(role) => {
+                                                  field.onChange(
+                                                    selectedMembers.map((m) =>
+                                                      m.user === member.user._id
+                                                        ? { ...m, role: role as "contributor" | "manager" | "viewer" }
+                                                        : m
+                                                    )
+                                                  );
+                                                }}
+                                              >
+                                                <SelectTrigger className="w-24 h-7 text-xs bg-white/5 border-white/20">
+                                                  <SelectValue placeholder="Role" />
+                                                </SelectTrigger>
+                                                <SelectContent className="bg-zinc-900/95 border-white/20 backdrop-blur-xl">
+                                                  <SelectItem value="manager">Manager</SelectItem>
+                                                  <SelectItem value="contributor">Contributor</SelectItem>
+                                                  <SelectItem value="viewer">Viewer</SelectItem>
+                                                </SelectContent>
+                                              </Select>
+                                            )}
+                                          </div>
+                                        );
+                                      })
+                                    )}
                                   </div>
                                 </PopoverContent>
                               </Popover>

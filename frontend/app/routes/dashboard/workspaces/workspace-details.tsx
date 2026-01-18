@@ -47,6 +47,9 @@ const WorkspaceDetails = () => {
   const isManager = user?.managedWorkspaces?.includes(workspaceId);
   const canCreateProject = isAdmin || isManager;
 
+  // Check if workspace has regular members (excluding admin)
+  const hasMembers = data?.workspace?.members?.filter((m: any) => m.role !== "admin").length > 0;
+
   return (
     <div className="space-y-8">
       <BackButton />
@@ -62,6 +65,8 @@ const WorkspaceDetails = () => {
         projects={data.projects}
         onCreateProject={() => setIsCreateProject(true)}
         canCreateProject={!!canCreateProject}
+        hasMembers={hasMembers}
+        onShowInvitePrompt={() => setIsInviteMember(true)}
       />
 
       <CreateProjectDialog

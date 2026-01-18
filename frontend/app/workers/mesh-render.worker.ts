@@ -81,9 +81,11 @@ void main() {
 
     // Constant Palette: Starboy Album (The Weeknd)
     vec3 c_nearBlack = vec3(0.02, 0.02, 0.04);    // Deep dark base
-    vec3 c_crimson   = vec3(0.70, 0.06, 0.10);    // Rich crimson red
+    // vec3 c_crimson   = vec3(0.70, 0.06, 0.10);    // Rich crimson red
+    vec3 c_crimson   = vec3(0.30, 0.06, 0.10);    // Rich crimson red
     vec3 c_navy      = vec3(0.12, 0.12, 0.35);    // Navy blue (more visible)
-    vec3 c_amber     = vec3(0.90, 0.50, 0.10);    // Warm amber (brighter)
+    // vec3 c_amber     = vec3(0.90, 0.50, 0.10);    // Warm amber (brighter)
+    vec3 c_amber     = vec3(0.10, 0.20, 0.40);    // Warm amber (brighter)
 
     // Larger scale noise for smoother, more fluid blobs
     float n1 = snoise(vec3(st * 0.8, time * 0.7));

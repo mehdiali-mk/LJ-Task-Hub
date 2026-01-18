@@ -41,6 +41,8 @@ interface CreateTaskDialogProps {
   onOpenChange: (open: boolean) => void;
   projectId: string;
   projectMembers: { user: User; role: ProjectMemberRole }[];
+  projectStartDate?: string;
+  projectDueDate?: string;
 }
 
 export type CreateTaskFormData = z.infer<typeof createTaskSchema>;
@@ -94,6 +96,8 @@ export const CreateTaskDialog = ({
   onOpenChange,
   projectId,
   projectMembers,
+  projectStartDate,
+  projectDueDate,
 }: CreateTaskDialogProps) => {
   const form = useForm<CreateTaskFormData>({
     resolver: zodResolver(createTaskSchema),
@@ -312,6 +316,10 @@ export const CreateTaskDialog = ({
                                   selected={field.value ? new Date(field.value) : undefined}
                                   onSelect={(date) => {
                                     field.onChange(date?.toISOString() || undefined);
+                                  }}
+                                  temporalConstraints={{
+                                    minDate: projectStartDate ? new Date(projectStartDate) : undefined,
+                                    maxDate: projectDueDate ? new Date(projectDueDate) : undefined,
                                   }}
                                 />
                               </PopoverContent>

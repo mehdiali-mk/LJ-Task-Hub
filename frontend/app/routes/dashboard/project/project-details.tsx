@@ -310,6 +310,8 @@ const ProjectDetails = () => {
         onOpenChange={setIsCreateTask}
         projectId={projectId!}
         projectMembers={project.members as any}
+        projectStartDate={project.startDate ? new Date(project.startDate).toISOString() : undefined}
+        projectDueDate={project.dueDate ? new Date(project.dueDate).toISOString() : undefined}
       />
     </div>
   );

@@ -5,9 +5,10 @@ import { ProjectCard } from "../project/projetc-card";
 interface ProjectListProps {
   workspaceId: string;
   projects: Project[];
-
   onCreateProject: () => void;
   canCreateProject?: boolean;
+  hasMembers?: boolean;
+  onShowInvitePrompt?: () => void;
 }
 
 export const ProjectList = ({
@@ -15,7 +16,25 @@ export const ProjectList = ({
   projects,
   onCreateProject,
   canCreateProject = false,
+  hasMembers = true,
+  onShowInvitePrompt,
 }: ProjectListProps) => {
+  // Determine the correct action when clicking the button
+  const handleButtonClick = () => {
+    if (!hasMembers && onShowInvitePrompt) {
+      onShowInvitePrompt();
+    } else {
+      onCreateProject();
+    }
+  };
+
+  // Determine description based on member status
+  const getDescription = () => {
+    if (!canCreateProject) return "No active projects in this workspace";
+    if (!hasMembers) return "Invite members first to create projects";
+    return "Create a project to get started";
+  };
+
   return (
     <div>
       <h3 className="text-xl font-medium mb-4">Projects</h3>
@@ -23,9 +42,10 @@ export const ProjectList = ({
         {projects.length === 0 ? (
           <NoDataFound
             title="No projects found"
-            description={canCreateProject ? "Create a project to get started" : "No active projects in this workspace"}
+            description={getDescription()}
             buttonText={canCreateProject ? "Create Project" : undefined}
-            buttonAction={canCreateProject ? onCreateProject : undefined}
+            buttonAction={canCreateProject ? handleButtonClick : undefined}
+            disabled={!hasMembers}
           />
         ) : (
           projects.map((project) => {

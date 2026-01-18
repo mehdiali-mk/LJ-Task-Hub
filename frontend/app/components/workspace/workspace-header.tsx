@@ -17,6 +17,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
+import { InviteMembersPrompt } from "./invite-members-prompt";
+import { cn } from "@/lib/utils";
 
 interface WorkspaceHeaderProps {
   workspace: Workspace;
@@ -45,6 +47,7 @@ export const WorkspaceHeader = ({
   const [isAdmin, setIsAdmin] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showInvitePrompt, setShowInvitePrompt] = useState(false);
 
   useEffect(() => {
     setIsAdmin(!!localStorage.getItem("admin_token"));
@@ -53,6 +56,18 @@ export const WorkspaceHeader = ({
   // Role Checks - Only Admin and Workspace Manager have elevated permissions
   // (Owner field removed since only Admin creates workspaces)
   const isManager = user?.managedWorkspaces?.includes(workspace._id);
+
+  // Check if workspace has regular members (excluding the admin who created it)
+  const hasRegularMembers = members.filter(m => m.role !== "admin").length > 0;
+
+  // Handle Create Project button click
+  const handleCreateProjectClick = () => {
+    if (!hasRegularMembers) {
+      setShowInvitePrompt(true);
+    } else {
+      onCreateProject();
+    }
+  };
 
   const handleDeleteWorkspace = async () => {
     setIsDeleting(true);
@@ -95,8 +110,13 @@ export const WorkspaceHeader = ({
                   Invite
                 </Button>
                 <Button
-                  onClick={onCreateProject}
-                  className="bg-white/[0.08] backdrop-blur-xl border border-white/20 text-white hover:bg-white/[0.15] hover:border-white/30 transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
+                  onClick={handleCreateProjectClick}
+                  className={cn(
+                    "bg-white/[0.08] backdrop-blur-xl border border-white/20 text-white transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.3)]",
+                    hasRegularMembers 
+                      ? "hover:bg-white/[0.15] hover:border-white/30" 
+                      : "opacity-50 cursor-not-allowed"
+                  )}
                 >
                   <Plus className="size-4 mr-2" />
                   Create Project
@@ -125,17 +145,18 @@ export const WorkspaceHeader = ({
         )}
 
 
-      {members.length > 0 && (
+      {/* Only show members section if there are regular (non-admin) members */}
+      {hasRegularMembers && (
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">Members</span>
 
           <div className="flex space-x-2">
-            {members.map((member) => {
+            {members.filter(m => m.role !== "admin").map((member) => {
               // Skip if member.user is null/undefined
               if (!member.user) return null;
               
               // Check if this member is the workspace manager
-              const isManager = workspace.manager?._id === member.user._id || 
+              const isMemberManager = workspace.manager?._id === member.user._id || 
                                workspace.manager?.toString() === member.user._id?.toString();
               
               return (
@@ -143,12 +164,12 @@ export const WorkspaceHeader = ({
                   key={member._id}
                   className="relative h-8 w-8 rounded-full overflow-hidden"
                   style={{
-                    border: isManager 
+                    border: isMemberManager 
                       ? `3px solid ${workspace.color || '#3b82f6'}` 
                       : '2px solid rgba(255, 255, 255, 0.1)',
-                    boxShadow: isManager ? `0 0 8px ${workspace.color || '#3b82f6'}40` : 'none'
+                    boxShadow: isMemberManager ? `0 0 8px ${workspace.color || '#3b82f6'}40` : 'none'
                   }}
-                  title={isManager ? `${member.user.name} (Workspace Manager)` : member.user.name}
+                  title={isMemberManager ? `${member.user.name} (Workspace Manager)` : member.user.name}
                 >
                   <AvatarImage
                     src={member.user.profilePicture}
@@ -185,6 +206,13 @@ export const WorkspaceHeader = ({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Invite Members Prompt Popup */}
+      <InviteMembersPrompt
+        isOpen={showInvitePrompt}
+        onClose={() => setShowInvitePrompt(false)}
+        onInviteClick={onInviteMember}
+      />
     </div>
   );
 };

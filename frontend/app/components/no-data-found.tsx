@@ -1,11 +1,13 @@
 import { CirclePlus, LayoutGrid } from "lucide-react";
 import { Button } from "./ui/button";
+import { cn } from "@/lib/utils";
 
 interface NoDataFoundProps {
   title: string;
   description: string;
   buttonText?: string;
   buttonAction?: () => void;
+  disabled?: boolean;
 }
 
 export const NoDataFound = ({
@@ -13,6 +15,7 @@ export const NoDataFound = ({
   description,
   buttonText,
   buttonAction,
+  disabled = false,
 }: NoDataFoundProps) => {
   return (
     <div className="col-span-full text-center py-12 2xl:py-24 bg-muted/40 rounded-lg">
@@ -24,7 +27,13 @@ export const NoDataFound = ({
       </p>
       
       {buttonText && buttonAction && (
-        <Button onClick={buttonAction} className="mt-4">
+        <Button 
+          onClick={buttonAction} 
+          className={cn(
+            "mt-4",
+            disabled && "opacity-50 cursor-not-allowed"
+          )}
+        >
             <CirclePlus className="size-4 mr-2" />
             {buttonText}
         </Button>

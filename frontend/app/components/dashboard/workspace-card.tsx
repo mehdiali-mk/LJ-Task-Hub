@@ -83,33 +83,41 @@ export const WorkspaceCard = ({ workspace, navigateToWorkspaceDetails = false }:
             )}
 
             <div className="mt-auto w-full pt-3 border-t border-white/10 flex items-center justify-between">
-                 <div className="flex gap-1.5">
-                    {workspace.members?.slice(0, 4).map((member, i) => {
-                      const userName = member.user?.name || 'User';
-                      const initial = userName.charAt(0).toUpperCase();
-                      
-                      return (
-                        <Avatar key={i} className="w-6 h-6 border-[1.5px] border-white/20 shadow-sm transition-transform hover:scale-110 hover:z-10">
-                          <AvatarImage src={member.user?.profilePicture} />
-                          <AvatarFallback className="bg-white/10 text-white/80 text-[10px] font-medium">
-                            {initial}
-                          </AvatarFallback>
-                        </Avatar>
-                      );
-                    })}
-                    {(workspace.members?.length || 0) > 4 && (
-                      <div className="w-6 h-6 rounded-full border-[1.5px] border-white/20 bg-white/10 flex items-center justify-center text-[10px] text-white/80 font-medium shadow-sm z-10">
-                        +{workspace.members.length - 4}
-                      </div>
-                    )}
-                </div>
+                 {/* Filter out admin members - only show regular members */}
+                 {(() => {
+                   const regularMembers = workspace.members?.filter(m => m.role !== "admin") || [];
+                   return (
+                     <>
+                       <div className="flex gap-1.5">
+                         {regularMembers.slice(0, 4).map((member, i) => {
+                           const userName = member.user?.name || 'User';
+                           const initial = userName.charAt(0).toUpperCase();
+                           
+                           return (
+                             <Avatar key={i} className="w-6 h-6 border-[1.5px] border-white/20 shadow-sm transition-transform hover:scale-110 hover:z-10">
+                               <AvatarImage src={member.user?.profilePicture} />
+                               <AvatarFallback className="bg-white/10 text-white/80 text-[10px] font-medium">
+                                 {initial}
+                               </AvatarFallback>
+                             </Avatar>
+                           );
+                         })}
+                         {regularMembers.length > 4 && (
+                           <div className="w-6 h-6 rounded-full border-[1.5px] border-white/20 bg-white/10 flex items-center justify-center text-[10px] text-white/80 font-medium shadow-sm z-10">
+                             +{regularMembers.length - 4}
+                           </div>
+                         )}
+                       </div>
 
-                <div className="flex items-center gap-3 text-xs font-semibold">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/5 border border-white/10">
-                        <Users className="w-3.5 h-3.5 text-white/60" />
-                        <span className="text-white/80">{workspace.members?.length || 1}</span>
-                    </div>
-                </div>
+                       <div className="flex items-center gap-3 text-xs font-semibold">
+                           <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/5 border border-white/10">
+                               <Users className="w-3.5 h-3.5 text-white/60" />
+                               <span className="text-white/80">{regularMembers.length}</span>
+                           </div>
+                       </div>
+                     </>
+                   );
+                 })()}
             </div>
         </div>
     </div>

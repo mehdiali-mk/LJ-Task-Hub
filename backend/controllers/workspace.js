@@ -507,6 +507,10 @@ const acceptGenerateInvite = async (req, res) => {
       });
     }
 
+    // Check if this will be the first non-admin member
+    const regularMembers = workspace.members.filter(m => m.role !== "admin");
+    const isFirstMember = regularMembers.length === 0;
+
     workspace.members.push({
       user: req.user._id,
       role: "member",
@@ -515,18 +519,27 @@ const acceptGenerateInvite = async (req, res) => {
 
     await workspace.save();
 
+    // If this is the first non-admin member, make them the workspace manager
+    if (isFirstMember) {
+      await User.findByIdAndUpdate(req.user._id, {
+        $addToSet: { managedWorkspaces: workspaceId }
+      });
+    }
+
     await recordActivity(
       req.user._id,
       "joined_workspace",
       "Workspace",
       workspaceId,
       {
-        description: `Joined ${workspace.name} workspace`,
+        description: `Joined ${workspace.name} workspace${isFirstMember ? ' as Workspace Manager' : ''}`,
       }
     );
 
     res.status(200).json({
-      message: "Invitation accepted successfully",
+      message: isFirstMember 
+        ? "Invitation accepted successfully! You are now the Workspace Manager." 
+        : "Invitation accepted successfully",
     });
   } catch (error) {
     console.log(error);
@@ -579,6 +592,10 @@ const acceptInviteByToken = async (req, res) => {
       });
     }
 
+    // Check if this will be the first non-admin member
+    const regularMembers = workspace.members.filter(m => m.role !== "admin");
+    const isFirstMember = regularMembers.length === 0;
+
     workspace.members.push({
       user: user,
       role: role || "member",
@@ -587,15 +604,24 @@ const acceptInviteByToken = async (req, res) => {
 
     await workspace.save();
 
+    // If this is the first non-admin member, make them the workspace manager
+    if (isFirstMember) {
+      await User.findByIdAndUpdate(user, {
+        $addToSet: { managedWorkspaces: workspaceId }
+      });
+    }
+
     await Promise.all([
       WorkspaceInvite.deleteOne({ _id: inviteInfo._id }),
       recordActivity(user, "joined_workspace", "Workspace", workspaceId, {
-        description: `Joined ${workspace.name} workspace`,
+        description: `Joined ${workspace.name} workspace${isFirstMember ? ' as Workspace Manager' : ''}`,
       }),
     ]);
 
     res.status(200).json({
-      message: "Invitation accepted successfully",
+      message: isFirstMember 
+        ? "Invitation accepted successfully! You are now the Workspace Manager." 
+        : "Invitation accepted successfully",
     });
   } catch (error) {
     console.log(error);
@@ -604,6 +630,7 @@ const acceptInviteByToken = async (req, res) => {
     });
   }
 };
+
 
 
 const deleteWorkspace = async (req, res) => {

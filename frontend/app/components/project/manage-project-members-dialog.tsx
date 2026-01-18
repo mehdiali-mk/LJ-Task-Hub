@@ -54,15 +54,19 @@ export const ManageProjectMembersDialog = ({
   const { data: workspaceData } = useGetWorkspaceDetailsQuery(workspaceId) as { data: any };
   const workspaceMembers = workspaceData?.members || [];
 
+  // Filter out members with null user objects
+  const validWorkspaceMembers = workspaceMembers.filter((wm: any) => wm.user && wm.user._id);
+  const validProjectMembers = project.members.filter((pm: any) => pm.user && pm.user._id);
+
   // Filter out users who are already in the project
-  const availableUsers = workspaceMembers.filter(
-      (wm: any) => !project.members.some((pm) => pm.user._id === wm.user._id)
+  const availableUsers = validWorkspaceMembers.filter(
+      (wm: any) => !validProjectMembers.some((pm: any) => pm.user._id === wm.user._id)
   );
 
   // Role permissions
   const isWorkspaceManager = user?.managedWorkspaces?.includes(workspaceId);
-  const isProjectManager = project.members.some(
-    (m) => m.user._id === user?._id && m.role === "manager"
+  const isProjectManager = validProjectMembers.some(
+    (m: any) => m.user._id === user?._id && m.role === "manager"
   );
   const isAdmin = user?.isAdmin;
   const canManage = isAdmin || isWorkspaceManager || isProjectManager;
@@ -145,8 +149,8 @@ export const ManageProjectMembersDialog = ({
             )}
 
           <div className="flex flex-col gap-3">
-             <h3 className="text-sm font-medium text-gray-400">Current Members ({project.members.length})</h3>
-            {project.members.map((member) => (
+             <h3 className="text-sm font-medium text-gray-400">Current Members ({validProjectMembers.length})</h3>
+            {validProjectMembers.map((member: any) => (
               <div
                 key={member.user._id}
                 className="flex items-center justify-between p-2 rounded-lg border border-white/5 bg-white/5"
@@ -154,7 +158,7 @@ export const ManageProjectMembersDialog = ({
                 <div className="flex items-center gap-3">
                   <Avatar>
                     <AvatarImage src={member.user.profilePicture} />
-                    <AvatarFallback>{member.user.name.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>{member.user.name?.charAt(0) || '?'}</AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="text-sm font-medium">{member.user.name}</p>
