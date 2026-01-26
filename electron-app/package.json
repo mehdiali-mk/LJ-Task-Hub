@@ -1,0 +1,19 @@
+{
+  "name": "taskforged",
+  "version": "1.0.0",
+  "description": "TaskForged - Project Management Desktop Application",
+  "main": "main.js",
+  "author": "LJ Task Hub",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  }
+}

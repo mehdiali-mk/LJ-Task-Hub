@@ -42,14 +42,14 @@ const springConfig = {
   damping: 25,
 };
 
-// Default colors palette (glass-friendly)
+// Default colors palette (desaturated for dark mode)
 const defaultColors = [
-  "hsl(200, 100%, 50%)",  // Electro blue
-  "hsl(280, 80%, 55%)",   // Purple
-  "hsl(160, 80%, 45%)",   // Teal
-  "hsl(35, 100%, 55%)",   // Orange
-  "hsl(340, 80%, 55%)",   // Pink
-  "hsl(220, 80%, 55%)",   // Royal blue
+  "hsl(200, 80%, 55%)",   // Cyan blue
+  "hsl(280, 65%, 58%)",   // Soft purple
+  "hsl(160, 70%, 48%)",   // Teal
+  "hsl(35, 90%, 55%)",    // Warm orange
+  "hsl(340, 70%, 58%)",   // Pink
+  "hsl(220, 75%, 58%)",   // Royal blue
 ];
 
 /**
@@ -77,25 +77,8 @@ function GlassBar({
   const [isHovered, setIsHovered] = React.useState(false);
   const percentage = maxValue > 0 ? (value / maxValue) * 100 : 0;
   
-  // Spring-animated height
-  const springHeight = useSpring(percentage, springConfig);
-  const barHeight = useTransform(springHeight, [0, 100], [0, height - 40]);
-  
-  React.useEffect(() => {
-    if (animated) {
-      springHeight.set(percentage);
-    }
-  }, [percentage, animated, springHeight]);
-
-  // Color variants
-  const colorDark = color.replace(/\d+%\)$/, (match) => {
-    const val = parseInt(match);
-    return `${Math.max(20, val - 15)}%)`;
-  });
-  const colorLight = color.replace(/\d+%\)$/, (match) => {
-    const val = parseInt(match);
-    return `${Math.min(80, val + 15)}%)`;
-  });
+  // Clean easing-based height
+  const barHeight = (percentage / 100) * (height - 40);
 
   return (
     <div
@@ -109,70 +92,43 @@ function GlassBar({
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 5 }}
-          className="text-xs font-medium text-white/80 mb-1"
-          style={{ textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}
+          className="text-xs font-medium text-white/90 mb-1"
+          style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}
         >
           {value.toLocaleString()}
         </motion.div>
       )}
       
-      {/* Glass Bar */}
+      {/* Bar */}
       <motion.div
-        className="relative w-full max-w-[60px] mx-auto cursor-pointer"
+        className="relative w-full max-w-[48px] mx-auto rounded-t-sm"
         style={{
-          height: animated ? barHeight : `${(percentage / 100) * (height - 40)}px`,
           minHeight: 4,
+          background: `linear-gradient(180deg, ${color} 0%, ${color}CC 100%)`, // Cleaner gradient
         }}
         initial={{ height: 0 }}
-        animate={{ height: animated ? undefined : `${(percentage / 100) * (height - 40)}px` }}
-        transition={animated ? undefined : { type: "spring", ...springConfig }}
+        animate={{ height: barHeight }}
+        transition={{ 
+          duration: 0.8, 
+          ease: "easeOut",
+          delay: index * 0.1 
+        }}
       >
-        {/* Main glass block */}
-        <div
-          className="absolute inset-0 rounded-t-lg overflow-hidden transition-all duration-200"
-          style={{
-            background: `linear-gradient(135deg, ${colorLight} 0%, ${color} 50%, ${colorDark} 100%)`,
-            border: "1px solid rgba(255,255,255,0.2)",
-            borderBottom: "none",
-            boxShadow: `
-              inset 0 1px 0 rgba(255,255,255,0.3),
-              inset -2px 0 4px rgba(0,0,0,0.1),
-              0 4px 12px rgba(0,0,0,0.2)
-            `,
-            filter: isHovered ? "url(#internalGlow)" : "url(#liquidGlass)",
-            transform: isHovered ? "scaleX(1.05)" : "scaleX(1)",
-          }}
-        >
-          {/* Specular highlight */}
-          <div
-            className="absolute top-0 left-0 right-1/2 h-1/3"
-            style={{
-              background: "linear-gradient(180deg, rgba(255,255,255,0.4) 0%, transparent 100%)",
-              borderRadius: "6px 0 0 0",
-            }}
-          />
-          
-          {/* Internal depth gradient */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: "linear-gradient(135deg, transparent 30%, rgba(0,0,0,0.15) 100%)",
-            }}
-          />
-          
-          {/* Edge rim */}
-          <div
-            className="absolute top-0 left-0 right-0 h-px"
-            style={{
-              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)",
-            }}
-          />
-        </div>
+        {/* Subtle top shine */}
+        <div 
+          className="absolute inset-x-0 top-0 h-[2px] bg-white/20"
+        />
+        
+        {/* Hover overlay */}
+        <div 
+          className="absolute inset-0 bg-white/10 transition-opacity duration-200"
+          style={{ opacity: isHovered ? 1 : 0 }}
+        />
       </motion.div>
       
       {/* X-axis label */}
       <div
-        className="mt-2 text-xs text-white/60 truncate max-w-full px-1 text-center"
+        className="mt-2 text-[10px] md:text-xs text-white/50 truncate max-w-full px-1 text-center font-medium"
         title={label}
       >
         {label}

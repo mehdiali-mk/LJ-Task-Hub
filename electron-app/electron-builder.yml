@@ -1,0 +1,36 @@
+appId: com.taskforge.desktop
+productName: TaskForge
+copyright: Copyright © 2026 TaskForge
+
+# Directories
+directories:
+  output: dist
+  buildResources: build
+
+# Files to include
+files:
+  - main.js
+  - preload.js
+  - package.json
+
+# Compression
+compression: normal
+
+# Windows configuration
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: build/icon.ico
+  artifactName: "${productName}-Setup-${version}.${ext}"
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: TaskForge
+  runAfterFinish: true

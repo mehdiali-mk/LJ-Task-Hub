@@ -46,126 +46,71 @@ const sizeConfig = {
 export function LiquidProgress({
   value,
   color = "hsl(200, 100%, 50%)",
-  showWave = true,
+  showWave = false, // Disabled by default for realism
   glowOnFill = true,
   size = "md",
   className,
-  showLabel = false,
+  showLabel = true, // Default to true for visibility
 }: LiquidProgressProps) {
   const clampedValue = Math.min(100, Math.max(0, value));
   const config = sizeConfig[size];
   
-  // Spring-animated progress value
-  const springValue = useSpring(clampedValue, springConfig);
-  const width = useTransform(springValue, [0, 100], ["0%", "100%"]);
-  
-  // Determine if should glow
-  const shouldGlow = glowOnFill && clampedValue > 80;
-  
-  // Parse color for darker/lighter variants
-  const colorDark = color.replace(/50%\)$/, "35%)");
-  const colorLight = color.replace(/50%\)$/, "65%)");
-  
-  // Update spring when value changes
-  React.useEffect(() => {
-    springValue.set(clampedValue);
-  }, [clampedValue, springValue]);
+  // Parse color for gradient
+  const colorDark = color.replace(/50%\)$/, "40%)");
+  const colorLight = color.replace(/50%\)$/, "60%)");
 
   return (
-    <div className={cn("relative w-full", className)}>
-      {/* Glass Tube Container */}
+    <div className={cn("flex flex-col gap-1.5 w-full", className)}>
+      {/* Label Row */}
+      {showLabel && (
+        <div className="flex justify-between items-end px-1">
+          <span className="text-xs text-transparent">.</span> {/* Spacer if needed, or remove */}
+          <span className="text-xs font-medium text-white/70">
+            {Math.round(clampedValue)}%
+          </span>
+        </div>
+      )}
+
+      {/* Modern Tube Container */}
       <div
-        className="relative overflow-hidden"
+        className="relative overflow-hidden w-full bg-white/5 border border-white/10"
         style={{
           height: config.height,
           borderRadius: config.borderRadius,
-          background: "linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(0,0,0,0.15) 100%)",
-          border: "1px solid rgba(255,255,255,0.15)",
-          boxShadow: `
-            inset 0 2px 4px rgba(0,0,0,0.2),
-            inset 0 -1px 0 rgba(255,255,255,0.1),
-            0 2px 8px rgba(0,0,0,0.15)
-          `,
-          filter: "url(#glassTube)",
+          boxShadow: "inset 0 1px 2px rgba(0,0,0,0.2)",
         }}
       >
-        {/* Liquid Fill */}
+        {/* Fill */}
         <motion.div
           className="absolute inset-y-0 left-0"
+          initial={{ width: 0 }}
+          animate={{ width: `${clampedValue}%` }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
           style={{
-            width,
-            background: `linear-gradient(180deg, ${colorLight} 0%, ${color} 40%, ${colorDark} 100%)`,
-            borderRadius: `${config.borderRadius - 1}px`,
-            boxShadow: shouldGlow
-              ? `0 0 20px ${color}, inset 0 1px 0 rgba(255,255,255,0.3)`
-              : "inset 0 1px 0 rgba(255,255,255,0.3)",
-            filter: shouldGlow ? "url(#electroBlueGlow)" : undefined,
+            background: `linear-gradient(90deg, ${color} 0%, ${colorLight} 100%)`,
+            borderRadius: config.borderRadius,
           }}
         >
-          {/* Wave Animation */}
-          {showWave && clampedValue > 5 && clampedValue < 100 && (
-            <svg
-              className="absolute right-0 top-0 h-full"
-              style={{ width: config.waveHeight * 3 }}
-              viewBox={`0 0 ${config.waveHeight * 3} ${config.height}`}
-              preserveAspectRatio="none"
-            >
-              <motion.path
-                d={`
-                  M 0 0
-                  L 0 ${config.height}
-                  L ${config.waveHeight * 3} ${config.height}
-                  Q ${config.waveHeight * 2} ${config.height / 2}, ${config.waveHeight * 3} 0
-                  Z
-                `}
-                fill={color}
-                animate={{
-                  d: [
-                    `M 0 0 L 0 ${config.height} L ${config.waveHeight * 3} ${config.height} Q ${config.waveHeight * 2} ${config.height / 2}, ${config.waveHeight * 3} 0 Z`,
-                    `M 0 0 L 0 ${config.height} L ${config.waveHeight * 3} ${config.height} Q ${config.waveHeight * 1.5} ${config.height * 0.3}, ${config.waveHeight * 3} 0 Z`,
-                    `M 0 0 L 0 ${config.height} L ${config.waveHeight * 3} ${config.height} Q ${config.waveHeight * 2.5} ${config.height * 0.7}, ${config.waveHeight * 3} 0 Z`,
-                    `M 0 0 L 0 ${config.height} L ${config.waveHeight * 3} ${config.height} Q ${config.waveHeight * 2} ${config.height / 2}, ${config.waveHeight * 3} 0 Z`,
-                  ],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
-            </svg>
-          )}
-          
-          {/* Specular highlight on liquid */}
+          {/* Subtle shine/gloss */}
           <div
-            className="absolute inset-x-0 top-0"
+            className="absolute inset-x-0 top-0 h-[40%]"
             style={{
-              height: "40%",
-              background: "linear-gradient(180deg, rgba(255,255,255,0.35) 0%, transparent 100%)",
-              borderRadius: `${config.borderRadius - 1}px ${config.borderRadius - 1}px 0 0`,
+              background: "linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 100%)",
             }}
           />
+          
+          {/* Glow effect at tip */}
+          {glowOnFill && (
+            <div 
+              className="absolute right-0 top-0 bottom-0 w-[4px]"
+              style={{
+                background: "rgba(255,255,255,0.4)",
+                filter: "blur(2px)",
+              }}
+            />
+          )}
         </motion.div>
-        
-        {/* Glass reflection overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: "linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 50%)",
-            borderRadius: config.borderRadius - 1,
-          }}
-        />
       </div>
-      
-      {/* Optional Label */}
-      {showLabel && (
-        <motion.span
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-medium text-white/80"
-          style={{ textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}
-        >
-          {Math.round(clampedValue)}%
-        </motion.span>
-      )}
     </div>
   );
 }

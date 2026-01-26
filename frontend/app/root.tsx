@@ -25,6 +25,7 @@ export const links: Route.LinksFunction = () => [
 ];
 
 import { RefractiveProvider } from "./components/ui/refractive-layout";
+import { AnimatedFavicon } from "./components/ui/animated-favicon";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -36,6 +37,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body suppressHydrationWarning>
+        <AnimatedFavicon />
         <RefractiveProvider>
           {children}
         </RefractiveProvider>
