@@ -99,7 +99,7 @@ const getProjectDetails = async (req, res) => {
 const getProjectTasks = async (req, res) => {
   try {
     const { projectId } = req.params;
-    const project = await Project.findById(projectId).populate("members.user");
+    const project = await Project.findById(projectId).populate("members.user", "name email profilePicture designation description");
 
     if (!project) {
       return res.status(404).json({
@@ -179,7 +179,7 @@ const addProjectMember = async (req, res) => {
     await project.save();
 
     // Populate user details for frontend return
-    await project.populate('members.user', 'name email profilePicture');
+    await project.populate('members.user', 'name email profilePicture designation description');
 
     res.status(200).json({ message: "Member added", project });
   } catch (error) {
@@ -217,7 +217,7 @@ const removeProjectMember = async (req, res) => {
       await project.save();
       
       // Populate user details for frontend return
-      await project.populate('members.user', 'name email profilePicture');
+      await project.populate('members.user', 'name email profilePicture designation description');
       
       res.status(200).json({ message: "Member removed", project });
     } catch (error) {

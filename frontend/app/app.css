@@ -105,6 +105,58 @@ body {
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: rgba(255, 255, 255, 0.1);
   --sidebar-ring: rgba(255, 255, 255, 0.5);
+  
+  /* ============================================
+     REFRACTIVE MATERIAL SYSTEM (iOS 26.2)
+     ============================================ */
+  
+  /* Refraction Engine - IOR 1.45 */
+  --refract-ior: 1.45;
+  --refract-scale: 15;  /* Displacement intensity: (IOR - 1) * 33 */
+  --refract-edge-feather: 8px;
+  
+  /* Dynamic Contrast Weighting */
+  --lg-opacity: 0.12;  /* Auto-adjusts: 0.05 (clear) to 0.25 (matte) */
+  --lg-contrast-weight: 1.0;  /* Multiplier for text contrast */
+  
+  /* Glass Cutout Text */
+  --glass-text-magnify: 1.15;
+  --glass-text-saturation: 1.3;
+  
+  /* Material Surface Layers */
+  --refract-surface-clear: rgba(255, 255, 255, 0.05);
+  --refract-surface-default: rgba(255, 255, 255, 0.12);
+  --refract-surface-matte: rgba(255, 255, 255, 0.25);
+  
+  /* Edge Lighting */
+  --refract-edge-light: rgba(255, 255, 255, 0.15);
+  --refract-edge-dark: rgba(0, 0, 0, 0.08);
+  
+  /* Atmospheric Shadows */
+  --refract-shadow-ambient: rgba(0, 0, 0, 0.2);
+  --refract-shadow-key: rgba(0, 0, 0, 0.15);
+  
+  /* ============================================
+     LIQUID GLASS DATA VISUALIZATIONS
+     ============================================ */
+  
+  /* Electro Blue - Primary liquid color */
+  --liquid-electro-blue: hsl(200, 100%, 50%);
+  --liquid-electro-blue-light: hsl(200, 100%, 65%);
+  --liquid-electro-blue-dark: hsl(200, 100%, 35%);
+  
+  /* Glow Effects */
+  --liquid-glow-intensity: 0.6;
+  --liquid-glow-radius: 20px;
+  
+  /* Glass Block Properties */
+  --glass-specular-opacity: 0.4;
+  --glass-depth-opacity: 0.15;
+  --glass-block-border: rgba(255, 255, 255, 0.2);
+  
+  /* Spring Animation Defaults */
+  --spring-stiffness: 300;
+  --spring-damping: 25;
 }
 
 .dark {
@@ -317,45 +369,7 @@ body {
 }
 
 
-/* =====================================================
-   KINETIC ICON ANIMATIONS - Hover-triggered animations
-   ===================================================== */
 
-/* Gear icon - rotates smoothly on hover */
-.kinetic-gear {
-  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.group:hover .kinetic-gear {
-  animation: kinetic-rotate 3s linear infinite;
-}
-@keyframes kinetic-rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* Action icons (zap, users, chart, layout) - bounce up on hover */
-.kinetic-action {
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.group:hover .kinetic-action {
-  animation: kinetic-bounce 0.6s ease-in-out infinite alternate;
-}
-@keyframes kinetic-bounce {
-  from { transform: translateY(0); }
-  to { transform: translateY(-3px); }
-}
-
-/* Standard icons (shield, lock) - pulse on hover */
-.kinetic-icon {
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.group:hover .kinetic-icon {
-  animation: kinetic-pulse 1s ease-in-out infinite;
-}
-@keyframes kinetic-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
 
 
 /* ========================================
@@ -1273,3 +1287,181 @@ body {
   z-index: 50;
 }
 
+/* === REFRACTIVE MATERIAL SYSTEM === */
+/* iOS 26.2 Inspired Glass Physics */
+
+/* === REFRACTIVE CARD === */
+.refract-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, var(--lg-opacity, 0.12)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  /* Edge rim lighting */
+  box-shadow: 
+    inset 0 1px 1px var(--refract-edge-light),
+    inset 0 -1px 1px var(--refract-edge-dark),
+    0 20px 40px -10px var(--refract-shadow-ambient) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Apply SVG displacement filter */
+  filter: url(#refractLens) !important;
+  backdrop-filter: none !important; /* Disable standard blur */
+}
+
+.refract-card:hover {
+  background: rgba(255, 255, 255, calc(var(--lg-opacity, 0.12) * 1.5)) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.2),
+    inset 0 -1px 1px var(--refract-edge-dark),
+    0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  transform: translateY(-2px);
+}
+
+/* === REFRACTIVE PANEL (Elevated) === */
+.refract-panel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, var(--lg-opacity, 0.08)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 8px 24px -6px var(--refract-shadow-key) !important;
+  filter: url(#refractEdge) !important;
+}
+
+/* === REFRACTIVE PANEL (Inset) === */
+.refract-panel-inset {
+  position: relative;
+  background: rgba(0, 0, 0, calc(var(--lg-opacity, 0.08) * 1.5)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 0.75rem;
+}
+
+/* === REFRACTIVE SIDEBAR === */
+.refract-sidebar {
+  position: relative;
+  background: rgba(15, 15, 25, calc(var(--lg-opacity, 0.12) * 2.5)) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 
+    inset -1px 0 0 rgba(255, 255, 255, 0.05),
+    4px 0 20px rgba(0, 0, 0, 0.1) !important;
+  filter: url(#refractEdge) !important;
+  backdrop-filter: none !important;
+}
+
+/* === REFRACTIVE MENU/DROPDOWN === */
+.refract-menu {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: rgba(20, 20, 35, calc(var(--lg-opacity, 0.12) * 3)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 10px 30px -5px rgba(0, 0, 0, 0.3) !important;
+  filter: url(#refractSoft) !important;
+  backdrop-filter: none !important;
+}
+
+/* === GLASS CUTOUT TEXT === */
+.glass-cutout {
+  color: rgba(255, 255, 255, 0.4) !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+  filter: url(#glassCutout) !important;
+  mix-blend-mode: overlay;
+}
+
+/* Glass cutout with higher visibility */
+.glass-cutout-visible {
+  color: rgba(255, 255, 255, 0.55);
+  text-shadow: 
+    0 1px 0 rgba(255, 255, 255, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+  filter: url(#glassCutout);
+}
+
+/* === DYNAMIC CONTRAST UTILITIES === */
+
+/* Clear mode - maximum transparency */
+.contrast-clear {
+  --lg-opacity: 0.05;
+  --lg-contrast-weight: 1.3;
+}
+
+/* Default mode - balanced */
+.contrast-default {
+  --lg-opacity: 0.12;
+  --lg-contrast-weight: 1.0;
+}
+
+/* Matte mode - reduced transparency */
+.contrast-matte {
+  --lg-opacity: 0.25;
+  --lg-contrast-weight: 0.85;
+}
+
+/* === REFRACTION EDGE VARIANTS === */
+
+/* Full refraction (IOR 1.45) */
+.refract-full {
+  filter: url(#refractLens);
+}
+
+/* Soft refraction (lighter effect) */
+.refract-soft {
+  filter: url(#refractSoft);
+}
+
+/* Edge-only refraction */
+.refract-edge {
+  filter: url(#refractEdge);
+}
+
+/* Transmission shader (chromatic effect) */
+.refract-transmission {
+  filter: url(#transmissionShader);
+}
+
+/* No refraction */
+.refract-none {
+  filter: none;
+}
+
+/* === NOISE TEXTURE OVERLAY === */
+.refract-noise::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+/* === ANIMATED CONTRAST TRANSITION === */
+.contrast-animate {
+  transition: 
+    --lg-opacity 0.5s ease-out,
+    background 0.5s ease-out,
+    box-shadow 0.5s ease-out;
+}
+
+/* === FALLBACK FOR UNSUPPORTED BROWSERS === */
+@supports not (filter: url(#refractLens)) {
+  .refract-card,
+  .refract-panel,
+  .refract-sidebar,
+  .refract-menu {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  
+  .glass-cutout,
+  .glass-cutout-visible {
+    filter: none;
+    color: rgba(255, 255, 255, 0.7);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+}

@@ -3,8 +3,8 @@ import { Layers, Users, Zap, Globe } from "lucide-react";
 
 export function meta({}: any) {
   return [
-    { title: "About Us - TaskHub" },
-    { name: "description", content: "About TaskHub" },
+    { title: "About Us - TaskForge" },
+    { name: "description", content: "About TaskForge" },
   ];
 }
 
@@ -17,7 +17,7 @@ export default function AboutPage() {
                We Orchestrate <br/> Productivity.
            </h1>
            <p className="text-xl text-glass-secondary max-w-2xl mx-auto leading-relaxed">
-               TaskHub isn't just a project management tool. It's a rhythm engine for teams that want to move fast and stay in sync.
+               TaskForge isn't just a project management tool. It's a rhythm engine for teams that want to move fast and stay in sync.
            </p>
        </div>
 
@@ -38,7 +38,7 @@ export default function AboutPage() {
                </div>
                <h3 className="text-2xl font-bold text-glass-heading-morph mb-4">Radical Transparency</h3>
                <p className="text-glass-secondary leading-relaxed">
-                   Silos kill momentum. TaskHub connects every member of your organization in a unified workspace where context is shared and barriers are dissolved.
+                   Silos kill momentum. TaskForge connects every member of your organization in a unified workspace where context is shared and barriers are dissolved.
                </p>
            </div>
        </div>

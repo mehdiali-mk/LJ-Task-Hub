@@ -179,14 +179,24 @@ export function Testimonials3DCarousel({ testimonials, className = '' }: Testimo
   const [direction, setDirection] = useState(0);
   
   const totalItems = testimonials.length;
-  const visibleCount = 3;
+  /* Responsive Logic */
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const visibleCount = isMobile ? 1 : 3;
   
-  // Get the 3 visible card indices with wrapping
+  // Get the visible card indices with wrapping
   const getVisibleIndices = () => {
     const indices = [];
     for (let i = 0; i < visibleCount; i++) {
-      let index = (currentIndex + i) % totalItems;
-      indices.push(index);
+        let index = (currentIndex + i) % totalItems;
+        indices.push(index);
     }
     return indices;
   };
@@ -203,11 +213,24 @@ export function Testimonials3DCarousel({ testimonials, className = '' }: Testimo
     setCurrentIndex((prev) => (prev === totalItems - 1 ? 0 : prev + 1));
   };
 
+  // Swipe Handler
+  const onDragEnd = (event: any, info: any) => {
+    const offset = info.offset.x;
+    const velocity = info.velocity.x;
+
+    if (offset < -100 || velocity < -500) {
+      handleNext();
+    } else if (offset > 100 || velocity > 500) {
+      handlePrev();
+    }
+  };
+
   return (
     <div className={`relative w-full ${className}`}>
       {/* Main Container with arrows and cards */}
       <div className="flex items-center gap-4 md:gap-8">
-        {/* Left Arrow */}
+        {/* Left Arrow (Hidden on Mobile) */}
+        {!isMobile && (
         <button
           onClick={handlePrev}
           className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full btn-glass-morph flex items-center justify-center group transition-all duration-300 hover:scale-110"
@@ -222,15 +245,16 @@ export function Testimonials3DCarousel({ testimonials, className = '' }: Testimo
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
+        )}
 
         {/* Cards Container */}
         <div 
-          className="flex-1 overflow-hidden py-4"
+          className="flex-1 overflow-visible py-4 touch-pan-y"
           style={{ perspective: '1200px' }}
         >
           <AnimatePresence initial={false} mode="popLayout" custom={direction}>
             <motion.div 
-              className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6"
+              className={`grid gap-4 md:gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}
               key={currentIndex}
               custom={direction}
               initial="enter"
@@ -238,7 +262,7 @@ export function Testimonials3DCarousel({ testimonials, className = '' }: Testimo
               exit="exit"
               variants={{
                 enter: (dir: number) => ({
-                  x: dir > 0 ? '100%' : '-100%',
+                  x: dir > 0 ? '50%' : '-50%',
                   opacity: 0,
                 }),
                 center: {
@@ -246,28 +270,33 @@ export function Testimonials3DCarousel({ testimonials, className = '' }: Testimo
                   opacity: 1,
                 },
                 exit: (dir: number) => ({
-                  x: dir > 0 ? '-100%' : '100%',
+                  x: dir > 0 ? '-50%' : '50%',
                   opacity: 0,
                 }),
               }}
               transition={{
-                x: { type: 'tween', duration: 0.5, ease: [0.32, 0.72, 0, 1] },
-                opacity: { duration: 0.3 },
+                x: { type: 'spring', stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
               }}
-              style={{ transformStyle: 'preserve-3d' }}
+              drag={isMobile ? "x" : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={onDragEnd}
+              style={{ transformStyle: 'preserve-3d', cursor: isMobile ? 'grab' : 'auto' }}
+              whileTap={{ cursor: 'grabbing' }}
             >
               {visibleIndices.map((testimonialIndex, i) => {
                 const testimonial = testimonials[testimonialIndex];
                 
                 return (
                   <motion.div
-                    key={testimonialIndex}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    key={`${testimonialIndex}-${i}`} // Ensure unique key for animation
+                    className="h-full"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
                     transition={{ 
-                      duration: 0.4,
-                      delay: i * 0.1,
-                      ease: 'easeOut'
+                      duration: 0.3,
+                      delay: i * 0.1
                     }}
                   >
                     <TestimonialCard testimonial={testimonial} />
@@ -278,7 +307,8 @@ export function Testimonials3DCarousel({ testimonials, className = '' }: Testimo
           </AnimatePresence>
         </div>
 
-        {/* Right Arrow */}
+        {/* Right Arrow (Hidden on Mobile) */}
+        {!isMobile && (
         <button
           onClick={handleNext}
           className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full btn-glass-morph flex items-center justify-center group transition-all duration-300 hover:scale-110"
@@ -293,6 +323,7 @@ export function Testimonials3DCarousel({ testimonials, className = '' }: Testimo
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
+        )}
       </div>
 
       {/* Dots Indicator */}

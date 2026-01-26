@@ -37,7 +37,7 @@ const getWorkspaces = async (req, res) => {
     const query = req.user.isAdmin ? {} : { "members.user": req.user._id };
 
     const workspaceDocs = await Workspace.find(query)
-        .populate("members.user", "name email profilePicture")
+        .populate("members.user", "name email profilePicture designation description")
         .sort({ createdAt: -1 })
         .lean();
     
@@ -61,7 +61,7 @@ const getWorkspaceDetails = async (req, res) => {
     const { workspaceId } = req.params;
 
     const workspaceDoc = await Workspace.findById(workspaceId)
-        .populate("members.user", "name email profilePicture")
+        .populate("members.user", "name email profilePicture designation description")
         .lean();
 
     if (!workspaceDoc) {
@@ -93,7 +93,7 @@ const getWorkspaceProjects = async (req, res) => {
     }
 
     const workspaceDoc = await Workspace.findOne(query)
-        .populate("members.user", "name email profilePicture")
+        .populate("members.user", "name email profilePicture designation description")
         .lean();
 
     if (!workspaceDoc) {
@@ -111,7 +111,7 @@ const getWorkspaceProjects = async (req, res) => {
       ...(req.user.isAdmin ? {} : { members: { $elemMatch: { user: req.user._id } } }),
     })
       .populate("tasks", "status")
-      .populate("members.user", "name email profilePicture") // Populate member details
+      .populate("members.user", "name email profilePicture designation description") // Populate member details
       .sort({ createdAt: -1 })
       .lean();
 
@@ -445,7 +445,7 @@ const inviteUserToWorkspace = async (req, res) => {
         </p>
         
         <p style="color: #555; font-size: 16px;">
-          You have been invited to join the workspace "<strong>${workspace.name}</strong>" on TaskHub.
+          You have been invited to join the workspace "<strong>${workspace.name}</strong>" on TaskForge.
         </p>
         
         ${workspace.description ? `<p style="color: #777; font-size: 14px; font-style: italic;">${workspace.description}</p>` : ''}

@@ -33,7 +33,7 @@ const PORT = process.env.PORT || 8099;
 
 app.get("/", async (req, res) => {
   res.status(200).json({
-    message: "Welcome to TaskHub API",
+    message: "Welcome to TaskForge API",
   });
 });
 

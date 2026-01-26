@@ -108,7 +108,7 @@ export const ManageProjectMembersDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Manage Project Members</DialogTitle>
         </DialogHeader>
@@ -153,22 +153,22 @@ export const ManageProjectMembersDialog = ({
             {validProjectMembers.map((member: any) => (
               <div
                 key={member.user._id}
-                className="flex items-center justify-between p-2 rounded-lg border border-white/5 bg-white/5"
+                className="flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-between p-3 rounded-lg border border-white/5 bg-white/5"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 overflow-hidden">
                   <Avatar>
                     <AvatarImage src={member.user.profilePicture} />
                     <AvatarFallback>{member.user.name?.charAt(0) || '?'}</AvatarFallback>
                   </Avatar>
-                  <div>
-                    <p className="text-sm font-medium">{member.user.name}</p>
-                    <p className="text-xs text-muted-foreground">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{member.user.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">
                       {member.user.email}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-end gap-2 md:justify-start">
                     {canManage ? (
                     <Select
                         defaultValue={member.role}

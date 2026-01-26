@@ -192,6 +192,11 @@ const Members = () => {
                         <p className="text-sm text-gray-500">
                           {member.user.email}
                         </p>
+                        {member.user.designation && (
+                          <p className="text-xs text-blue-400 mt-0.5">
+                            {member.user.designation}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -229,9 +234,15 @@ const Members = () => {
                     </AvatarFallback>
                   </Avatar>
 
-                  <h3 className="text-lg font-medium mb-2">
+                  <h3 className="text-lg font-medium mb-1">
                     {member.user.name}
                   </h3>
+
+                  {member.user.designation && (
+                    <p className="text-xs text-blue-400 mb-2">
+                      {member.user.designation}
+                    </p>
+                  )}
 
                   <p className="text-sm text-gray-500 mb-4">
                     {member.user.email}

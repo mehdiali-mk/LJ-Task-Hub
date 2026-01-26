@@ -69,7 +69,7 @@ const registerUser = async (req, res) => {
     }
 
     if (phoneNumber) {
-        const smsBody = `Your TaskHub verification code is: ${verificationCode}`;
+        const smsBody = `Your TaskForge verification code is: ${verificationCode}`;
         const isSmsSent = await sendSms(phoneNumber, smsBody);
         const isWaSent = await sendWhatsapp(phoneNumber, smsBody);
         if (isSmsSent || isWaSent) sent = true;
@@ -131,7 +131,7 @@ const loginUser = async (req, res) => {
              const emailBody = `<p>Your verification code is: <strong>${verificationCode}</strong></p>`;
              await sendEmail(user.email, "Verify Account", emailBody);
         } else if (!isEmail && user.phoneNumber) {
-             const smsBody = `Your TaskHub verification code is: ${verificationCode}`;
+             const smsBody = `Your TaskForge verification code is: ${verificationCode}`;
             sendSms(user.phoneNumber, smsBody);
             sendWhatsapp(user.phoneNumber, smsBody);
         }
@@ -307,7 +307,7 @@ const sendVerificationCode = async (req, res) => {
              const emailBody = `<p>Your verification code is: <strong>${verificationCode}</strong></p>`;
              await sendEmail(user.email, "Verify Account", emailBody);
         } else {
-             const smsBody = `Your TaskHub verification code is: ${verificationCode}`;
+             const smsBody = `Your TaskForge verification code is: ${verificationCode}`;
             sendSms(user.phoneNumber, smsBody);
             sendWhatsapp(user.phoneNumber, smsBody);
         }

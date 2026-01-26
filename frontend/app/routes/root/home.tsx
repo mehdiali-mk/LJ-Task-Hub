@@ -9,7 +9,7 @@ import { FeaturesBentoGrid, Testimonials3DCarousel } from "@/components/ui/bento
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "TaskHub - Sonic Flow" },
+    { title: "TaskForge - Sonic Flow" },
     { name: "description", content: "Project management that feels like your favorite playlist." },
   ];
 }
@@ -30,7 +30,7 @@ const Homepage = () => {
           <div className="animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-10 space-y-8">
 
              
-             <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-none">
+             <h1 className="text-4xl sm:text-6xl lg:text-8xl font-black tracking-tighter mb-8 leading-none">
               <span className="text-glass-hero-morph">Orchestrate</span> <br/>
               <span className="text-glass-heading-morph">Your Success.</span>
             </h1>
@@ -63,7 +63,7 @@ const Homepage = () => {
                               <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
                                 <span className="text-[8px] font-bold text-white">T</span>
                               </div>
-                              <span className="text-[10px] font-bold text-white/90">TaskHub</span>
+                              <span className="text-[10px] font-bold text-white/90">TaskForge</span>
                             </div>
                             <div className="space-y-1.5">
                               <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-white/10">
@@ -337,14 +337,14 @@ const Homepage = () => {
                   name: "Emma W.",
                   role: "Project Manager",
                   expertise: "Agile Coach",
-                  text: "TaskHub transformed how our team collaborates. The real-time sync is a game-changer for remote work.",
+                  text: "TaskForge transformed how our team collaborates. The real-time sync is a game-changer for remote work.",
                   color: "#6366F1"
                 },
                 {
                   name: "David K.",
                   role: "CTO",
                   expertise: "Tech Leader",
-                  text: "We evaluated 15 project management tools. TaskHub won hands down for its intuitive design and powerful features.",
+                  text: "We evaluated 15 project management tools. TaskForge won hands down for its intuitive design and powerful features.",
                   color: "#10B981"
                 },
                 {
@@ -358,28 +358,28 @@ const Homepage = () => {
                   name: "James H.",
                   role: "Startup Founder",
                   expertise: "Entrepreneur",
-                  text: "From day one, TaskHub felt like it was built for startups. Fast, flexible, and scales with us.",
+                  text: "From day one, TaskForge felt like it was built for startups. Fast, flexible, and scales with us.",
                   color: "#EC4899"
                 },
                 {
                   name: "Anna P.",
                   role: "Team Lead",
                   expertise: "Operations",
-                  text: "Our productivity increased by 40% after switching to TaskHub. The automation features are incredible.",
+                  text: "Our productivity increased by 40% after switching to TaskForge. The automation features are incredible.",
                   color: "#8B5CF6"
                 },
                 {
                   name: "Chris B.",
                   role: "Freelancer",
                   expertise: "Solo Pro",
-                  text: "As a solo professional, I need tools that don't slow me down. TaskHub is fast, minimal, and powerful.",
+                  text: "As a solo professional, I need tools that don't slow me down. TaskForge is fast, minimal, and powerful.",
                   color: "#0EA5E9"
                 },
                 {
                   name: "Rachel L.",
                   role: "Agency Owner",
                   expertise: "Creative Director",
-                  text: "Managing multiple client projects used to be chaos. TaskHub brought structure without killing creativity.",
+                  text: "Managing multiple client projects used to be chaos. TaskForge brought structure without killing creativity.",
                   color: "#EF4444"
                 }
               ]}

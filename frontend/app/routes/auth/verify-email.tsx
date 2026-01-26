@@ -40,7 +40,7 @@ const VerifyEmail = () => {
            <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 ring-1 ring-white/10 flex items-center justify-center shadow-inner mb-2">
              <Layers className="size-6 text-white/80" />
            </div>
-          <h1 className="text-2xl font-bold text-white">TaskHub</h1>
+          <h1 className="text-2xl font-bold text-white">TaskForge</h1>
        </div>
 
       <Card className="w-full max-w-md bg-white/[0.08] backdrop-blur-3xl border-white/20 ring-1 ring-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">

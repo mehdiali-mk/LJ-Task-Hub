@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 
 export const sendEmail = async (to, subject, html) => {
   const msg = {
-    from: `TaskHub <${process.env.FROM_EMAIL}>`,
+    from: `TaskForge <${process.env.FROM_EMAIL}>`,
     to,
     subject,
     html,

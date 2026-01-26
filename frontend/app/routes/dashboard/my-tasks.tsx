@@ -119,11 +119,7 @@ const MyTasks = () => {
           <h1 className="text-2xl font-bold">My Tasks</h1>
         </div>
 
-        <div
-          className="flex flex-col items-start md:flex-row md"
-          itemScope
-          gap-2
-        >
+        <div className="flex flex-col items-start md:flex-row gap-2">
           <Button
             variant={"outline"}
             onClick={() =>
@@ -174,7 +170,7 @@ const MyTasks = () => {
       />
 
       <Tabs defaultValue="list">
-        <TabsList>
+        <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="list">List View</TabsTrigger>
           <TabsTrigger value="board">Board View</TabsTrigger>
         </TabsList>

@@ -31,7 +31,7 @@ async function getCanvasFingerprint(): Promise<string> {
   ctx.fillStyle = '#f60';
   ctx.fillRect(125, 1, 62, 20);
   ctx.fillStyle = '#069';
-  ctx.fillText('TaskHub Fingerprint', 2, 15);
+  ctx.fillText('TaskForge Fingerprint', 2, 15);
   ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
   ctx.fillText('Security Layer', 4, 45);
 

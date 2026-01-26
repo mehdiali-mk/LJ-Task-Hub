@@ -83,16 +83,20 @@ const SignUp = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <Link to="/" className="flex flex-col items-center gap-2 mb-8 group cursor-pointer">
-        <div className="w-16 h-16 rounded-xl bg-white border border-white/50 flex items-center justify-center overflow-hidden shadow-lg transition-transform group-hover:scale-105 group-hover:-translate-y-0.5">
+      <Link to="/" className="flex items-center gap-3 mb-8 group cursor-pointer">
+        <div className="w-14 h-14 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center transition-all duration-300 backdrop-blur-md overflow-hidden
+          group-hover:bg-white
+          group-hover:border-white/70
+          group-hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.25),inset_0_-1px_0_rgba(0,0,0,0.1),0_4px_16px_rgba(0,0,0,0.2),0_0_20px_rgba(255,255,255,0.15)]
+          group-hover:-translate-y-0.5">
            <DotLottieReact
              src="https://lottie.host/2bd99e49-b27f-4ad1-a9fd-4c7272da3bbe/hgKC6qcLgu.lottie"
              loop
              autoplay
-             style={{ width: '64px', height: '64px', transform: 'scale(1.4)' }}
+             style={{ width: '56px', height: '56px', transform: 'scale(1.4)' }}
            />
         </div>
-        <span className="font-bold text-2xl text-glass-heading-morph tracking-tighter group-hover:opacity-80 transition-opacity">TaskHub</span>
+        <span className="font-bold text-2xl tracking-tighter text-white/90 group-hover:text-white transition-colors">TaskForge</span>
       </Link>
       <Card className="max-w-md w-full shadow-xl">
         <CardHeader className="text-center mb-5">

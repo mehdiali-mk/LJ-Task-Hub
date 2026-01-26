@@ -24,7 +24,7 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-import { MeshBackground } from "./components/ui/mesh-background";
+import { RefractiveProvider } from "./components/ui/refractive-layout";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -36,8 +36,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body suppressHydrationWarning>
-        <MeshBackground />
-        {children}
+        <RefractiveProvider>
+          {children}
+        </RefractiveProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

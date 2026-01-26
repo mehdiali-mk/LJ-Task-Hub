@@ -16,7 +16,7 @@ export function GlassNavbar() {
                  style={{ width: '56px', height: '56px', transform: 'scale(1.4)' }}
                />
             </div>
-            <span className="font-bold text-2xl tracking-tighter text-white">TaskHub</span>
+            <span className="font-bold text-2xl tracking-tighter text-white">TaskForge</span>
           </Link>
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">

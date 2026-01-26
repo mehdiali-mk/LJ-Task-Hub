@@ -2,8 +2,8 @@ import React from "react";
 
 export function meta({}: any) {
   return [
-    { title: "Privacy Policy - TaskHub" },
-    { name: "description", content: "Privacy Policy for TaskHub" },
+    { title: "Privacy Policy - TaskForge" },
+    { name: "description", content: "Privacy Policy for TaskForge" },
   ];
 }
 
@@ -38,7 +38,7 @@ const sections = [
   },
   {
     title: "8. Contact Us",
-    content: "If you have any questions about this Privacy Policy, please contact us at privacy@taskhub.com or through our contact form."
+    content: "If you have any questions about this Privacy Policy, please contact us at privacy@TaskForge.com or through our contact form."
   }
 ];
 
@@ -59,7 +59,7 @@ export default function PrivacyPage() {
         {/* Content Card */}
         <div className="rounded-3xl p-8 md:p-12 deep-glass">
           <p className="text-white/70 leading-relaxed mb-12">
-            At TaskHub, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our service.
+            At TaskForge, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our service.
           </p>
 
           {/* Sections */}
@@ -81,7 +81,7 @@ export default function PrivacyPage() {
             <p className="text-white/40 text-sm">
               If you have questions about this policy, please contact us at{" "}
               <a href="mailto:privacy@taskhub.com" className="footer-glass-link">
-                privacy@taskhub.com
+                privacy@TaskForge.com
               </a>
             </p>
           </div>

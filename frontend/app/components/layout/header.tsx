@@ -1,7 +1,7 @@
 import { useAuth } from "@/provider/auth-context";
 import type { Workspace } from "@/types";
 import { Button } from "../ui/button";
-import { Bell, PlusCircle } from "lucide-react";
+import { Bell, PlusCircle, Menu } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,12 +19,14 @@ interface HeaderProps {
   onWorkspaceSelected: (workspace: Workspace) => void;
   selectedWorkspace: Workspace | null;
   onCreateWorkspace: () => void;
+  onMenuClick?: () => void;
 }
 
 export const Header = ({
   onWorkspaceSelected,
   selectedWorkspace,
   onCreateWorkspace,
+  onMenuClick,
 }: HeaderProps) => {
   const navigate = useNavigate();
 
@@ -48,7 +50,13 @@ export const Header = ({
 
   return (
     <div className="deep-glass-sm sticky top-0 z-40 border-b border-white/10">
-      <div className="flex h-14 items-center justify-end px-4 sm:px-6 lg:px-8 py-4">
+      <div className="flex h-14 items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
+        {/* Mobile Menu Trigger */}
+        <div className="flex items-center md:hidden">
+            <Button variant="ghost" size="icon" onClick={onMenuClick} className="text-white hover:bg-white/10">
+                <Menu className="w-6 h-6" />
+            </Button>
+        </div>
         {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -104,7 +112,7 @@ export const Header = ({
           </DropdownMenuContent>
         </DropdownMenu> */}
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-auto">
           {false && (
             <Button variant="ghost" size="icon">
               <Bell />

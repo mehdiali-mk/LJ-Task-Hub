@@ -7,8 +7,8 @@ import { Mail, MapPin, Phone } from "lucide-react";
 
 export function meta({}: any) {
   return [
-    { title: "Contact Us - TaskHub" },
-    { name: "description", content: "Contact TaskHub Support" },
+    { title: "Contact Us - TaskForge" },
+    { name: "description", content: "Contact TaskForge Support" },
   ];
 }
 
@@ -31,7 +31,7 @@ export default function ContactPage() {
                    </div>
                    <div>
                        <div className="text-sm text-white/50 font-medium uppercase tracking-wider">Email</div>
-                       <div className="text-lg text-white/90 font-semibold">hello@taskhub.com</div>
+                       <div className="text-lg text-white/90 font-semibold">mehdialikadiwala@gmail.com</div>
                    </div>
                </div>
                
@@ -41,7 +41,7 @@ export default function ContactPage() {
                    </div>
                    <div>
                        <div className="text-sm text-white/50 font-medium uppercase tracking-wider">Phone</div>
-                       <div className="text-lg text-white/90 font-semibold">+1 (555) 123-4567</div>
+                       <div className="text-lg text-white/90 font-semibold">+91 884955 3383</div>
                    </div>
                </div>
 
@@ -51,7 +51,7 @@ export default function ContactPage() {
                    </div>
                    <div>
                        <div className="text-sm text-white/50 font-medium uppercase tracking-wider">HQ</div>
-                       <div className="text-lg text-white/90 font-semibold">San Francisco, CA</div>
+                       <div className="text-lg text-white/90 font-semibold">GIFT City, Gandhinagar, Gujarat</div>
                    </div>
                </div>
            </div>

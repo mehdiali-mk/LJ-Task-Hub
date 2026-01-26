@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export function meta({}: any) {
   return [
-    { title: "Support - TaskHub" },
-    { name: "description", content: "TaskHub Support Center" },
+    { title: "Support - TaskForge" },
+    { name: "description", content: "TaskForge Support Center" },
   ];
 }
 
@@ -138,7 +138,7 @@ export default function SupportPage() {
   return (
     <div className="w-full max-w-2xl mx-auto py-12">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-black tracking-tighter text-glass-hero-morph mb-4">Support Center</h1>
+        <h1 className="text-4xl font-black tracking-tighter text-glass-hero-morph mb-4">Help Center</h1>
         <p className="text-glass-secondary">Let's find a solution for you.</p>
       </div>
 

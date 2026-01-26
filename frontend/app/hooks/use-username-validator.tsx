@@ -66,7 +66,7 @@ export function useUsernameValidator(
     }
     
     // Reserved usernames
-    const reserved = ['admin', 'root', 'system', 'support', 'help', 'taskhub'];
+    const reserved = ['admin', 'root', 'system', 'support', 'help', 'TaskForge'];
     if (reserved.includes(value.toLowerCase())) {
       return 'This username is reserved';
     }
