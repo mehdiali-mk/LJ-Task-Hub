@@ -74,7 +74,7 @@ const COMMENT_PATTERNS = [
 
 // Helper to get random array item
 const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
-const getRandomSubset = (arr, max = 3) => arr.sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * max) + 1);
+const getRandomSubset = (arr, max = 3) => [...arr].sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * max) + 1);
 
 async function seedDatabase() {
   console.log("\x1b[36m%s\x1b[0m", ">>> STARTING TOTAL RECONSTRUCTION PROTOCOL...");
@@ -190,20 +190,31 @@ async function seedDatabase() {
         const manager = wsManagers[i];
         const wsName = WORKSPACE_DOMAINS[i % WORKSPACE_DOMAINS.length] + " " + (Math.floor(i/12) + 1);
         
-        // Assign some members to this workspace
-        const wsMembers = getRandomSubset(developers, 15).map(u => ({
-            user: u._id,
-            role: getRandom(["member", "viewer"]),
-            joinedAt: faker.date.past({ years: 2 })
-        }));
+        // Start with workspace manager as first admin member
+        const wsMembers = [{ user: manager._id, role: "admin", joinedAt: faker.date.past({ years: 3 }) }];
+        const addedMemberIds = new Set([manager._id.toString()]);
         
-        // Add Manager as Admin
-        wsMembers.push({ user: manager._id, role: "admin", joinedAt: faker.date.past({ years: 3 }) });
+        // Add developers (excluding manager to prevent duplicates)
+        const availableDevs = developers.filter(d => !addedMemberIds.has(d._id.toString()));
+        getRandomSubset(availableDevs, 15).forEach(u => {
+            if (!addedMemberIds.has(u._id.toString())) {
+                wsMembers.push({
+                    user: u._id,
+                    role: getRandom(["member", "viewer"]),
+                    joinedAt: faker.date.past({ years: 2 })
+                });
+                addedMemberIds.add(u._id.toString());
+            }
+        });
 
-        // Add 3 Project Managers
-        const assignedPMs = getRandomSubset(projectManagers, 3);
+        // Add 3 Project Managers (with deduplication)
+        const availablePMs = projectManagers.filter(pm => !addedMemberIds.has(pm._id.toString()));
+        const assignedPMs = getRandomSubset(availablePMs, 3);
         assignedPMs.forEach(pm => {
-             wsMembers.push({ user: pm._id, role: "admin", joinedAt: faker.date.past({ years: 2 }) });
+            if (!addedMemberIds.has(pm._id.toString())) {
+                wsMembers.push({ user: pm._id, role: "admin", joinedAt: faker.date.past({ years: 2 }) });
+                addedMemberIds.add(pm._id.toString());
+            }
         });
 
         const workspace = await Workspace.create({
@@ -227,11 +238,19 @@ async function seedDatabase() {
             const pm = getRandom(assignedPMs); // Randomly pick one of the PMs assigned to this WS
             const projTitle = getRandom(PROJECT_NAMES) + ` (${faker.hacker.adjective()})`;
             
-            // Project Members (subset of WS members)
-            const projMembers = wsMembers.slice(0, 8).map(m => ({
-                user: m.user,
-                role: m.user.toString() === pm._id.toString() ? "manager" : "contributor"
-            }));
+            // Project Members: Always include PM as manager, then add other WS members as contributors
+            const projMemberIds = new Set();
+            const projMembers = [];
+            
+            // PM is always the manager
+            projMembers.push({ user: pm._id, role: "manager" });
+            projMemberIds.add(pm._id.toString());
+            
+            // Add other workspace members as contributors (up to 7 more, excluding PM)
+            wsMembers.filter(m => !projMemberIds.has(m.user.toString())).slice(0, 7).forEach(m => {
+                projMembers.push({ user: m.user, role: "contributor" });
+                projMemberIds.add(m.user.toString());
+            });
 
             const project = await Project.create({
                 title: projTitle,
@@ -278,7 +297,9 @@ async function seedDatabase() {
         for (let k = 0; k < tasksCount; k++) {
             taskGlobalCounter++;
             const creator = project.createdBy;
-            const assignee = getRandom(project.members).user;
+            // Fix 4: Explicitly extract member user IDs before random selection
+            const projectMemberUserIds = project.members.map(m => m.user);
+            const assignee = getRandom(projectMemberUserIds);
             
             const createdAt = randomDate(startDate, new Date());
             
